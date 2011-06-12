@@ -20,7 +20,15 @@ namespace Pulse.Base
             var webClient = new WebClient();
             webClient.Encoding = System.Text.Encoding.GetEncoding("koi8-r");
             var url = String.Format("http://www.google.com/translate_t?hl=en&text={0}&langpair={1}", input, languagePair);
-            var result = webClient.DownloadString(new Uri(url));
+            string result;
+            try
+            {
+                result = webClient.DownloadString(new Uri(url));
+            }
+            catch (Exception)
+            {
+                return null;
+            }
             result = result.Substring(result.IndexOf("<span title=\"") + "<span title=\"".Length);
             result = result.Substring(result.IndexOf(">") + 1);
             result = result.Substring(0, result.IndexOf("</span>"));

@@ -29,11 +29,15 @@ namespace wallbase
             if (totalCount == 0)
             {
                 content = HttpPost(Url, string.Format("query={0}&board=all&thpp=32&res_opt=eqeq&aspect=0&orderby=relevance&orderby_opt=desc", search));
+                if (string.IsNullOrEmpty(content))
+                    return null;
                 GetPagesCount(content);
             }
             else
             {
                 content = HttpPost(Url + rnd.Next(totalCount / 32), string.Format("query={0}&board=all&thpp=32&res_opt=eqeq&aspect=0&orderby=relevance&orderby_opt=desc", search));
+                if (string.IsNullOrEmpty(content))
+                    return null;
             }
             var pics = ParsePictures(content, skipLowRes);
             var result = new List<Picture>();
@@ -114,20 +118,30 @@ namespace wallbase
 
         private static string HttpPost(string url, string parameters)
         {
-            System.Net.WebRequest req = System.Net.WebRequest.Create(url);
-            //Add these, as we're doing a POST
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.Method = "POST";
-            //We need to count how many bytes we're sending. Post'ed Faked Forms should be name=value&
-            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameters);
-            req.ContentLength = bytes.Length;
-            System.IO.Stream os = req.GetRequestStream();
-            os.Write(bytes, 0, bytes.Length); //Push it out there
-            os.Close();
-            System.Net.WebResponse resp = req.GetResponse();
-            if (resp == null) return null;
-            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-            return sr.ReadToEnd().Trim();
+            try
+            {
+
+
+                System.Net.WebRequest req = System.Net.WebRequest.Create(url);
+                //Add these, as we're doing a POST
+                req.ContentType = "application/x-www-form-urlencoded";
+                req.Method = "POST";
+                //We need to count how many bytes we're sending. Post'ed Faked Forms should be name=value&
+                byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameters);
+                req.ContentLength = bytes.Length;
+                System.IO.Stream os = req.GetRequestStream();
+                os.Write(bytes, 0, bytes.Length); //Push it out there
+                os.Close();
+                System.Net.WebResponse resp = req.GetResponse();
+
+                if (resp == null) return null;
+                System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+                return sr.ReadToEnd().Trim();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static string StripTags(string source)
