@@ -178,7 +178,7 @@ namespace Pulse
 
         void TimerTick(object sender, EventArgs e)
         {
-            if (App.Settings.Language == "ru-RU")
+            if (App.Settings.Language == "ru-RU" || App.Settings.Provider != "Rewalls")
                 App.PictureManager.GetPicture(App.Settings.Search);
             else
             {

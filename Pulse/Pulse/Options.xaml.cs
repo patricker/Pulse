@@ -77,11 +77,23 @@ namespace Pulse
 
             FilterBox.Text = App.Settings.Filter;
 
+            if (Environment.OSVersion.Version.Major < 6 || Environment.OSVersion.Version.Minor < 1)
+                ChangeLogonBgCheckBox.Visibility = System.Windows.Visibility.Collapsed;
             ChangeLogonBgCheckBox.IsChecked = App.Settings.ChangeLogonBg;
 
             if (App.Settings.Language != "ru-RU")
             {
                 FilterPanel.Visibility = System.Windows.Visibility.Collapsed;
+            }
+
+
+            if (App.PictureManager != null && App.PictureManager.Providers != null)
+            {
+                foreach (var p in App.PictureManager.Providers)
+                {
+                    ProvidersBox.Items.Add(p.Name);
+                }
+                ProvidersBox.SelectedIndex = App.PictureManager.Providers.IndexOf(App.PictureManager.CurrentProvider);
             }
 
             ApplyButton.IsEnabled = false;
@@ -119,7 +131,8 @@ namespace Pulse
             App.Settings.ClearOldPics = (bool)ClearCacheCheckBox.IsChecked;
             App.Settings.ClearInterval = (int)ClearIntervalSlider.Value;
             App.Settings.Filter = FilterBox.Text;
-            //App.Settings.ChangeLogonBg = (bool) ChangeLogonBgCheckBox.IsChecked;
+            if (!string.IsNullOrEmpty(ProvidersBox.Text))
+                App.Settings.Provider = ProvidersBox.Text;
 
             if (RefreshIntervalSlider.Value > 0)
                 App.Settings.RefreshInterval = RefreshIntervalSlider.Value;
@@ -144,6 +157,17 @@ namespace Pulse
                     Process.Start(p);
                 }
             }
+
+            if (App.PictureManager != null && App.PictureManager.Providers != null)
+                foreach (Provider p in App.PictureManager.Providers)
+                {
+                    if (p.Name == App.Settings.Provider)
+                    {
+                        if (!p.IsLoaded)
+                            p.Load();
+                        App.PictureManager.CurrentProvider = p;
+                    }
+                }
 
             App.Settings.Save(App.Path + "\\settings.conf");
 

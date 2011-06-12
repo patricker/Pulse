@@ -21,7 +21,7 @@ namespace Rewalls
         private const string PicUrlTemplate = "http://rewalls.com/pic/{0}/{1}/reWalls.com-{2}.jpg";
         private const string Url = "http://rewalls.com/xml/tag.php?tag={0}";
 
-        //all available sizes on rewall.com
+        //all available sizes on rewalls.com
         private readonly List<Size> Sizes = new List<Size>(){new Size(2560,1600), new Size(2560,1440), new Size(1920,1200), new Size(1920,1080),
             new Size(1680,1050), new Size(1600,1200), new Size(1600,900), new Size(1440,900), new Size(1366,768), new Size(1280,1024),
             new Size(1280,960), new Size(1280,800), new Size(1280,768), new Size(1152,864), new Size(1024,768), new Size(1024, 600),

@@ -385,6 +385,15 @@ namespace Pulse.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select wallpapers source:.
+        /// </summary>
+        public static string OptionsSelectProvider {
+            get {
+                return ResourceManager.GetString("OptionsSelectProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skip pictures with lower resolution.
         /// </summary>
         public static string OptionsSkipLowRes {

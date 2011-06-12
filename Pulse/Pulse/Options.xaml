@@ -38,6 +38,8 @@
                         </StackPanel>
                         <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsBehaviour}" Margin="0,15,0,0" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
+                        <TextBlock Text="{x:Static Properties:Resources.OptionsSelectProvider}"/>
+                        <ComboBox Name="ProvidersBox" MinWidth="120" Margin="0,3,0,3" SelectionChanged="ComboBoxSelectionChanged"/>
                         <CheckBox Name="AutoDownloadCheckBox" Content="{x:Static Properties:Resources.OptionsDownloadAutomatically}" Click="CheckBoxClick"/>
                         <StackPanel Orientation="Horizontal" Margin="0,7,0,0" >
                             <TextBlock Text="{x:Static Properties:Resources.OptionsRefreshInterval}"/>

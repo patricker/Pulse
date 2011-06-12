@@ -32,6 +32,17 @@ namespace Pulse
             get { return pmanager.CurrentProvider.GetResultsCount(); }
         }
 
+        public Provider CurrentProvider
+        {
+            get { return pmanager.CurrentProvider; }
+            set { pmanager.CurrentProvider = value; }
+        }
+
+        public List<Provider> Providers
+        {
+            get { return pmanager.Providers; }
+        }
+
         public PictureManager()
         {
             pmanager = new ProviderManager();
@@ -61,8 +72,8 @@ namespace Pulse
                         PictureDownloaded();
                     return;
                 }
-                //CurrentPicture = Pictures[rnd.Next(Pictures.Count)];
-                CurrentPicture = Pictures[index];
+                CurrentPicture = Pictures[rnd.Next(Pictures.Count)];
+               // CurrentPicture = Pictures[index];
                 if (!Directory.Exists(App.Path + "\\Cache"))
                     Directory.CreateDirectory(App.Path + "\\Cache");
                 if (!File.Exists(App.Path + "\\Cache\\" + CurrentPicture.Id + ".jpg"))

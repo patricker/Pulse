@@ -225,6 +225,9 @@
   <data name="OptionsSearchResults" xml:space="preserve">
     <value>Pictures found:</value>
   </data>
+  <data name="OptionsSelectProvider" xml:space="preserve">
+    <value>Select wallpapers source:</value>
+  </data>
   <data name="OptionsSkipLowRes" xml:space="preserve">
     <value>Skip pictures with lower resolution</value>
   </data>

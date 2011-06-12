@@ -9,9 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rewalls", "Providers\Rewalls\Rewalls.csproj", "{9014327D-43C7-4C75-AE6D-AFDC48670035}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallbase", "Providers\wallbase\wallbase.csproj", "{921F5326-5B28-462D-8220-3D3507438C27}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -25,6 +27,10 @@ Global
 		SccProjectUniqueName3 = Pulse\\Pulse.csproj
 		SccProjectName3 = Pulse
 		SccLocalPath3 = Pulse
+		SccProjectUniqueName4 = Providers\\wallbase\\wallbase.csproj
+		SccProjectTopLevelParentUniqueName4 = Pulse.sln
+		SccProjectName4 = Providers/wallbase
+		SccLocalPath4 = Providers\\wallbase
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,11 +71,22 @@ Global
 		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|x86.ActiveCfg = Release|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{921F5326-5B28-462D-8220-3D3507438C27}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9014327D-43C7-4C75-AE6D-AFDC48670035} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
+		{921F5326-5B28-462D-8220-3D3507438C27} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
 	EndGlobalSection
 EndGlobal
