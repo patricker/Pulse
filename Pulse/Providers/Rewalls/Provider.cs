@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Xml.Linq;
 using Pulse.Base;
 
 namespace Rewalls
@@ -17,9 +18,11 @@ namespace Rewalls
         private StreamReader reader;
         private int resultsCount;
 
-        private const string PicUrlTemplate = "http://rewalls.com/pic/{0}/{1}/reWalls.com-{2}";
+        private const string PicUrlTemplate = "http://rewalls.com/pic/{0}/{1}/reWalls.com-{2}.jpg";
+        private const string Url = "http://rewalls.com/xml/tag.php?tag={0}";
+
         //all available sizes on rewall.com
-        private List<Size> Sizes = new List<Size>(){new Size(2560,1600), new Size(2560,1440), new Size(1920,1200), new Size(1920,1080),
+        private readonly List<Size> Sizes = new List<Size>(){new Size(2560,1600), new Size(2560,1440), new Size(1920,1200), new Size(1920,1080),
             new Size(1680,1050), new Size(1600,1200), new Size(1600,900), new Size(1440,900), new Size(1366,768), new Size(1280,1024),
             new Size(1280,960), new Size(1280,800), new Size(1280,768), new Size(1152,864), new Size(1024,768), new Size(1024, 600),
             new Size(800,600), new Size(640,960), new Size(320,480)};
@@ -31,7 +34,53 @@ namespace Rewalls
                 "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 8.0) (compatible; MSIE 8.0; Windows NT 5.1;)";
         }
 
-        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes)
+        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes, List<string> filterKeywords = null)
+        {
+            var query = HttpUtility.UrlEncode(search, Encoding.GetEncoding(1251));
+            var url = string.Format(Url, query);
+            var content = GeneralHelper.GetWebPageContent(url);
+            if (string.IsNullOrEmpty(content))
+                return null;
+            var xml = XElement.Parse(content);
+            var result = new List<Picture>();
+            foreach (var el in xml.Elements("Image"))
+            {
+                var tags = el.Element("tags").Value;
+
+                if (filterKeywords != null && IsImageUnwanted(tags, filterKeywords))
+                    continue;
+                
+                var id = el.Element("id").Value;
+                var folder = el.Element("folder").Value;
+                var maxResString = el.Element("res").Value;
+                var maxRes = new Size(Convert.ToInt32(maxResString.Split('x')[0]), Convert.ToInt32(maxResString.Split('x')[1]));
+                var curRes = new Size((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
+
+                if (skipLowRes && (maxRes.Height < curRes.Height || maxRes.Width < curRes.Width))
+                    continue;
+
+                var res = FindNearestSize(curRes.Width, curRes.Height);
+                
+                var pic = new Picture();
+                pic.Id = id;
+                if (getMaxRes)
+                    pic.Url = string.Format(PicUrlTemplate, folder, maxRes.Width + "x" + maxRes.Height, pic.Id);
+                else 
+                    pic.Url = string.Format(PicUrlTemplate, folder, res.Width + "x" + res.Height, pic.Id);
+                result.Add(pic);
+            }
+
+            resultsCount = result.Count;
+
+            return result;
+        }
+
+        private bool IsImageUnwanted(string tags, IEnumerable<string> filterKeywords)
+        {
+            return filterKeywords.Any(tags.Contains);
+        }
+
+        /*public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes)
         {
             var rnd = new Random(Environment.TickCount);
             var query = HttpUtility.UrlEncode(search, Encoding.GetEncoding(1251));
@@ -99,7 +148,7 @@ namespace Rewalls
                 resultsCount = c;
             reader.Close();
             return result;
-        }
+        }*/
 
         public int GetResultsCount()
         {

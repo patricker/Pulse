@@ -147,6 +147,9 @@
   <data name="OptionsCancelButton" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="OptionsChangeLogonBg" xml:space="preserve">
+    <value>Set wallpaper as logon background</value>
+  </data>
   <data name="OptionsClearCache" xml:space="preserve">
     <value>Delete old pictures</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="OptionsFilterInfo" xml:space="preserve">
     <value>To skip pictures with some content which you don't want to see, type one or more keywords here. Split words with comma.</value>
+  </data>
+  <data name="OptionsFilterText" xml:space="preserve">
+    <value>You can skip images with unwanted content. Type one or more keywords separated with commas (e.g. "rain, man, animals").</value>
   </data>
   <data name="OptionsGeneralTabHeader" xml:space="preserve">
     <value>General</value>

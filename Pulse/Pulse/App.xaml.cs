@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.AccessControl;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using Pulse.Base;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -26,9 +30,32 @@ namespace Pulse
         public static PictureManager PictureManager;
         private DispatcherTimer timer;
         public static Translator Translator;
+        public static List<string> FilterKeywords;
+        private string translatedKeyword;
 
         private void ApplicationStartup(object sender, StartupEventArgs e)
         {
+            if (e.Args.Contains("/enableoembg"))
+            {
+                EnableOEMBackground();
+                Shutdown();
+                return;
+            }
+
+            if (e.Args.Contains("/disableoembg"))
+            {
+                DisableOEMBackground();
+                Shutdown();
+                return;
+            }
+
+            if (e.Args.Contains("/createdirs"))
+            {
+                CreateDirs();
+                Shutdown();
+                return;
+            }
+
             Settings = (Settings)XmlSerializable.Load(typeof(Settings), "settings.conf") ?? new Settings();
 
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Language);
@@ -40,10 +67,10 @@ namespace Pulse
             {
                 foreach (var f in Directory.GetFiles(Path + "\\Cache"))
                 {
-                   if (File.GetCreationTime(f).CompareTo(DateTime.Now.AddDays(1-App.Settings.ClearInterval)) <= 0)
-                   {
-                       File.Delete(f);
-                   }
+                    if (File.GetCreationTime(f).CompareTo(DateTime.Now.AddDays(1 - App.Settings.ClearInterval)) <= 0)
+                    {
+                        File.Delete(f);
+                    }
                 }
             }
 
@@ -60,14 +87,74 @@ namespace Pulse
                 timer.Start();
 
             Translator = new Translator();
-            Translator.Translated += TranslatorTranslated;
+            //Translator.Translated += TranslatorTranslated;
             WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
+
+            FilterKeywords = new List<string>();
+            if (!string.IsNullOrEmpty(Settings.Filter))
+            {
+                var s = Settings.Filter.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                if (s.Length == 0)
+                    return;
+                FilterKeywords.AddRange(s);
+            }
         }
 
-        void TranslatorTranslated(object sender, EventArgs e)
+        private void EnableOEMBackground()
         {
-            App.PictureManager.GetPicture(Translator.Result);
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("Microsoft").OpenSubKey("Windows")
+                    .OpenSubKey("CurrentVersion").OpenSubKey("Authentication").OpenSubKey("LogonUI").OpenSubKey("Background", true))
+                {
+                    key.SetValue("OEMBackground", 1, RegistryValueKind.DWord);
+                    key.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Pulse Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
+        private void DisableOEMBackground()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey("Software", RegistryKeyPermissionCheck.ReadWriteSubTree).OpenSubKey("Microsoft").OpenSubKey("Windows")
+                    .OpenSubKey("CurrentVersion").OpenSubKey("Authentication").OpenSubKey("LogonUI").OpenSubKey("Background", true))
+                {
+                    key.DeleteValue("OEMBackground", false);
+                    key.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Pulse Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SetAccessRules()
+        {
+            DirectorySecurity dirSec = Directory.GetAccessControl(Environment.SystemDirectory + "\\oobe\\info\\backgrounds");
+            dirSec.AddAccessRule(new FileSystemAccessRule(Environment.UserDomainName + "\\" + Environment.UserName, FileSystemRights.FullControl, AccessControlType.Allow));
+            Directory.SetAccessControl(Environment.SystemDirectory + "\\oobe\\info\\backgrounds", dirSec);
+
+        }
+
+        private void CreateDirs()
+        {
+            if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info"))
+                Directory.CreateDirectory(Environment.SystemDirectory + "\\oobe\\info");
+            if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info\\backgrounds"))
+                Directory.CreateDirectory(Environment.SystemDirectory + "\\oobe\\info\\backgrounds");
+            SetAccessRules();
+        }
+
+        //void TranslatorTranslated(object sender, EventArgs e)
+        //{
+        //    App.PictureManager.GetPicture(Translator.Result);
+        //}
 
         public static void Log(string message)
         {
@@ -95,10 +182,19 @@ namespace Pulse
                 App.PictureManager.GetPicture(App.Settings.Search);
             else
             {
-                if (string.IsNullOrEmpty(Translator.Result))
-                    Translator.TranslateText(App.Settings.Search, "en|ru");
+                if (string.IsNullOrEmpty(translatedKeyword))
+                {
+                    ThreadStart threadStarter = delegate
+                                                    {
+                                                        translatedKeyword = Translator.TranslateText(App.Settings.Search, "en|ru");
+                                                        App.PictureManager.GetPicture(translatedKeyword);
+                                                    };
+                    var thread = new Thread(threadStarter);
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.Start();
+                }
                 else
-                    App.PictureManager.GetPicture(Translator.Result);
+                    App.PictureManager.GetPicture(translatedKeyword);
             }
         }
 
@@ -140,15 +236,16 @@ namespace Pulse
 
         void NextMenuItemClick(object sender, EventArgs e)
         {
-            if (App.Settings.Language == "ru-RU")
-                App.PictureManager.GetPicture(App.Settings.Search);
-            else
-            {
-                if (string.IsNullOrEmpty(Translator.Result))
-                    Translator.TranslateText(App.Settings.Search, "en|ru");
-                else
-                    App.PictureManager.GetPicture(Translator.Result);
-            }
+            TimerTick(null, EventArgs.Empty);
+            //if (App.Settings.Language == "ru-RU")
+            //    App.PictureManager.GetPicture(App.Settings.Search);
+            //else
+            //{
+            //    if (string.IsNullOrEmpty(Translator.Result))
+            //        Translator.TranslateText(App.Settings.Search, "en|ru");
+            //    else
+            //        App.PictureManager.GetPicture(Translator.Result);
+            //}
         }
 
         void OptionsMenuItemClick(object sender, EventArgs e)
@@ -186,6 +283,16 @@ namespace Pulse
 
         void OptionsWindowUpdateSettings(object sender, EventArgs e)
         {
+            translatedKeyword = string.Empty;
+            FilterKeywords.Clear();
+            if (!string.IsNullOrEmpty(Settings.Filter))
+            {
+                var s = Settings.Filter.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                if (s.Length == 0)
+                    return;
+                FilterKeywords.AddRange(s);
+            }
+
             timer.Stop();
             timer.Interval = TimeSpan.FromMinutes(Settings.RefreshInterval);
             if (Settings.DownloadAutomatically)
@@ -202,7 +309,28 @@ namespace Pulse
         void PmanagerPictureDownloaded()
         {
             if (PictureManager.CurrentPicture != null)
-                WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id, WinAPI.SPIF_UPDATEINIFILE).ToString();
+            {
+                WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", WinAPI.SPIF_UPDATEINIFILE).ToString();
+                if (App.Settings.ChangeLogonBg)
+                {
+                    if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info") || !Directory.Exists(Environment.SystemDirectory + "\\oobe\\info\\backgrounds"))
+                    {
+                        var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/createdirs" };
+                        var proc = Process.Start(p);
+                        proc.WaitForExit();
+                    }
+                    var info = new FileInfo(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg");
+                    if (info.Length > 0)
+                    {
+                        File.Copy(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", true);
+                        info = new FileInfo(Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg");
+                        if (info.Length / 1024 > 256)
+                        {
+                            PictureManager.ReduceQuality(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", 90);
+                        }
+                    }
+                }
+            }
             var stream = GetResourceStream(new Uri("/Pulse;component/Resources/icon_small.ico", UriKind.Relative)).Stream;
             trayIcon.Icon = new Icon(stream);
             stream.Close();
@@ -211,7 +339,7 @@ namespace Pulse
         void PictureManager_PictureDownloading()
         {
             var stream = GetResourceStream(new Uri("/Pulse;component/Resources/icon_downloading.ico", UriKind.Relative)).Stream;
-            trayIcon.Icon = new Icon(stream); 
+            trayIcon.Icon = new Icon(stream);
             stream.Close();
         }
 

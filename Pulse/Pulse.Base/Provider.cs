@@ -37,9 +37,9 @@ namespace Pulse.Base
             IsLoaded = true;
         }
 
-        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes)
+        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes, List<string> filterKeywords)
         {
-            return provider.GetPictures(search, skipLowRes, getMaxRes);
+            return provider.GetPictures(search, skipLowRes, getMaxRes, filterKeywords);
         }
 
         public int GetResultsCount()

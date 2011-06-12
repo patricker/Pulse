@@ -147,6 +147,9 @@
   <data name="OptionsCancelButton" xml:space="preserve">
     <value>Отмена</value>
   </data>
+  <data name="OptionsChangeLogonBg" xml:space="preserve">
+    <value>Установить обои как фон экрана входа в систему</value>
+  </data>
   <data name="OptionsClearCache" xml:space="preserve">
     <value>Удалять старые изображения</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="OptionsFilterInfo" xml:space="preserve">
     <value>Чтобы пропускать изображения с определенным содержанием, укажите одно или более ключевых слов. Разделяйте слова запятыми.</value>
+  </data>
+  <data name="OptionsFilterText" xml:space="preserve">
+    <value>Вы можете фильтровать изображения с нежелательным контентом. Введите одно или несколько ключевых слов, разделяя их запятыми (например "дождь, человек, животные").</value>
   </data>
   <data name="OptionsGeneralTabHeader" xml:space="preserve">
     <value>Общее</value>

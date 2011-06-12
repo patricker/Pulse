@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dwm.cs" />
+    <Compile Include="GeneralHelper.cs" />
     <Compile Include="HttpUtility.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="IProvider.cs" />

@@ -8,37 +8,23 @@ namespace Pulse.Base
 {
     public class Translator
     {
-        private readonly WebClient webClient;
+        //public Translator()
+        //{
+        //    webClient = new WebClient();
+        //    webClient.Encoding = System.Text.Encoding.GetEncoding("koi8-r");
+        //    //webClient.DownloadStringCompleted += WebClientDownloadStringCompleted;
+        //}
 
-        public string Result { get; set; }
-
-        public event EventHandler Translated;
-
-        public Translator()
+        public static string TranslateText(string input, string languagePair)
         {
-            webClient = new WebClient();
+            var webClient = new WebClient();
             webClient.Encoding = System.Text.Encoding.GetEncoding("koi8-r");
-            webClient.DownloadStringCompleted += WebClientDownloadStringCompleted;
-        }
-
-        public void TranslateText(string input, string languagePair)
-        {
             var url = String.Format("http://www.google.com/translate_t?hl=en&text={0}&langpair={1}", input, languagePair);
-            webClient.DownloadStringAsync(new Uri(url));
-        }
-
-        public void WebClientDownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            ((WebClient) sender).DownloadStringCompleted -= WebClientDownloadStringCompleted;
-            var result = e.Result;
+            var result = webClient.DownloadString(new Uri(url));
             result = result.Substring(result.IndexOf("<span title=\"") + "<span title=\"".Length);
             result = result.Substring(result.IndexOf(">") + 1);
             result = result.Substring(0, result.IndexOf("</span>"));
-            Result = result.Trim();
-            //Result = ConvertToWin1251(Result);
-
-            if (Translated != null)
-                Translated(null, EventArgs.Empty);
+            return result.Trim();
         }
 
         public static string ConvertToWin1251(string input)

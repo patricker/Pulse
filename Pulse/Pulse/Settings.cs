@@ -42,6 +42,8 @@ namespace Pulse
                     Search = Properties.Resources.Autumn;
                     break;
             }
+
+            ChangeLogonBg = false;
         }
 
         public string Provider { get; set; }
@@ -54,5 +56,6 @@ namespace Pulse
         public string Filter { get; set; }
         public int ClearInterval { get; set; }
         public bool ClearOldPics { get; set; }
+        public bool ChangeLogonBg { get; set; }
     }
 }

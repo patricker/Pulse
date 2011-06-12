@@ -151,6 +151,15 @@ namespace Pulse.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set wallpaper as logon background.
+        /// </summary>
+        public static string OptionsChangeLogonBg {
+            get {
+                return ResourceManager.GetString("OptionsChangeLogonBg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete old pictures.
         /// </summary>
         public static string OptionsClearCache {
@@ -228,6 +237,15 @@ namespace Pulse.Properties {
         public static string OptionsFilterInfo {
             get {
                 return ResourceManager.GetString("OptionsFilterInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can skip images with unwanted content. Type one or more keywords separated with commas (e.g. &quot;rain, man, animals&quot;)..
+        /// </summary>
+        public static string OptionsFilterText {
+            get {
+                return ResourceManager.GetString("OptionsFilterText", resourceCulture);
             }
         }
         

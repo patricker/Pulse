@@ -8,7 +8,7 @@ namespace Pulse.Base
     public interface IProvider
     {
         void Initialize();
-        List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes);
+        List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes, List<string> filterKeywords);
         int GetResultsCount();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 using Pulse.Base;
 
 namespace Pulse
@@ -73,6 +75,15 @@ namespace Pulse
             ClearCacheCheckBox.IsChecked = App.Settings.ClearOldPics;
             ClearIntervalSlider.Value = App.Settings.ClearInterval;
 
+            FilterBox.Text = App.Settings.Filter;
+
+            ChangeLogonBgCheckBox.IsChecked = App.Settings.ChangeLogonBg;
+
+            if (App.Settings.Language != "ru-RU")
+            {
+                FilterPanel.Visibility = System.Windows.Visibility.Collapsed;
+            }
+
             ApplyButton.IsEnabled = false;
         }
 
@@ -99,14 +110,16 @@ namespace Pulse
 
         private void ApplySettings()
         {
-            if (App.Settings.Search != SearchBox.Text)
-                App.Translator.Result = string.Empty;
+            //if (App.Settings.Search != SearchBox.Text)
+            //    App.Translator.Result = string.Empty;
             App.Settings.Search = SearchBox.Text;
             App.Settings.DownloadAutomatically = (bool)AutoDownloadCheckBox.IsChecked;
-            App.Settings.GetMaxRes = (bool) GetMaxResCheckBox.IsChecked;
-            App.Settings.SkipLowRes = (bool) SkipLowResCheckBox.IsChecked;
-            App.Settings.ClearOldPics = (bool) ClearCacheCheckBox.IsChecked;
+            App.Settings.GetMaxRes = (bool)GetMaxResCheckBox.IsChecked;
+            App.Settings.SkipLowRes = (bool)SkipLowResCheckBox.IsChecked;
+            App.Settings.ClearOldPics = (bool)ClearCacheCheckBox.IsChecked;
             App.Settings.ClearInterval = (int)ClearIntervalSlider.Value;
+            App.Settings.Filter = FilterBox.Text;
+            //App.Settings.ChangeLogonBg = (bool) ChangeLogonBgCheckBox.IsChecked;
 
             if (RefreshIntervalSlider.Value > 0)
                 App.Settings.RefreshInterval = RefreshIntervalSlider.Value;
@@ -115,6 +128,22 @@ namespace Pulse
 
             if (LanguageComboBox.SelectedIndex >= 0)
                 App.Settings.Language = langCodes[LanguageComboBox.SelectedIndex];
+
+            if (App.Settings.ChangeLogonBg != (bool)ChangeLogonBgCheckBox.IsChecked)
+            {
+                App.Settings.ChangeLogonBg = (bool)ChangeLogonBgCheckBox.IsChecked;
+                //HKLM\Software\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background
+                if (App.Settings.ChangeLogonBg)
+                {
+                    var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/enableoembg" };
+                    Process.Start(p);
+                }
+                else
+                {
+                    var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/disableoembg" };
+                    Process.Start(p);
+                }
+            }
 
             App.Settings.Save(App.Path + "\\settings.conf");
 

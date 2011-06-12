@@ -25,16 +25,18 @@
             <TabItem Header="{x:Static Properties:Resources.OptionsGeneralTabHeader}" Style="{StaticResource TabItemStyle}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Background="White">
                     <StackPanel Orientation="Vertical" Margin="10">
-                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsSearch}"/>
+                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsSearch}" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
                         <TextBox Name="SearchBox" Text="{x:Static Properties:Resources.OptionsSearchBox}" FontStyle="Italic" Foreground="Gray"
                                      IsKeyboardFocusedChanged="SearchBoxIsKeyboardFocusedChanged" TextChanged="SearchBoxTextChanged"/>
-
-                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsFilter}" Margin="0,15,0,0" Visibility="Collapsed"/>
-                        <Separator Margin="0,0,0,10" Visibility="Collapsed"/>
-                        <TextBox Name="FilterBox" Text="{x:Static Properties:Resources.OptionsSearchBox}" FontStyle="Italic" Foreground="Gray"
-                                     IsKeyboardFocusedChanged="SearchBoxIsKeyboardFocusedChanged" TextChanged="SearchBoxTextChanged" Visibility="Collapsed"/>
-                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsBehaviour}" Margin="0,15,0,0"/>
+                        <StackPanel Name="FilterPanel">
+                            <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsFilter}" Margin="0,15,0,0" Foreground="#083ca2"/>
+                            <Separator Margin="0,0,0,10" Visibility="Visible"/>
+                            <TextBlock Text="{x:Static Properties:Resources.OptionsFilterText}" TextWrapping="Wrap"/>
+                            <TextBox Name="FilterBox" Text="{x:Static Properties:Resources.OptionsSearchBox}" 
+                                     IsKeyboardFocusedChanged="SearchBoxIsKeyboardFocusedChanged" TextChanged="SearchBoxTextChanged"/>
+                        </StackPanel>
+                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsBehaviour}" Margin="0,15,0,0" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
                         <CheckBox Name="AutoDownloadCheckBox" Content="{x:Static Properties:Resources.OptionsDownloadAutomatically}" Click="CheckBoxClick"/>
                         <StackPanel Orientation="Horizontal" Margin="0,7,0,0" >
@@ -49,7 +51,8 @@
                         </DockPanel>
                         <CheckBox Name="SkipLowResCheckBox" Content="{x:Static Properties:Resources.OptionsSkipLowRes}" Click="CheckBoxClick"/>
                         <CheckBox Name="GetMaxResCheckBox" Content="{x:Static Properties:Resources.OptionsGetMaxRes}" Click="CheckBoxClick"/>
-                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsCache}" Margin="0,15,0,0"/>
+                        <CheckBox Name="ChangeLogonBgCheckBox" Content="{x:Static Properties:Resources.OptionsChangeLogonBg}" Click="CheckBoxClick"/>
+                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsCache}" Margin="0,15,0,0" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
                         <CheckBox Name="ClearCacheCheckBox" Content="{x:Static Properties:Resources.OptionsClearCache}" Click="CheckBoxClick"/>
                         <TextBlock Name="ClearIntervalTextBlock" Text="{x:Static Properties:Resources.OptionsClearInterval}"  Margin="0,7,0,0"/>
@@ -59,8 +62,8 @@
                             <Slider Name="ClearIntervalSlider" Margin="0,3,0,0" Value="20" TickPlacement="Both" Minimum="1" Maximum="12" TickFrequency="1" SmallChange="1" LargeChange="4"
                                         IsSnapToTickEnabled="True" IsDirectionReversed="True" ValueChanged="ClearIntervalSliderValueChanged" IsEnabled="{Binding ElementName=ClearCacheCheckBox, Path=IsChecked}"/>
                         </DockPanel>
-                        <Button Name="ClearNowButton" Content="{x:Static Properties:Resources.OptionsClearNow}" Width="75" Height="23" HorizontalAlignment="Right" Margin="0,7,0,0" Click="ClearNowButtonClick"/>
-                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsLanguage}" Margin="0,-7,0,0"/>
+                        <Button Name="ClearNowButton" Content="{x:Static Properties:Resources.OptionsClearNow}" Padding="10,0,10,0" Height="23" HorizontalAlignment="Right" Margin="0,7,0,0" Click="ClearNowButtonClick"/>
+                        <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsLanguage}" Margin="0,-7,0,0" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
                         <ComboBox Name="LanguageComboBox" SelectionChanged="ComboBoxSelectionChanged"/>
                         <TextBlock Text="{x:Static Properties:Resources.OptionsRestart}" Margin="0,3,0,0" Foreground="Gray"/>
@@ -73,7 +76,7 @@
                         <Grid>
                             <Image Width="55" Source="/Resources/logo.png" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,40,10,0" Opacity="1"/>
                             <StackPanel Orientation="Vertical">
-                                <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsAbout}"/>
+                                <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsAbout}" Foreground="#083ca2"/>
                                 <Separator/>
                                 <TextBlock Text="Pulse Beta 1" Margin="0,7,0,0"/>
                                 <TextBlock>
