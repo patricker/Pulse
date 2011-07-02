@@ -11,9 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rewalls", "Providers\Rewall
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallbase", "Providers\wallbase\wallbase.csproj", "{921F5326-5B28-462D-8220-3D3507438C27}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleImages", "Providers\GoogleImages\GoogleImages.csproj", "{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -31,6 +33,10 @@ Global
 		SccProjectTopLevelParentUniqueName4 = Pulse.sln
 		SccProjectName4 = Providers/wallbase
 		SccLocalPath4 = Providers\\wallbase
+		SccProjectUniqueName5 = Providers\\GoogleImages\\GoogleImages.csproj
+		SccProjectTopLevelParentUniqueName5 = Pulse.sln
+		SccProjectName5 = Providers/GoogleImages
+		SccLocalPath5 = Providers\\GoogleImages
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +87,16 @@ Global
 		{921F5326-5B28-462D-8220-3D3507438C27}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{921F5326-5B28-462D-8220-3D3507438C27}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{921F5326-5B28-462D-8220-3D3507438C27}.Release|x86.ActiveCfg = Release|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,5 +104,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9014327D-43C7-4C75-AE6D-AFDC48670035} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
 		{921F5326-5B28-462D-8220-3D3507438C27} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
 	EndGlobalSection
 EndGlobal

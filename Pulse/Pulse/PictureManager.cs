@@ -65,7 +65,7 @@ namespace Pulse
                     PictureDownloading();
                 if (Pictures == null || lastKeyword != keyword)
                     Pictures = pmanager.CurrentProvider.GetPictures(keyword, App.Settings.SkipLowRes, App.Settings.GetMaxRes, App.FilterKeywords);
-                if (Pictures == null)
+                if (Pictures == null || Pictures.Count == 0)
                 {
                     App.Log("Nothing found.");
                     if (PictureDownloaded != null)

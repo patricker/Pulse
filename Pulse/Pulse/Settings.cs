@@ -11,7 +11,7 @@ namespace Pulse
     {
         public Settings()
         {
-            Provider = "Rewalls";
+            Provider = "wallbase";
             Language = CultureInfo.CurrentUICulture.Name;
             DownloadAutomatically = true;
             RefreshInterval = 20;

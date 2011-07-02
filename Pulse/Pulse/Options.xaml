@@ -80,7 +80,7 @@
                             <StackPanel Orientation="Vertical">
                                 <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsAbout}" Foreground="#083ca2"/>
                                 <Separator/>
-                                <TextBlock Text="Pulse Beta 1" Margin="0,7,0,0"/>
+                                <TextBlock Text="Pulse Beta 2" Margin="0,7,0,0"/>
                                 <TextBlock>
                                     <Run Text="{x:Static Properties:Resources.OptionsVersion}"/> 
                                     <Run Name="BuildTag" Text="1.0.0.0"/>

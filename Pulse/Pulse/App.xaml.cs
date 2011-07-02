@@ -237,6 +237,11 @@ namespace Pulse
         void NextMenuItemClick(object sender, EventArgs e)
         {
             TimerTick(null, EventArgs.Empty);
+            if (Settings.DownloadAutomatically)
+            {
+                timer.Stop();
+                timer.Start();
+            }
             //if (App.Settings.Language == "ru-RU")
             //    App.PictureManager.GetPicture(App.Settings.Search);
             //else
