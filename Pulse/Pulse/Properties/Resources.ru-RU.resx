@@ -210,6 +210,9 @@
   <data name="OptionsOlder" xml:space="preserve">
     <value>Старше</value>
   </data>
+  <data name="OptionsPreFetch" xml:space="preserve">
+    <value>Pre Fetch</value>
+  </data>
   <data name="OptionsRefreshInterval" xml:space="preserve">
     <value>Интервал обновления:</value>
   </data>
@@ -233,6 +236,12 @@
   </data>
   <data name="OptionsWindowTitle" xml:space="preserve">
     <value>Настройки Pulse</value>
+  </data>
+  <data name="ProviderSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ProviderSettingsTitle" xml:space="preserve">
+    <value>Provider Settings for </value>
   </data>
   <data name="Spring" xml:space="preserve">
     <value>Весна</value>

@@ -12,11 +12,10 @@ using Pulse.Base;
 
 namespace Rewalls
 {
+    [System.ComponentModel.Description("Rewalls")]
     public class Provider : IProvider
     {
         private WebClient webClient;
-        private StreamReader reader;
-        private int resultsCount;
 
         private const string PicUrlTemplate = "http://rewalls.com/pic/{0}/{1}/reWalls.com-{2}.jpg";
         private const string Url = "http://rewalls.com/xml/tag.php?tag={0}";
@@ -34,15 +33,17 @@ namespace Rewalls
                 "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 8.0) (compatible; MSIE 8.0; Windows NT 5.1;)";
         }
 
-        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes, List<string> filterKeywords = null)
+        public PictureList GetPictures(PictureSearch ps)
         {
+            string search = ps.SearchString; bool skipLowRes = true; bool getMaxRes = true; List<string> filterKeywords = null; 
+
             var query = HttpUtility.UrlEncode(search, Encoding.GetEncoding(1251));
             var url = string.Format(Url, query);
             var content = GeneralHelper.GetWebPageContent(url);
             if (string.IsNullOrEmpty(content))
                 return null;
             var xml = XElement.Parse(content);
-            var result = new List<Picture>();
+            var result = new PictureList() { FetchDate = DateTime.Now };
             foreach (var el in xml.Elements("Image"))
             {
                 var tags = el.Element("tags").Value;
@@ -67,10 +68,8 @@ namespace Rewalls
                     pic.Url = string.Format(PicUrlTemplate, folder, maxRes.Width + "x" + maxRes.Height, pic.Id);
                 else 
                     pic.Url = string.Format(PicUrlTemplate, folder, res.Width + "x" + res.Height, pic.Id);
-                result.Add(pic);
+                result.Pictures.Add(pic);
             }
-
-            resultsCount = result.Count;
 
             return result;
         }
@@ -80,80 +79,6 @@ namespace Rewalls
             return filterKeywords.Any(tags.Contains);
         }
 
-        /*public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes)
-        {
-            var rnd = new Random(Environment.TickCount);
-            var query = HttpUtility.UrlEncode(search, Encoding.GetEncoding(1251));
-            var url = "http://rewalls.com/tags/" + query;
-            try
-            {
-                reader = new StreamReader(webClient.OpenRead(url));
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-            var content = reader.ReadToEnd();
-            var pagesCount = GetPagesCount(content);
-            if (pagesCount > 0)
-            {
-                reader.Close();
-                try
-                {
-                    reader = new StreamReader(webClient.OpenRead(url + "/page/" + rnd.Next(pagesCount)));
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-                content = reader.ReadToEnd();
-            }
-            resultsCount = pagesCount * 16;
-            var result = new List<Picture>();
-            //parse wallpapers on the first page
-            var r = new Regex("<a href=\".*\">.*</a>.*<div class=\"razmer\">.*</div>");
-            var c = 0;
-            foreach (Match m in r.Matches(content))
-            {
-                var v = m.Value;
-                var pic = new Picture();
-                var fileName = GetFileName(v);
-                var maxRes = GetMaxResolution(v);
-                var date = GetDate(v);
-
-                var res = maxRes.Split(new[] { 'x' });
-                var maxWidth = Convert.ToInt32(res[0]);
-                var maxHeight = Convert.ToInt32(res[1]);
-                if (skipLowRes && (maxHeight < SystemParameters.PrimaryScreenHeight || maxWidth < SystemParameters.PrimaryScreenWidth))
-                    continue;
-
-                pic.Id = fileName;
-                if (!getMaxRes)
-                    pic.Url = string.Format(PicUrlTemplate, date, SystemParameters.PrimaryScreenWidth + "x" + SystemParameters.PrimaryScreenHeight, fileName);
-                else
-                {
-                    //2560x1600
-                    if (maxWidth > 2560 && maxHeight > 1600)
-                    {
-                        maxWidth = 2560;
-                        maxHeight = 1600;
-                    }
-                    var size = FindNearestSize(maxWidth, maxHeight);
-                    pic.Url = string.Format(PicUrlTemplate, date, size.Width + "x" + size.Height, fileName);
-                }
-                result.Add(pic);
-                c++;
-            }
-            if (resultsCount == 0)
-                resultsCount = c;
-            reader.Close();
-            return result;
-        }*/
-
-        public int GetResultsCount()
-        {
-            return resultsCount;
-        }
 
         private static string GetFileName(string source)
         {

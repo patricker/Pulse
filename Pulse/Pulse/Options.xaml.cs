@@ -27,6 +27,8 @@ namespace Pulse
     {
         public event EventHandler UpdateSettings;
         private readonly List<string> langCodes = new List<string>();
+        private string _tempProviderConfig = string.Empty;
+
         public Options()
         {
             InitializeComponent();
@@ -53,8 +55,8 @@ namespace Pulse
                 RefreshIntervalSlider.Value = App.Settings.RefreshInterval;
             else
                 RefreshIntervalSlider.Value = 0;
-            SkipLowResCheckBox.IsChecked = App.Settings.SkipLowRes;
-            GetMaxResCheckBox.IsChecked = App.Settings.GetMaxRes;
+            PreFetchCheckBox.IsChecked = App.Settings.PreFetch;
+            
 
             LanguageComboBox.Items.Add(new ComboBoxItem() { Content = CultureInfo.GetCultureInfo("en-US").NativeName });
             langCodes.Add("en-US");
@@ -87,13 +89,16 @@ namespace Pulse
             }
 
 
-            if (App.PictureManager != null && App.PictureManager.Providers != null)
+            if (App.PictureManager != null && App.ProviderManager.Providers != null)
             {
-                foreach (var p in App.PictureManager.Providers)
+                foreach (var p in App.ProviderManager.Providers)
                 {
-                    ProvidersBox.Items.Add(p.Name);
+                    ProvidersBox.Items.Add(p.Key);
                 }
-                ProvidersBox.SelectedIndex = App.PictureManager.Providers.IndexOf(App.PictureManager.CurrentProvider);
+                ProvidersBox.SelectedValue = App.Settings.Provider;
+
+                //handle settings button enable/disable and loading string from config if it exists
+                HandleProviderSettingsEnableAndLoad();
             }
 
             ApplyButton.IsEnabled = false;
@@ -124,15 +129,24 @@ namespace Pulse
         {
             //if (App.Settings.Search != SearchBox.Text)
             //    App.Translator.Result = string.Empty;
-            App.Settings.Search = SearchBox.Text;
+            //check if the search box text == options search box text (keyword(s)), if so use empty string
+            // on some sites searching with no query is fine
+            App.Settings.Search = SearchBox.Text == Properties.Resources.OptionsSearchBox ? "":SearchBox.Text;
             App.Settings.DownloadAutomatically = (bool)AutoDownloadCheckBox.IsChecked;
-            App.Settings.GetMaxRes = (bool)GetMaxResCheckBox.IsChecked;
-            App.Settings.SkipLowRes = (bool)SkipLowResCheckBox.IsChecked;
             App.Settings.ClearOldPics = (bool)ClearCacheCheckBox.IsChecked;
             App.Settings.ClearInterval = (int)ClearIntervalSlider.Value;
             App.Settings.Filter = FilterBox.Text;
             if (!string.IsNullOrEmpty(ProvidersBox.Text))
                 App.Settings.Provider = ProvidersBox.Text;
+
+            //set pre-fetch flag
+            App.Settings.PreFetch = (bool)PreFetchCheckBox.IsChecked;
+
+            //save provider config if it exists
+            if (!string.IsNullOrEmpty(_tempProviderConfig))
+            {
+                App.Settings.ProviderSettings[App.Settings.Provider] = _tempProviderConfig;
+            }
 
             if (RefreshIntervalSlider.Value > 0)
                 App.Settings.RefreshInterval = RefreshIntervalSlider.Value;
@@ -158,16 +172,16 @@ namespace Pulse
                 }
             }
 
-            if (App.PictureManager != null && App.PictureManager.Providers != null)
-                foreach (Provider p in App.PictureManager.Providers)
+            if (App.PictureManager != null && App.ProviderManager.Providers != null)
+            {
+                foreach (KeyValuePair<string, Type> p in App.ProviderManager.Providers)
                 {
-                    if (p.Name == App.Settings.Provider)
+                    if (p.Key == App.Settings.Provider && App.CurrentProvider.GetType() != p.Value)
                     {
-                        if (!p.IsLoaded)
-                            p.Load();
-                        App.PictureManager.CurrentProvider = p;
+                        App.CurrentProvider = App.ProviderManager.InitializeProvider(p.Key);
                     }
                 }
+            }
 
             App.Settings.Save(App.Path + "\\settings.conf");
 
@@ -201,10 +215,11 @@ namespace Pulse
 
         private void SearchBoxKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter && SearchBox.Text != Properties.Resources.OptionsSearchBox && SearchBox.Text.Length > 2)
-            {
-                App.PictureManager.GetPicture(SearchBox.Text);
-            }
+            //What is this for?  SO that you can hit enter while in options and have it run the search??  Seems silly to me.
+            //if (e.Key == Key.Enter && SearchBox.Text != Properties.Resources.OptionsSearchBox && SearchBox.Text.Length > 2)
+            //{
+            //    App.PictureManager.GetPicture(new PictureSearch() { ProviderSearchSettings = SearchBox.Text, PreFetch=false, MaxPictureCount=200, SearchProvider=App.CurrentProvider });
+            //}
         }
 
         private void SearchBoxTextChanged(object sender, TextChangedEventArgs e)
@@ -258,12 +273,56 @@ namespace Pulse
             ApplyButton.IsEnabled = true;
         }
 
+        private void ProviderSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBoxSelectionChanged(sender, e);
+
+            HandleProviderSettingsEnableAndLoad();
+        }
+
+        private void HandleProviderSettingsEnableAndLoad()
+        {
+            //enable or disable settings button depending on settings availability
+            ProviderSettings.IsEnabled = (ProvidersBox.SelectedValue != null) && App.ProviderManager.HasConfigurationWindow(ProvidersBox.SelectedValue.ToString()) != null;
+
+            //load provider config from settings if it exists
+            if (ProvidersBox.SelectedValue != null && App.Settings.ProviderSettings.ContainsKey(ProvidersBox.SelectedValue.ToString()))
+            {
+                _tempProviderConfig = App.Settings.ProviderSettings[ProvidersBox.SelectedValue.ToString()];
+            }
+        }
+
         private void ClearNowButtonClick(object sender, RoutedEventArgs e)
         {
             if (Directory.Exists(App.Path + "\\Cache"))
             {
                 foreach (var f in Directory.GetFiles(App.Path + "\\Cache"))
                     File.Delete(f);
+            }
+        }
+
+        private void ProviderSettings_Click(object sender, RoutedEventArgs e)
+        {
+            //get the usercontrol instance from Provider Manager
+            var initSettings = App.ProviderManager.InitializeConfigurationWindow(ProvidersBox.SelectedValue.ToString());
+            if (initSettings == null) return;
+
+            //dialog window which will house the user control
+            ProviderSettingsWindow psw = new ProviderSettingsWindow();
+
+            //load the usercontrol into the window
+            psw.LoadSettings(initSettings, ProvidersBox.SelectedValue.ToString());
+
+            //load the configuration info into the user control
+            initSettings.LoadConfiguration(_tempProviderConfig);
+
+            //show the dialog box
+            psw.ShowDialog();
+            
+            //if user clicked OK then call save to keep a copy of settings in memory
+            if (initSettings.IsOK)
+            {
+                _tempProviderConfig = initSettings.SaveConfiguration();
             }
         }
     }

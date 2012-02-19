@@ -5,36 +5,69 @@ using System.Text;
 using Pulse.Base;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.ComponentModel;
 
 namespace GoogleImages
 {
+    [ProviderConfigurationUserControl(typeof(ProviderPreferences))]
+    [System.ComponentModel.Description("Google Images")]
     public class Provider : IProvider
     {
-        private int _resultCount = 0;
+        private Regex imagesRegex2 = new Regex(@"(imgurl=)(?<imgurl>http[^&>]*)([>&]{1})");
+        private string baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}{1}&start={2}";
+        
+        public Provider()
+        {
+        }
 
         public void Initialize()
         {
             //nothing to do here
         }
 
-        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes, List<string> filterKeywords)
+        public PictureList GetPictures(PictureSearch ps)
         {
-            var result = new List<Picture>();
+            var result = new PictureList() { FetchDate = DateTime.Now };
 
-            var height = (int)SystemParameters.PrimaryScreenHeight;
-            var width = (int)SystemParameters.PrimaryScreenWidth;
-            var baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}&tbs=isz:ex,iszw:{1},iszh:{2}&start={3}";
+            //load provider search settings
+            GoogleImageSearchSettings giss = GoogleImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
 
-            System.Net.WebClient client = new System.Net.WebClient();
-            Regex imagesRegex2 = new Regex(@"(imgurl=)(?<imgurl>http[^&>]*)([>&]{1})");
+            //to help not have so many null checks, if no search settings provided then use default ones
+            if (giss == null) giss=new GoogleImageSearchSettings();
+
+            //if search is empty, return now since we can't search without it
+            if (string.IsNullOrEmpty(ps.SearchString)) return result;
+
+            System.Net.WebClient client = new System.Net.WebClient();                        
 
             var pageIndex = 0;
             var imgFoundCount =0;
+            
+            //if max picture count is 0, then no maximum, else specified max
+            var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
+
+            //build tbs strring
+            var tbs = "";//isz:ex,iszw:{1},iszh:{2}
+
+            //handle sizeing
+            if (giss.ImageHeight > 0 && giss.ImageWidth > 0)
+            {
+                tbs += string.Format("isz:ex,iszw:{0},iszh:{1},", giss.ImageWidth.ToString(), giss.ImageHeight.ToString());
+            }
+
+            //handle colors
+            if (!string.IsNullOrEmpty(giss.Color))
+            {
+                tbs += GoogleImageSearchSettings.GoogleImageColors.GetColorSearchString((from c in GoogleImageSearchSettings.GoogleImageColors.GetColors() where c.Value == giss.Color select c).Single()) + ",";
+            }
+
+            //if we have a filter string then add it and trim off trailing commas
+            if (!string.IsNullOrEmpty(tbs)) tbs = ("&tbs=" + tbs).Trim(new char[]{','});
 
             do
             {
                 //build URL from query, dimensions and page index
-                var url = string.Format(baseURL, search, width.ToString(), height.ToString(), (pageIndex * 20).ToString());
+                var url = string.Format(baseURL, ps.SearchString, tbs, (pageIndex * 20).ToString());
 
                 var response = client.DownloadString(url);
 
@@ -47,26 +80,16 @@ namespace GoogleImages
                 foreach (Match item in images)
                 {
                     var purl = item.Groups[3].Value;
-                    //id must be a value that can be used as a file name, but also should be unique.
-                    // so we'll use a guid
-                    //NOTE id should not be unique to make caching possible
-                    var id = Guid.NewGuid().ToString();
-                    result.Add(new Picture() { Url = purl, Id = id });
+
+                    result.Pictures.Add(new Picture() { Url = purl, Id = System.IO.Path.GetFileNameWithoutExtension(purl) });
                 }
 
                 //increment page index so we can get the next 20 images if they exist
                 pageIndex++;
-            } while (imgFoundCount > 0);
-
-            //set result count
-            _resultCount = result.Count;
+                // Max Picture count is defined in search settings passed in, check for it here too
+            } while (imgFoundCount > 0 && result.Pictures.Count < maxPictureCount);
 
             return result;
-        }
-
-        public int GetResultsCount()
-        {
-            return _resultCount;
         }
     }
 }

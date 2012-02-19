@@ -71,8 +71,10 @@
     <Compile Include="Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PictureManager.cs" />
-    <Compile Include="ProviderManager.cs" />
+    <Compile Include="ProviderSettingsWindow.xaml.cs">
+      <DependentUpon>ProviderSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Settings.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -87,6 +89,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Options.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProviderSettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
