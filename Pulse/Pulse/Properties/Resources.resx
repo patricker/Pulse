@@ -210,6 +210,9 @@
   <data name="OptionsOlder" xml:space="preserve">
     <value>Older</value>
   </data>
+  <data name="OptionsPreFetch" xml:space="preserve">
+    <value>Pre Fetch</value>
+  </data>
   <data name="OptionsRefreshInterval" xml:space="preserve">
     <value>Change picture every:</value>
   </data>
@@ -217,10 +220,10 @@
     <value>Changes will be applied after restarting the program</value>
   </data>
   <data name="OptionsSearch" xml:space="preserve">
-    <value>Keyword</value>
+    <value>Search</value>
   </data>
   <data name="OptionsSearchBox" xml:space="preserve">
-    <value>Type keyword here</value>
+    <value>keyword(s)</value>
   </data>
   <data name="OptionsSearchResults" xml:space="preserve">
     <value>Pictures found:</value>
@@ -236,6 +239,12 @@
   </data>
   <data name="OptionsWindowTitle" xml:space="preserve">
     <value>Pulse options</value>
+  </data>
+  <data name="ProviderSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ProviderSettingsTitle" xml:space="preserve">
+    <value>Provider Settings for </value>
   </data>
   <data name="Spring" xml:space="preserve">
     <value>Spring</value>

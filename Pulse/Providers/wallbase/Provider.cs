@@ -7,47 +7,114 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Pulse.Base;
+using System.Threading;
 
 namespace wallbase
 {
+    [System.ComponentModel.Description("Wallbase")]
     public class Provider : IProvider
     {
         private int totalCount;
         private int resultCount;
 
         private const string Url = "http://wallbase.cc/search/";
-        private Random rnd = new Random(Environment.TickCount);
+        private Random rnd = new Random();
 
         public void Initialize()
         {
             System.Net.ServicePointManager.Expect100Continue = false;
         }
 
-        public List<Picture> GetPictures(string search, bool skipLowRes, bool getMaxRes, List<string> filterKeywords)
+        public PictureList GetPictures(PictureSearch ps)
         {
-            string content;
-            if (totalCount == 0)
+            string search=ps.SearchString;
+            bool skipLowRes=true;
+                        
+            //if max picture count is 0, then no maximum, else specified max
+            var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
+            int pageSize = 60;
+            int pageIndex = 0;
+            var imgFoundCount = 0;
+
+            var result = new PictureList() { FetchDate = DateTime.Now };
+            
+            var wallResults = new List<WallPicture>();
+
+            string postParams = "query={0}&board=all&thpp={1}&res_opt=eqeq&aspect=0&orderby=relevance&orderby_opt=desc";
+
+            do
             {
-                content = HttpPost(Url, string.Format("query={0}&board=all&thpp=32&res_opt=eqeq&aspect=0&orderby=relevance&orderby_opt=desc", search));
+                string strPageNum = pageIndex > 0 ? (pageIndex * pageSize).ToString() : "";
+
+                string content = HttpPost(Url + strPageNum, string.Format(postParams, search, pageSize.ToString()));
                 if (string.IsNullOrEmpty(content))
-                    return null;
-                GetPagesCount(content);
-            }
-            else
+                    break;
+
+                //parse html and get count
+                var pics = ParsePictures(content, skipLowRes);
+                imgFoundCount = pics.Count();
+
+                wallResults.AddRange(pics);
+
+                //increment page index so we can get the next set of images if they exist
+                pageIndex++;
+
+            } while (imgFoundCount > 0 && wallResults.Count < maxPictureCount);
+
+            ManualResetEvent mreThread = new ManualResetEvent(false);
+
+            ThreadStart threadStarter = () =>
             {
-                content = HttpPost(Url + rnd.Next(totalCount / 32), string.Format("query={0}&board=all&thpp=32&res_opt=eqeq&aspect=0&orderby=relevance&orderby_opt=desc", search));
-                if (string.IsNullOrEmpty(content))
-                    return null;
-            }
-            var pics = ParsePictures(content, skipLowRes);
-            var result = new List<Picture>();
-            foreach (var wallPicture in pics)
-            {
-                var p = new Picture();
-                p.Url = GetDirectPictureUrl(wallPicture.PageUrl);
-                p.Id = GetPictureId(wallPicture.PageUrl);
-                result.Add(p);
-            }
+                //download in parallel
+                var processCounter = 0;
+
+                try
+                {
+                    while (processCounter < wallResults.Count)
+                    {
+                        var toProcess = wallResults.Skip(processCounter).Take(60).ToList();
+                        processCounter += toProcess.Count;
+
+                        ManualResetEvent[] manualEvents = new ManualResetEvent[toProcess.Count];
+
+                        // Queue the work items that create and write to the files.
+                        for (int i = 0; i < toProcess.Count; i++)
+                        {
+                            manualEvents[i] = new ManualResetEvent(false);
+
+                            ThreadPool.QueueUserWorkItem(new WaitCallback(delegate(object state)
+                            {
+                                object[] states = (object[])state;
+
+                                ManualResetEvent mre = (ManualResetEvent)states[0];
+                                WallPicture wp = (WallPicture)states[1];
+
+                                var p = new Picture();
+                                p.Url = GetDirectPictureUrl(wp.PageUrl);
+                                p.Id = GetPictureId(wp.PageUrl);
+                                result.Pictures.Add(p);
+
+                                mre.Set();
+                            }), new object[] { manualEvents[i], toProcess[i] });
+                        }
+
+                        //wait for all items to finish
+                        //one minute timeout
+                        WaitHandle.WaitAll(manualEvents, 60 * 1000);
+                    }
+                }
+                catch (Exception ex) { }
+                finally
+                {
+                    mreThread.Set();
+                }
+            };
+
+            var thread = new Thread(threadStarter);
+            thread.SetApartmentState(ApartmentState.MTA);
+            thread.Start();
+
+            mreThread.WaitOne();
 
             return result;
         }
@@ -85,12 +152,12 @@ namespace wallbase
         {
             var webClient = new WebClient();
             var content = webClient.DownloadString(pageUrl);
-            var regex = new Regex(@"<img src='.*(wallpaper.*\.(jpg|png))'");
+            var regex = new Regex(@"<img src="".*(wallpaper.*\.(jpg|png))""");
             var m = regex.Match(content);
             if (!string.IsNullOrEmpty(m.Value))
             {
                 var url = m.Value;
-                url = url.Substring(url.IndexOf('\'') + 1, url.LastIndexOf('\'') - url.IndexOf('\'') - 1);
+                url = url.Substring(url.IndexOf('\"') + 1, url.LastIndexOf('\"') - url.IndexOf('\"') - 1);
                 return url;
             }
 
@@ -120,8 +187,6 @@ namespace wallbase
         {
             try
             {
-
-
                 System.Net.WebRequest req = System.Net.WebRequest.Create(url);
                 //Add these, as we're doing a POST
                 req.ContentType = "application/x-www-form-urlencoded";

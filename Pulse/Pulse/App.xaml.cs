@@ -27,10 +27,13 @@ namespace Pulse
         public static Settings Settings;
         public static string Path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private Options optionsWindow;
-        public static PictureManager PictureManager;
+
+        public static PictureManager PictureManager = new PictureManager();
+        public static ProviderManager ProviderManager = new ProviderManager();
+        public static IProvider CurrentProvider = null;
+
         private DispatcherTimer timer;
         public static Translator Translator;
-        public static List<string> FilterKeywords;
         private string translatedKeyword;
 
         private void ApplicationStartup(object sender, StartupEventArgs e)
@@ -56,16 +59,19 @@ namespace Pulse
                 return;
             }
 
-            Settings = (Settings)XmlSerializable.Load(typeof(Settings), "settings.conf") ?? new Settings();
+            Settings = Settings.LoadFromFile("settings.conf") ?? new Settings();
 
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Language);
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Language);
 
+            //Create system tray icon
             AddIcon();
 
-            if (App.Settings.ClearOldPics && Directory.Exists(Path + "\\Cache"))
+            //clear out old pictures on startup after 3 days
+            // this should be on a timer job for people who never turn off their computers
+            if (App.Settings.ClearOldPics && Directory.Exists(Settings.CachePath))
             {
-                foreach (var f in Directory.GetFiles(Path + "\\Cache"))
+                foreach (var f in Directory.GetFiles(Settings.CachePath))
                 {
                     if (File.GetCreationTime(f).CompareTo(DateTime.Now.AddDays(1 - App.Settings.ClearInterval)) <= 0)
                     {
@@ -74,7 +80,6 @@ namespace Pulse
                 }
             }
 
-            PictureManager = new PictureManager();
             PictureManager.PictureDownloaded += PmanagerPictureDownloaded;
             PictureManager.PictureDownloading += PictureManager_PictureDownloading;
 
@@ -90,15 +95,16 @@ namespace Pulse
             //Translator.Translated += TranslatorTranslated;
             WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
 
-            FilterKeywords = new List<string>();
-            if (!string.IsNullOrEmpty(Settings.Filter))
+            //load provider from settings
+            CurrentProvider = ProviderManager.InitializeProvider(Settings.Provider);
+
+            if (CurrentProvider == null)
             {
-                var s = Settings.Filter.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-                if (s.Length == 0)
-                    return;
-                FilterKeywords.AddRange(s);
+                MessageBox.Show("A provider is not currently selected.  Please choose a wallpaper provider from the options menu.");
             }
         }
+
+        #region OEMBackground
 
         private void EnableOEMBackground()
         {
@@ -150,12 +156,8 @@ namespace Pulse
                 Directory.CreateDirectory(Environment.SystemDirectory + "\\oobe\\info\\backgrounds");
             SetAccessRules();
         }
-
-        //void TranslatorTranslated(object sender, EventArgs e)
-        //{
-        //    App.PictureManager.GetPicture(Translator.Result);
-        //}
-
+        #endregion
+        
         public static void Log(string message)
         {
             if (!Directory.Exists(App.Path + "\\Logs"))
@@ -178,8 +180,17 @@ namespace Pulse
 
         void TimerTick(object sender, EventArgs e)
         {
+            var ps = new PictureSearch() {
+                SearchString = App.Settings.Search, 
+                PreFetch = App.Settings.PreFetch, 
+                SaveFolder = App.Settings.CachePath,
+                MaxPictureCount = App.Settings.MaxPictureDownloadCount, 
+                SearchProvider = App.CurrentProvider,
+                ProviderSearchSettings = App.Settings.ProviderSettings[App.Settings.Provider]
+                };
+
             if (App.Settings.Language == "ru-RU" || App.Settings.Provider != "Rewalls")
-                App.PictureManager.GetPicture(App.Settings.Search);
+                App.PictureManager.GetPicture(ps);
             else
             {
                 if (string.IsNullOrEmpty(translatedKeyword))
@@ -187,14 +198,16 @@ namespace Pulse
                     ThreadStart threadStarter = delegate
                                                     {
                                                         translatedKeyword = Translator.TranslateText(App.Settings.Search, "en|ru");
-                                                        App.PictureManager.GetPicture(translatedKeyword);
+                                                        ps.SearchString = translatedKeyword;
+                                                        App.PictureManager.GetPicture(ps);
                                                     };
                     var thread = new Thread(threadStarter);
                     thread.SetApartmentState(ApartmentState.STA);
                     thread.Start();
                 }
                 else
-                    App.PictureManager.GetPicture(translatedKeyword);
+                    ps.SearchString = translatedKeyword;
+                    App.PictureManager.GetPicture(ps);
             }
         }
 
@@ -253,7 +266,7 @@ namespace Pulse
             //}
         }
 
-        void OptionsMenuItemClick(object sender, EventArgs e)
+        void ShowOptionsMenu()
         {
             if (optionsWindow != null && optionsWindow.IsVisible)
             {
@@ -280,6 +293,11 @@ namespace Pulse
             optionsWindow.ShowDialog();
         }
 
+        void OptionsMenuItemClick(object sender, EventArgs e)
+        {
+            ShowOptionsMenu();
+        }
+
         void OptionsWindowClosed(object sender, EventArgs e)
         {
             optionsWindow.Closed -= OptionsWindowClosed;
@@ -289,14 +307,6 @@ namespace Pulse
         void OptionsWindowUpdateSettings(object sender, EventArgs e)
         {
             translatedKeyword = string.Empty;
-            FilterKeywords.Clear();
-            if (!string.IsNullOrEmpty(Settings.Filter))
-            {
-                var s = Settings.Filter.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-                if (s.Length == 0)
-                    return;
-                FilterKeywords.AddRange(s);
-            }
 
             timer.Stop();
             timer.Interval = TimeSpan.FromMinutes(Settings.RefreshInterval);

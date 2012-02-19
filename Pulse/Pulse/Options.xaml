@@ -27,19 +27,24 @@
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsSearch}" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
-                        <TextBox Name="SearchBox" Text="{x:Static Properties:Resources.OptionsSearchBox}" FontStyle="Italic" Foreground="Gray"
-                                     IsKeyboardFocusedChanged="SearchBoxIsKeyboardFocusedChanged" TextChanged="SearchBoxTextChanged"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Name="SearchBox" FontStyle="Italic" Foreground="Gray"
+                                     IsKeyboardFocusedChanged="SearchBoxIsKeyboardFocusedChanged" TextChanged="SearchBoxTextChanged" Width="183" />
+                            <ComboBox Name="ProvidersBox" MinWidth="120" Margin="7,3,0,3" SelectionChanged="ProviderSelectionChanged" Width="156" />
+                            <Button Content="{x:Static Properties:Resources.ProviderSettings}" Height="23" Name="ProviderSettings" Width="75" IsEnabled="False" Margin="7,0,0,0" Click="ProviderSettings_Click" />
+                        </StackPanel>
+
                         <StackPanel Name="FilterPanel">
                             <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsFilter}" Margin="0,15,0,0" Foreground="#083ca2"/>
                             <Separator Margin="0,0,0,10" Visibility="Visible"/>
                             <TextBlock Text="{x:Static Properties:Resources.OptionsFilterText}" TextWrapping="Wrap"/>
                             <TextBox Name="FilterBox" Text="{x:Static Properties:Resources.OptionsSearchBox}" 
                                      IsKeyboardFocusedChanged="SearchBoxIsKeyboardFocusedChanged" TextChanged="SearchBoxTextChanged"/>
+
                         </StackPanel>
                         <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsBehaviour}" Margin="0,15,0,0" Foreground="#083ca2"/>
                         <Separator Margin="0,0,0,10"/>
-                        <TextBlock Text="{x:Static Properties:Resources.OptionsSelectProvider}"/>
-                        <ComboBox Name="ProvidersBox" MinWidth="120" Margin="0,3,0,3" SelectionChanged="ComboBoxSelectionChanged"/>
+
                         <CheckBox Name="AutoDownloadCheckBox" Content="{x:Static Properties:Resources.OptionsDownloadAutomatically}" Click="CheckBoxClick"/>
                         <StackPanel Orientation="Horizontal" Margin="0,7,0,0" >
                             <TextBlock Text="{x:Static Properties:Resources.OptionsRefreshInterval}"/>
@@ -51,7 +56,7 @@
                             <Slider Name="RefreshIntervalSlider" Margin="0,3,0,0" Value="20" TickPlacement="Both" Minimum="0" Maximum="90" TickFrequency="5" SmallChange="10" LargeChange="10"
                                         IsSnapToTickEnabled="True" IsDirectionReversed="True" ValueChanged="RefreshIntervalSliderValueChanged" IsEnabled="{Binding ElementName=AutoDownloadCheckBox, Path=IsChecked}"/>
                         </DockPanel>
-                        <CheckBox Name="SkipLowResCheckBox" Content="{x:Static Properties:Resources.OptionsSkipLowRes}" Click="CheckBoxClick"/>
+                        <CheckBox Name="PreFetchCheckBox" Content="{x:Static Properties:Resources.OptionsPreFetch}" Click="CheckBoxClick"/>
                         <CheckBox Name="GetMaxResCheckBox" Content="{x:Static Properties:Resources.OptionsGetMaxRes}" Click="CheckBoxClick"/>
                         <CheckBox Name="ChangeLogonBgCheckBox" Content="{x:Static Properties:Resources.OptionsChangeLogonBg}" Click="CheckBoxClick"/>
                         <TextBlock FontSize="24" FontWeight="Light" Text="{x:Static Properties:Resources.OptionsCache}" Margin="0,15,0,0" Foreground="#083ca2"/>

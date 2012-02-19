@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.IO;
 using Pulse.Base;
 
 namespace Pulse
 {
-    public class Settings : XmlSerializable
+    public class Settings : XmlSerializable<Settings>
     {
         public Settings()
         {
-            Provider = "wallbase";
+            Provider = "Wallbase";
             Language = CultureInfo.CurrentUICulture.Name;
             DownloadAutomatically = true;
             RefreshInterval = 20;
-            SkipLowRes = true;
-            GetMaxRes = false;
-            ClearOldPics = true;
+            ClearOldPics = false;
             ClearInterval = 3;
+            PreFetch = false;
+            MaxPictureDownloadCount = 100;
+            CachePath = Path.Combine(App.Path, "Cache");
+            ProviderSettings = new SerializableDictionary<string, string>();
+
             switch (DateTime.Now.Month)
             {
                 case 12:
@@ -47,15 +51,43 @@ namespace Pulse
         }
 
         public string Provider { get; set; }
+
         public string Search { get; set; }
-        public string Language { get; set; }
+        public string Filter { get; set; }
+        public List<string> BannedImages { get; set; }
+        
         public bool DownloadAutomatically { get; set; }
         public double RefreshInterval { get; set; }
-        public bool SkipLowRes { get; set; }
-        public bool GetMaxRes { get; set; }
-        public string Filter { get; set; }
+        public bool PreFetch { get; set; }
+        public int MaxPictureDownloadCount { get; set; }
+        public string CachePath { get; set; }
+
+        public bool ChangeLogonBg { get; set; }
+
+        public string Language { get; set; }
+        
         public int ClearInterval { get; set; }
         public bool ClearOldPics { get; set; }
-        public bool ChangeLogonBg { get; set; }
+
+        //provider settings
+        public SerializableDictionary<string, string> ProviderSettings { get; set; }
+
+
+        //read-only split filtered words
+        public List<string> FilteredWords
+        {
+            get {
+                var result = new List<string>();
+                if(string.IsNullOrEmpty(Filter)) return result;
+
+                var s = Filter.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                if (s.Length == 0)
+                    return result;
+
+                result.AddRange(s);
+
+                return result;
+            }
+        }
     }
 }
