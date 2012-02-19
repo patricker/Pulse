@@ -186,7 +186,7 @@ namespace Pulse
                 SaveFolder = App.Settings.CachePath,
                 MaxPictureCount = App.Settings.MaxPictureDownloadCount, 
                 SearchProvider = App.CurrentProvider,
-                ProviderSearchSettings = App.Settings.ProviderSettings[App.Settings.Provider]
+                ProviderSearchSettings = App.Settings.ProviderSettings.ContainsKey(App.Settings.Provider) ? App.Settings.ProviderSettings[App.Settings.Provider] : string.Empty
                 };
 
             if (App.Settings.Language == "ru-RU" || App.Settings.Provider != "Rewalls")
