@@ -23,6 +23,7 @@ namespace Pulse.Base
 
         public ProviderConfigurationBase() : base()
         {
+
         }
 
         public virtual void LoadConfiguration(string config){}
