@@ -12,12 +12,13 @@ using System.Threading;
 namespace wallbase
 {
     [System.ComponentModel.Description("Wallbase")]
+    [ProviderConfigurationUserControl(typeof(WallbaseProviderPreferences))]
     public class Provider : IProvider
     {
         private int totalCount;
         private int resultCount;
 
-        private const string Url = "http://wallbase.cc/search/";
+        private const string Url = "http://wallbase.cc/{0}/";
         private Random rnd = new Random();
 
         public void Initialize()
@@ -28,8 +29,10 @@ namespace wallbase
         public PictureList GetPictures(PictureSearch ps)
         {
             string search=ps.SearchString;
-            bool skipLowRes=true;
-                        
+
+            WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.ProviderSearchSettings) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
+            
+                                    
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
             int pageSize = 60;
@@ -40,18 +43,55 @@ namespace wallbase
             
             var wallResults = new List<WallPicture>();
 
-            string postParams = "query={0}&board=all&thpp={1}&res_opt=eqeq&aspect=0&orderby=relevance&orderby_opt=desc";
+            var resolutionString = wiss.ImageHeight > 0 && wiss.ImageWidth > 0 ? wiss.ImageWidth.ToString() + "x" + wiss.ImageHeight.ToString() : "0";
+
+            string areaURL = string.Format(Url, wiss.SA);
+            string postParams = string.Empty;
+
+            //Search uses the post params, but random and top listde not
+            // random includes the options in the URL string
+            if (wiss.SA != "search")
+            {
+                //toplist put's it's page index before the categories
+                if (wiss.SA == "toplist")
+                {
+                    //prepend placeholder for page number.  With toplist there is always a page numer (starting at 0, multiplied by item per page count)s
+                    areaURL += "{0}/" + string.Format("all/{0}/{1}/0/100/{2}/3d", wiss.SO, resolutionString, pageSize.ToString());
+                }
+                else
+                {
+                    //random does not need paging, we just reload the random page time and time again
+                    areaURL += string.Format("all/{0}/{1}/0/100/{2}", wiss.SO, resolutionString, pageSize.ToString());
+                }
+
+            }
+            else
+            {
+                postParams = string.Format("query={0}&board=all&nsfw=100&res_opt={2}&res={3}&aspect=0&orderby={4}&orderby_opt={5}&thpp={1}&section=wallpapers",
+                    search, pageSize.ToString(), wiss.SO, resolutionString, wiss.OB, wiss.OBD);
+
+                //if there is a color option and wiss.SA = search then add
+                if (wiss.SA == "search" && wiss.Color != System.Drawing.Color.Empty)
+                {
+                    areaURL += string.Format("color/{0}/{1}/{2}/", wiss.Color.R.ToString(), wiss.Color.G.ToString(), wiss.Color.B.ToString());
+                }
+
+                //place holder for page number
+                areaURL += "{0}";
+            }
 
             do
             {
-                string strPageNum = pageIndex > 0 ? (pageIndex * pageSize).ToString() : "";
+                //calculate page index.  Random does not use pages, so for random just refresh with same url
+                string strPageNum = (pageIndex > 0 && wiss.SA != "random") || wiss.SA == "toplist" ? (pageIndex * pageSize).ToString() : "";
 
-                string content = HttpPost(Url + strPageNum, string.Format(postParams, search, pageSize.ToString()));
+                string pageURL = areaURL.Contains("{0}") ? string.Format(areaURL, strPageNum) : areaURL;
+                string content = HttpPost(pageURL, postParams);
                 if (string.IsNullOrEmpty(content))
                     break;
 
                 //parse html and get count
-                var pics = ParsePictures(content, skipLowRes);
+                var pics = ParsePictures(content);
                 imgFoundCount = pics.Count();
 
                 wallResults.AddRange(pics);
@@ -120,27 +160,28 @@ namespace wallbase
         }
 
         //find links to pages with wallpaper only with matching resolution
-        private IEnumerable<WallPicture> ParsePictures(string content, bool skipLowRes)
+        private IEnumerable<WallPicture> ParsePictures(string content)
         {
             var picsRegex = new Regex("<a href=\"http://.*\" id=\".*\" .*>");
-            var resRegex = new Regex("<span class=\"res\">.*</span>");
+            //var resRegex = new Regex("<span class=\"res\">.*</span>");
             var picsMatches = picsRegex.Matches(content);
-            var resMatches = resRegex.Matches(content);
+            //var resMatches = resRegex.Matches(content);
             var result = new List<WallPicture>();
             for (var i = 0; i < picsMatches.Count; i++)
             {
-                var resString = StripTags(resMatches[i].Value);
-                var res = new Size(Convert.ToInt32(resString.Split('x')[0]), Convert.ToInt32(resString.Split('x')[1]));
-                var curRes = new Size((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
+                //NOTE: Wallbase has a built in search option that handles this for us, so we don't have to parse and check manually anymore
+                //var resString = StripTags(resMatches[i].Value);
+                //var res = new System.Drawing.Size(Convert.ToInt32(resString.Split('x')[0]), Convert.ToInt32(resString.Split('x')[1]));
+                //var curRes = new System.Drawing.Size((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
 
-                if (skipLowRes && (res.Height < curRes.Height || res.Width < curRes.Width))
-                    continue;
+                //if (skipLowRes && (res.Height < curRes.Height || res.Width < curRes.Width))
+                //    continue;
                 var pic = new WallPicture();
                 var url = picsMatches[i].Value;
                 url = url.Substring(url.IndexOf('"') + 1, url.IndexOf(' ', 5) - url.IndexOf('"') - 2);
                 pic.PageUrl = url;
-                pic.Width = res.Width;
-                pic.Height = res.Height;
+                //pic.Width = res.Width;
+                //pic.Height = res.Height;
 
                 result.Add(pic);
             }

@@ -290,6 +290,7 @@ namespace Pulse
             {
                 _tempProviderConfig = App.Settings.ProviderSettings[ProvidersBox.SelectedValue.ToString()];
             }
+            else { _tempProviderConfig = string.Empty; }
         }
 
         private void ClearNowButtonClick(object sender, RoutedEventArgs e)
@@ -323,6 +324,8 @@ namespace Pulse
             if (initSettings.IsOK)
             {
                 _tempProviderConfig = initSettings.SaveConfiguration();
+                //activate apply option
+                ApplyButton.IsEnabled = true;
             }
         }
     }
