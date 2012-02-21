@@ -84,6 +84,14 @@ namespace GoogleImages
                     result.Pictures.Add(new Picture() { Url = purl, Id = System.IO.Path.GetFileNameWithoutExtension(purl) });
                 }
 
+                //if we have an image ban list check for them
+                // doing this in the provider instead of picture manager
+                // ensures that our count does not go down if we have a max
+                if (ps.BannedURLs != null && ps.BannedURLs.Count > 0)
+                {
+                    result.Pictures = (from c in result.Pictures where !(ps.BannedURLs.Contains(c.Url)) select c).ToList();
+                }
+
                 //increment page index so we can get the next 20 images if they exist
                 pageIndex++;
                 // Max Picture count is defined in search settings passed in, check for it here too

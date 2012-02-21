@@ -17,7 +17,7 @@ namespace Pulse.Base
         
         private readonly Random rnd = new Random();
 
-        public delegate void PictureDownloadedHandler();
+        public delegate void PictureDownloadedHandler(string filePath);
         public event PictureDownloadedHandler PictureDownloaded;
         public delegate void PictureDownloadingHandler();
         public event PictureDownloadingHandler PictureDownloading;
@@ -60,7 +60,7 @@ namespace Pulse.Base
                 {
                     //App.Log("Nothing found.");
                     if (PictureDownloaded != null)
-                        PictureDownloaded();
+                        PictureDownloaded(string.Empty);
                     return;
                 }
 
@@ -111,7 +111,7 @@ namespace Pulse.Base
             if(File.Exists(picturePath)) {
                 //if the wallpaper image already exists then fire the event
                 if (PictureDownloaded != null && hookEvent)
-                    PictureDownloaded();
+                    PictureDownloaded(picturePath);
 
                 return;
             }
@@ -127,14 +127,14 @@ namespace Pulse.Base
             }
 
             //download wallpaper async
-            wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath);
+            wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath, picturePath);
         }
 
 
         void ClientDownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (PictureDownloaded != null)
-                PictureDownloaded();
+                PictureDownloaded(e.UserState.ToString());
         }
 
         public static void ReduceQuality(string file, string destFile, int quality)

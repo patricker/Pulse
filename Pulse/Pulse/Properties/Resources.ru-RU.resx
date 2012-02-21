@@ -120,6 +120,9 @@
   <data name="Autumn" xml:space="preserve">
     <value>Осень</value>
   </data>
+  <data name="BanImage" xml:space="preserve">
+    <value>Ban Image</value>
+  </data>
   <data name="Close" xml:space="preserve">
     <value>Закрыть</value>
   </data>
@@ -248,6 +251,9 @@
   </data>
   <data name="Summer" xml:space="preserve">
     <value>Лето</value>
+  </data>
+  <data name="ViewCacheFolder" xml:space="preserve">
+    <value>Open Cache Folder</value>
   </data>
   <data name="Winter" xml:space="preserve">
     <value>Зима</value>

@@ -70,6 +70,15 @@ namespace Pulse.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ban Image.
+        /// </summary>
+        public static string BanImage {
+            get {
+                return ResourceManager.GetString("BanImage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string Close {
@@ -462,6 +471,15 @@ namespace Pulse.Properties {
         public static string Summer {
             get {
                 return ResourceManager.GetString("Summer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Cache Folder.
+        /// </summary>
+        public static string ViewCacheFolder {
+            get {
+                return ResourceManager.GetString("ViewCacheFolder", resourceCulture);
             }
         }
         
