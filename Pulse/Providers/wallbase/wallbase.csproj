@@ -52,7 +52,6 @@
     <Compile Include="WallbaseProviderPreferences.xaml.cs">
       <DependentUpon>WallbaseProviderPreferences.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WallPicture.cs" />
     <Compile Include="Provider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

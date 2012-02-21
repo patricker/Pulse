@@ -41,7 +41,7 @@ namespace wallbase
 
             var result = new PictureList() { FetchDate = DateTime.Now };
             
-            var wallResults = new List<WallPicture>();
+            var wallResults = new List<Picture>();
 
             var resolutionString = wiss.ImageHeight > 0 && wiss.ImageWidth > 0 ? wiss.ImageWidth.ToString() + "x" + wiss.ImageHeight.ToString() : "0";
 
@@ -94,11 +94,18 @@ namespace wallbase
                 var pics = ParsePictures(content);
                 imgFoundCount = pics.Count();
 
+                //if we have an image ban list check for them
+                // doing this in the provider instead of picture manager
+                // ensures that our count does not go down if we have a max
+                if (ps.BannedURLs != null && ps.BannedURLs.Count > 0)
+                {
+                    pics = (from c in pics where !(ps.BannedURLs.Contains(c.Url)) select c).ToList();
+                }
+
                 wallResults.AddRange(pics);
 
                 //increment page index so we can get the next set of images if they exist
                 pageIndex++;
-
             } while (imgFoundCount > 0 && wallResults.Count < maxPictureCount);
 
             ManualResetEvent mreThread = new ManualResetEvent(false);
@@ -127,11 +134,10 @@ namespace wallbase
                                 object[] states = (object[])state;
 
                                 ManualResetEvent mre = (ManualResetEvent)states[0];
-                                WallPicture wp = (WallPicture)states[1];
+                                Picture p = (Picture)states[1];
 
-                                var p = new Picture();
-                                p.Url = GetDirectPictureUrl(wp.PageUrl);
-                                p.Id = GetPictureId(wp.PageUrl);
+                                p.Url = GetDirectPictureUrl(p.Url);
+                                p.Id = GetPictureId(p.Url);
                                 result.Pictures.Add(p);
 
                                 mre.Set();
@@ -160,13 +166,13 @@ namespace wallbase
         }
 
         //find links to pages with wallpaper only with matching resolution
-        private IEnumerable<WallPicture> ParsePictures(string content)
+        private List<Picture> ParsePictures(string content)
         {
             var picsRegex = new Regex("<a href=\"http://.*\" id=\".*\" .*>");
             //var resRegex = new Regex("<span class=\"res\">.*</span>");
             var picsMatches = picsRegex.Matches(content);
             //var resMatches = resRegex.Matches(content);
-            var result = new List<WallPicture>();
+            var result = new List<Picture>();
             for (var i = 0; i < picsMatches.Count; i++)
             {
                 //NOTE: Wallbase has a built in search option that handles this for us, so we don't have to parse and check manually anymore
@@ -176,10 +182,10 @@ namespace wallbase
 
                 //if (skipLowRes && (res.Height < curRes.Height || res.Width < curRes.Width))
                 //    continue;
-                var pic = new WallPicture();
+                var pic = new Picture();
                 var url = picsMatches[i].Value;
                 url = url.Substring(url.IndexOf('"') + 1, url.IndexOf(' ', 5) - url.IndexOf('"') - 2);
-                pic.PageUrl = url;
+                pic.Url= url;
                 //pic.Width = res.Width;
                 //pic.Height = res.Height;
 

@@ -180,40 +180,14 @@ namespace Pulse
 
         void TimerTick(object sender, EventArgs e)
         {
-            var ps = new PictureSearch() {
-                SearchString = App.Settings.Search, 
-                PreFetch = App.Settings.PreFetch, 
-                SaveFolder = App.Settings.CachePath,
-                MaxPictureCount = App.Settings.MaxPictureDownloadCount, 
-                SearchProvider = App.CurrentProvider,
-                ProviderSearchSettings = App.Settings.ProviderSettings.ContainsKey(App.Settings.Provider) ? App.Settings.ProviderSettings[App.Settings.Provider] : string.Empty
-                };
-
-            if (App.Settings.Language == "ru-RU" || App.Settings.Provider != "Rewalls")
-                App.PictureManager.GetPicture(ps);
-            else
-            {
-                if (string.IsNullOrEmpty(translatedKeyword))
-                {
-                    ThreadStart threadStarter = delegate
-                                                    {
-                                                        translatedKeyword = Translator.TranslateText(App.Settings.Search, "en|ru");
-                                                        ps.SearchString = translatedKeyword;
-                                                        App.PictureManager.GetPicture(ps);
-                                                    };
-                    var thread = new Thread(threadStarter);
-                    thread.SetApartmentState(ApartmentState.STA);
-                    thread.Start();
-                }
-                else
-                    ps.SearchString = translatedKeyword;
-                    App.PictureManager.GetPicture(ps);
-            }
+            DownloadNextPicture();
         }
 
         private static System.Windows.Forms.ContextMenu trayMenu;
         private static System.Windows.Forms.MenuItem closeMenuItem;
         private static System.Windows.Forms.MenuItem optionsMenuItem;
+        private static System.Windows.Forms.MenuItem cacheViewMenuItem;
+        private static System.Windows.Forms.MenuItem banImageMenuItem;
         private static System.Windows.Forms.MenuItem nextMenuItem;
         private static System.Windows.Forms.NotifyIcon trayIcon;
 
@@ -229,12 +203,25 @@ namespace Pulse
             optionsMenuItem.Text = Pulse.Properties.Resources.Options;
             optionsMenuItem.Click += OptionsMenuItemClick;
 
+            cacheViewMenuItem = new System.Windows.Forms.MenuItem();
+            cacheViewMenuItem.Text = Pulse.Properties.Resources.ViewCacheFolder;
+            cacheViewMenuItem.Click += ShowCacheFolderMenuItemClick;
+
+            banImageMenuItem = new System.Windows.Forms.MenuItem();
+            banImageMenuItem.Text = Pulse.Properties.Resources.BanImage;
+            banImageMenuItem.Enabled = false;
+            banImageMenuItem.Click += BanImageMenuItemClick;
+
             nextMenuItem = new System.Windows.Forms.MenuItem();
             nextMenuItem.Text = Pulse.Properties.Resources.NextPicture;
             nextMenuItem.Click += new EventHandler(NextMenuItemClick);
 
             trayMenu.MenuItems.Add(nextMenuItem);
+            trayMenu.MenuItems.Add(cacheViewMenuItem);
+            trayMenu.MenuItems.Add(banImageMenuItem);
+            
             trayMenu.MenuItems.Add(optionsMenuItem);
+            
             trayMenu.MenuItems.Add(closeMenuItem);
 
             trayIcon = new System.Windows.Forms.NotifyIcon();
@@ -249,21 +236,7 @@ namespace Pulse
 
         void NextMenuItemClick(object sender, EventArgs e)
         {
-            TimerTick(null, EventArgs.Empty);
-            if (Settings.DownloadAutomatically)
-            {
-                timer.Stop();
-                timer.Start();
-            }
-            //if (App.Settings.Language == "ru-RU")
-            //    App.PictureManager.GetPicture(App.Settings.Search);
-            //else
-            //{
-            //    if (string.IsNullOrEmpty(Translator.Result))
-            //        Translator.TranslateText(App.Settings.Search, "en|ru");
-            //    else
-            //        App.PictureManager.GetPicture(Translator.Result);
-            //}
+            SkipToNextPicture();
         }
 
         void ShowOptionsMenu()
@@ -298,6 +271,30 @@ namespace Pulse
             ShowOptionsMenu();
         }
 
+        void ShowCacheFolderMenuItemClick(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", Settings.CachePath);
+        }
+
+        void BanImageMenuItemClick(object sender, EventArgs e)
+        {
+            if (PictureManager.CurrentPicture != null)
+            {
+                if (MessageBox.Show(string.Format("Ban '{0}'?", PictureManager.CurrentPicture.Url), "Image Ban", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                {
+                    return;
+                }
+
+                //add the url to the ban list
+                Settings.BannedImages.Add(PictureManager.CurrentPicture.Url);
+                //save the settings file
+                Settings.Save(App.Path + "\\settings.conf");
+
+                //skip to next photo
+                SkipToNextPicture();
+            }
+        }
+
         void OptionsWindowClosed(object sender, EventArgs e)
         {
             optionsWindow.Closed -= OptionsWindowClosed;
@@ -321,31 +318,81 @@ namespace Pulse
             this.Shutdown();
         }
 
-        void PmanagerPictureDownloaded()
+        void SkipToNextPicture()
         {
-            if (PictureManager.CurrentPicture != null)
+            DownloadNextPicture();
+            //Stop and restart the timer so that the next picture won't happen to soon
+            if (Settings.DownloadAutomatically)
             {
-                WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", WinAPI.SPIF_UPDATEINIFILE).ToString();
-                if (App.Settings.ChangeLogonBg)
+                timer.Stop();
+                timer.Start();
+            }
+        }
+
+        void DownloadNextPicture()
+        {
+            var ps = new PictureSearch()
+            {
+                SearchString = App.Settings.Search,
+                PreFetch = App.Settings.PreFetch,
+                SaveFolder = App.Settings.CachePath,
+                MaxPictureCount = App.Settings.MaxPictureDownloadCount,
+                SearchProvider = App.CurrentProvider,
+                BannedURLs = App.Settings.BannedImages,
+                ProviderSearchSettings = App.Settings.ProviderSettings.ContainsKey(App.Settings.Provider) ? App.Settings.ProviderSettings[App.Settings.Provider] : string.Empty
+            };
+
+            if (App.Settings.Language == "ru-RU" || App.Settings.Provider != "Rewalls")
+                App.PictureManager.GetPicture(ps);
+            else
+            {
+                if (string.IsNullOrEmpty(translatedKeyword))
                 {
-                    if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info") || !Directory.Exists(Environment.SystemDirectory + "\\oobe\\info\\backgrounds"))
+                    ThreadStart threadStarter = delegate
                     {
-                        var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/createdirs" };
-                        var proc = Process.Start(p);
-                        proc.WaitForExit();
-                    }
-                    var info = new FileInfo(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg");
-                    if (info.Length > 0)
+                        translatedKeyword = Translator.TranslateText(App.Settings.Search, "en|ru");
+                        ps.SearchString = translatedKeyword;
+                        App.PictureManager.GetPicture(ps);
+                    };
+                    var thread = new Thread(threadStarter);
+                    thread.SetApartmentState(ApartmentState.STA);
+                    thread.Start();
+                }
+                else
+                    ps.SearchString = translatedKeyword;
+                App.PictureManager.GetPicture(ps);
+            }
+        }
+
+        void PmanagerPictureDownloaded(string picPath)
+        {
+            //enable image banning
+            banImageMenuItem.Enabled = true;
+                
+            //set the wallpaper to the new image
+            WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, picPath, WinAPI.SPIF_UPDATEINIFILE).ToString();
+                
+            if (App.Settings.ChangeLogonBg)
+            {
+                if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info") || !Directory.Exists(Environment.SystemDirectory + "\\oobe\\info\\backgrounds"))
+                {
+                    var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/createdirs" };
+                    var proc = Process.Start(p);
+                    proc.WaitForExit();
+                }
+                var info = new FileInfo(picPath);
+                if (info.Length > 0)
+                {
+                    File.Copy(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", true);
+                    info = new FileInfo(Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg");
+                    if (info.Length / 1024 > 256)
                     {
-                        File.Copy(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", true);
-                        info = new FileInfo(Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg");
-                        if (info.Length / 1024 > 256)
-                        {
-                            PictureManager.ReduceQuality(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", 90);
-                        }
+                        PictureManager.ReduceQuality(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", 90);
                     }
                 }
             }
+
+
             var stream = GetResourceStream(new Uri("/Pulse;component/Resources/icon_small.ico", UriKind.Relative)).Stream;
             trayIcon.Icon = new Icon(stream);
             stream.Close();
