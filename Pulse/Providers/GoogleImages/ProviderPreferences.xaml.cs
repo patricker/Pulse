@@ -47,7 +47,7 @@ namespace GoogleImages
         public override string SaveConfiguration()
         {
             //I should find out if we can do two-way binding on these properties to make this cleaner...
-            giss.Color = comboBox1.SelectedValue.ToString();
+            giss.Color = comboBox1.SelectedValue != null ? comboBox1.SelectedValue.ToString() : "";
             giss.ImageWidth = Convert.ToInt32(txtWidth.Text);
             giss.ImageHeight = Convert.ToInt32(txtHeight.Text);
 

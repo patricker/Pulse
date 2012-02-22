@@ -78,7 +78,7 @@ namespace Pulse.Base
 
                 CurrentPicture = Pictures.Pictures[index];
                 //download current picture first
-                GetPicture(CurrentPicture, ps.SaveFolder, true);                
+                GetPicture(CurrentPicture, ps.SaveFolder, true, false);                
 
                 //if pre-fetch true, get the rest of the pictures
                 if (ps.PreFetch)
@@ -88,7 +88,7 @@ namespace Pulse.Base
                         //skip the image we already processed
                         if (i == index) continue;
 
-                        GetPicture(Pictures.Pictures[i], ps.SaveFolder, false);
+                        GetPicture(Pictures.Pictures[i], ps.SaveFolder, false, true);
                     }
                 }
 
@@ -103,31 +103,40 @@ namespace Pulse.Base
             thread.Start();
         }
 
-        public void GetPicture(Picture pic, string saveFolder, bool hookEvent)
+        public void GetPicture(Picture pic, string saveFolder, bool hookEvent, bool async)
         {
             //check if the requested image exists, if it does then fire event if needed and return
             var picturePath = Path.Combine(saveFolder, pic.Id + ".jpg");
+            var fi = new FileInfo(picturePath);
 
-            if(File.Exists(picturePath)) {
-                //if the wallpaper image already exists then fire the event
-                if (PictureDownloaded != null && hookEvent)
-                    PictureDownloaded(picturePath);
+            if(fi.Exists) {
+                if (fi.Length > 0)
+                {
+                    //if the wallpaper image already exists, and passes our 0 size check then fire the event
+                    if (PictureDownloaded != null && hookEvent)
+                        PictureDownloaded(picturePath);
 
-                return;
+                    return;
+                }
+                    //if file size is 0 then delete so we can retry
+                else { try { fi.Delete(); } catch { } }
             }
 
-            //if the picture does not exist localy then download
-
+            //if the picture does not exist localy (or failed 0 size check) then download
             var wcLocal = new WebClient();
                 
             //if this will become our background image them hook into the event
-            if (hookEvent)
+            if (hookEvent && async)
             {
                 wcLocal.DownloadFileCompleted += ClientDownloadFileCompleted;
             }
 
-            //download wallpaper async
-            wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath, picturePath);
+            if (async) wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath, picturePath);
+            else {
+                wcLocal.DownloadFile(new Uri(pic.Url), picturePath);
+                PictureDownloaded(picturePath);
+            }
+            
         }
 
 

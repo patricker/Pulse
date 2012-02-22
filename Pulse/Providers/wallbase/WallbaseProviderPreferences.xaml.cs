@@ -55,7 +55,7 @@ namespace wallbase
             wiss.ImageWidth = string.IsNullOrEmpty(txtWidth.Text) ? 0 : Convert.ToInt32(txtWidth.Text);
             wiss.ImageHeight = string.IsNullOrEmpty(txtHeight.Text) ? 0 : Convert.ToInt32(txtHeight.Text);
 
-            if (!string.IsNullOrEmpty(txtColorRed.Text) && !string.IsNullOrEmpty(txtColorRed.Text) && !string.IsNullOrEmpty(txtColorRed.Text))
+            if (!string.IsNullOrEmpty(txtColorRed.Text) && !string.IsNullOrEmpty(txtColorGreen.Text) && !string.IsNullOrEmpty(txtColorBlue.Text))
             {
                 wiss.Color = System.Drawing.Color.FromArgb(Convert.ToInt32(txtColorRed.Text), Convert.ToInt32(txtColorGreen.Text), Convert.ToInt32(txtColorBlue.Text));
             }

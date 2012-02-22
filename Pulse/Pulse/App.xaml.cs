@@ -359,8 +359,10 @@ namespace Pulse
                     thread.Start();
                 }
                 else
+                {
                     ps.SearchString = translatedKeyword;
-                App.PictureManager.GetPicture(ps);
+                    App.PictureManager.GetPicture(ps);
+                }
             }
         }
 

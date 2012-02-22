@@ -35,15 +35,18 @@ namespace Rewalls
 
         public PictureList GetPictures(PictureSearch ps)
         {
-            string search = ps.SearchString; bool skipLowRes = true; bool getMaxRes = true; List<string> filterKeywords = null; 
+            string search = ps.SearchString; bool skipLowRes = true; bool getMaxRes = true; List<string> filterKeywords = null;
+            var result = new PictureList() { FetchDate = DateTime.Now };
 
             var query = HttpUtility.UrlEncode(search, Encoding.GetEncoding(1251));
             var url = string.Format(Url, query);
             var content = GeneralHelper.GetWebPageContent(url);
             if (string.IsNullOrEmpty(content))
-                return null;
+                return result;
+            //check for no results
+            if (content.StartsWith("<br")) { return result; }
+
             var xml = XElement.Parse(content);
-            var result = new PictureList() { FetchDate = DateTime.Now };
             foreach (var el in xml.Elements("Image"))
             {
                 var tags = el.Element("tags").Value;
