@@ -80,8 +80,11 @@ namespace GoogleImages
                 foreach (Match item in images)
                 {
                     var purl = item.Groups[3].Value;
+                    //get id and trim if necessary (ran into a few cases of rediculously long filenames)
+                    var id = System.IO.Path.GetFileNameWithoutExtension(purl);
+                    if (id.Length > 50) id = id.Substring(0, 50);
 
-                    result.Pictures.Add(new Picture() { Url = purl, Id = System.IO.Path.GetFileNameWithoutExtension(purl) });
+                    result.Pictures.Add(new Picture() { Url = purl, Id = id });
                 }
 
                 //if we have an image ban list check for them

@@ -29,7 +29,7 @@ namespace Pulse.Base
             {
                 return null;
             }
-            result = result.Substring(result.IndexOf("<span title=\"") + "<span title=\"".Length);
+            result = result.Substring(result.IndexOf("<span title=\"" + input + "\""));
             result = result.Substring(result.IndexOf(">") + 1);
             result = result.Substring(0, result.IndexOf("</span>"));
             return result.Trim();

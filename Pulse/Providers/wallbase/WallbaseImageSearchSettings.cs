@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.Windows;
+using System.Drawing;
 
 namespace wallbase
 {
@@ -13,7 +14,16 @@ namespace wallbase
         public string SA { get; set; }
 
         //color, used for color searches (color searching is only available with "Search" type
+        [XmlIgnore()]
         public System.Drawing.Color Color { get; set; }
+
+        [XmlElement("Color")]
+        public string ClrHtml
+        {
+            get { return ColorTranslator.ToHtml(Color); }
+            set { Color = ColorTranslator.FromHtml(value); }
+        }
+
 
         //Image sizing information
         public string SO { get; set; }
