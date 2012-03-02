@@ -23,9 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDirectory", "Providers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperSetter", "Providers\WallpaperSetter\WallpaperSetter.csproj", "{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeroGlassChanger", "Providers\AeroGlassChanger\AeroGlassChanger.csproj", "{DE533383-3E9D-494B-855F-89A00E31AEEB}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -59,6 +61,10 @@ Global
 		SccProjectTopLevelParentUniqueName8 = Pulse.sln
 		SccProjectName8 = Providers/WallpaperSetter
 		SccLocalPath8 = Providers\\WallpaperSetter
+		SccProjectUniqueName9 = Providers\\AeroGlassChanger\\AeroGlassChanger.csproj
+		SccProjectTopLevelParentUniqueName9 = Pulse.sln
+		SccProjectName9 = Providers/AeroGlassChanger
+		SccLocalPath9 = Providers\\AeroGlassChanger
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +155,16 @@ Global
 		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DE533383-3E9D-494B-855F-89A00E31AEEB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,5 +178,6 @@ Global
 		{624D0297-58E5-4EA7-9FDC-8FA03E82770C} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
+		{DE533383-3E9D-494B-855F-89A00E31AEEB} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 	EndGlobalSection
 EndGlobal
