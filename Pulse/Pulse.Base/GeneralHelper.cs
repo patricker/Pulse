@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace Pulse.Base
 {
@@ -50,5 +51,51 @@ namespace Pulse.Base
             }
         }
 
+        private static byte[] s_aditionalEntropy = { 2,1,5,8,2,3,1,8,2,9  };
+
+        public static string Protect(string data)
+        {
+            byte[] bytes = Encoding.Default.GetBytes(data);
+
+            byte[] protectedBytes = Protect(bytes);
+
+            return Convert.ToBase64String(protectedBytes);
+        }
+
+        public static byte[] Protect(byte[] data)
+        {
+            try
+            {
+                // Encrypt the data using DataProtectionScope.CurrentUser. The result can be decrypted
+                //  only by the same current user.
+                return ProtectedData.Protect(data, s_aditionalEntropy, DataProtectionScope.CurrentUser);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static string Unprotect(string data)
+        {
+            byte[] bytes = Convert.FromBase64String(data);
+
+            byte[] unprotectedBytes = Unprotect(bytes);
+
+            return Encoding.Default.GetString(unprotectedBytes);
+        }
+
+        public static byte[] Unprotect(byte[] data)
+        {
+            try
+            {
+                //Decrypt the data using DataProtectionScope.CurrentUser.
+                return ProtectedData.Unprotect(data, s_aditionalEntropy, DataProtectionScope.CurrentUser);
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

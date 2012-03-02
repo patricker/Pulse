@@ -13,12 +13,12 @@ namespace wallbase
 {
     [System.ComponentModel.Description("Wallbase")]
     [ProviderConfigurationUserControl(typeof(WallbaseProviderPreferences))]
-    public class Provider : IProvider
+    public class Provider : IInputProvider
     {
         private int totalCount;
         private int resultCount;
+        private CookieContainer _cookies = new CookieContainer();
 
-        private const string Url = "http://wallbase.cc/{0}/";
         private Random rnd = new Random();
 
         public void Initialize()
@@ -26,64 +26,40 @@ namespace wallbase
             System.Net.ServicePointManager.Expect100Continue = false;
         }
 
+        public void Activate(object args) { }
+        public void Deactivate(object args) { }
+
         public PictureList GetPictures(PictureSearch ps)
         {
             string search=ps.SearchString;
 
             WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.ProviderSearchSettings) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
             
+            //if we have a username/password and we aren't already authenticated then authenticate
+            if (_cookies.Count == 0 && !string.IsNullOrEmpty(wiss.Username) && !string.IsNullOrEmpty(wiss.Password))
+            {
+                var test = HttpGet("http://wallbase.cc/home");
+                //usrname=$USER&pass=$PASS&nopass_email=Type+in+your+e-mail+and+press+enter&nopass=0&1=1
+                var hit1 = HttpPost("http://wallbase.cc/user/login", string.Format("usrname={0}&pass={1}&nopass_email=Type+in+your+e-mail+and+press+enter&nopass=0&1=1", wiss.Username, wiss.Password));
+                var hitConfirm = HttpPost("http://wallbase.cc/user/adult_confirm/1", "");
+            }
                                     
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
-            int pageSize = 60;
+            int pageSize = wiss.GetPageSize();
             int pageIndex = 0;
             var imgFoundCount = 0;
 
-            var result = new PictureList() { FetchDate = DateTime.Now };
             
             var wallResults = new List<Picture>();
 
-            var resolutionString = wiss.ImageHeight > 0 && wiss.ImageWidth > 0 ? wiss.ImageWidth.ToString() + "x" + wiss.ImageHeight.ToString() : "0";
-
-            string areaURL = string.Format(Url, wiss.SA);
-            string postParams = string.Empty;
-
-            //Search uses the post params, but random and top listde not
-            // random includes the options in the URL string
-            if (wiss.SA != "search")
-            {
-                //toplist put's it's page index before the categories
-                if (wiss.SA == "toplist")
-                {
-                    //prepend placeholder for page number.  With toplist there is always a page numer (starting at 0, multiplied by item per page count)s
-                    areaURL += "{0}/" + string.Format("all/{0}/{1}/0/100/{2}/3d", wiss.SO, resolutionString, pageSize.ToString());
-                }
-                else
-                {
-                    //random does not need paging, we just reload the random page time and time again
-                    areaURL += string.Format("all/{0}/{1}/0/100/{2}", wiss.SO, resolutionString, pageSize.ToString());
-                }
-
-            }
-            else
-            {
-                postParams = string.Format("query={0}&board=all&nsfw=100&res_opt={2}&res={3}&aspect=0&orderby={4}&orderby_opt={5}&thpp={1}&section=wallpapers",
-                    search, pageSize.ToString(), wiss.SO, resolutionString, wiss.OB, wiss.OBD);
-
-                //if there is a color option and wiss.SA = search then add
-                if (wiss.SA == "search" && wiss.Color != System.Drawing.Color.Empty)
-                {
-                    areaURL += string.Format("color/{0}/{1}/{2}/", wiss.Color.R.ToString(), wiss.Color.G.ToString(), wiss.Color.B.ToString());
-                }
-
-                //place holder for page number
-                areaURL += "{0}";
-            }
+            string areaURL = wiss.BuildURL();
+            string postParams = wiss.GetPostParams(search);
 
             do
             {
                 //calculate page index.  Random does not use pages, so for random just refresh with same url
-                string strPageNum = (pageIndex > 0 && wiss.SA != "random") || wiss.SA == "toplist" ? (pageIndex * pageSize).ToString() : "";
+                string strPageNum = (pageIndex > 0 && wiss.SA != "random") || (wiss.SA == "toplist" || wiss.SA=="user/collection") ? (pageIndex * pageSize).ToString() : "";
 
                 string pageURL = areaURL.Contains("{0}") ? string.Format(areaURL, strPageNum) : areaURL;
                 string content = HttpPost(pageURL, postParams);
@@ -107,6 +83,16 @@ namespace wallbase
                 //increment page index so we can get the next set of images if they exist
                 pageIndex++;
             } while (imgFoundCount > 0 && wallResults.Count < maxPictureCount);
+
+            PictureList result = FetchPictures(wallResults);
+            
+
+            return result;
+        }
+
+        private PictureList FetchPictures(List<Picture> wallResults) 
+        {
+            var result = new PictureList() { FetchDate = DateTime.Now };
 
             ManualResetEvent mreThread = new ManualResetEvent(false);
 
@@ -137,8 +123,12 @@ namespace wallbase
                                 Picture p = (Picture)states[1];
 
                                 p.Url = GetDirectPictureUrl(p.Url);
-                                p.Id = GetPictureId(p.Url);
-                                result.Pictures.Add(p);
+                                p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
+
+                                if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
+                                {
+                                    result.Pictures.Add(p);
+                                }
 
                                 mre.Set();
                             }), new object[] { manualEvents[i], toProcess[i] });
@@ -149,7 +139,7 @@ namespace wallbase
                         WaitHandle.WaitAll(manualEvents, 60 * 1000);
                     }
                 }
-                catch (Exception ex) { }
+                catch { }
                 finally
                 {
                     mreThread.Set();
@@ -168,26 +158,17 @@ namespace wallbase
         //find links to pages with wallpaper only with matching resolution
         private List<Picture> ParsePictures(string content)
         {
-            var picsRegex = new Regex("<a href=\"http://.*\" id=\".*\" .*>");
+            var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*)\" id=\".*\" .*>.*<img.*src=\"(?<img>.*)\".*style=\".*</a>");
             //var resRegex = new Regex("<span class=\"res\">.*</span>");
             var picsMatches = picsRegex.Matches(content);
             //var resMatches = resRegex.Matches(content);
             var result = new List<Picture>();
             for (var i = 0; i < picsMatches.Count; i++)
             {
-                //NOTE: Wallbase has a built in search option that handles this for us, so we don't have to parse and check manually anymore
-                //var resString = StripTags(resMatches[i].Value);
-                //var res = new System.Drawing.Size(Convert.ToInt32(resString.Split('x')[0]), Convert.ToInt32(resString.Split('x')[1]));
-                //var curRes = new System.Drawing.Size((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
-
-                //if (skipLowRes && (res.Height < curRes.Height || res.Width < curRes.Width))
-                //    continue;
                 var pic = new Picture();
-                var url = picsMatches[i].Value;
-                url = url.Substring(url.IndexOf('"') + 1, url.IndexOf(' ', 5) - url.IndexOf('"') - 2);
-                pic.Url= url;
-                //pic.Width = res.Width;
-                //pic.Height = res.Height;
+
+                pic.Url = picsMatches[i].Groups["link"].Value;
+                pic.Properties["thumb"] = picsMatches[i].Groups["img"].Value;
 
                 result.Add(pic);
             }
@@ -196,41 +177,34 @@ namespace wallbase
         }
 
         private string GetDirectPictureUrl(string pageUrl)
-        {
-            var webClient = new WebClient();
-            var content = webClient.DownloadString(pageUrl);
-            var regex = new Regex(@"<img src="".*(wallpaper.*\.(jpg|png))""");
+        {            
+            var content = HttpPost(pageUrl,"");
+            if (string.IsNullOrEmpty(content)) return string.Empty;
+
+            var regex = new Regex(@"<img src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
             var m = regex.Match(content);
-            if (!string.IsNullOrEmpty(m.Value))
+            if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
             {
-                var url = m.Value;
-                url = url.Substring(url.IndexOf('\"') + 1, url.LastIndexOf('\"') - url.IndexOf('\"') - 1);
-                return url;
+                return m.Groups["img"].Value;
             }
 
-            return null;
+            return string.Empty;
         }
 
-        private string GetPictureId(string pageUrl)
+        private string HttpGet(string url)
         {
-            return pageUrl.Substring(pageUrl.LastIndexOf('/') + 1);
+            System.Net.WebRequest req = System.Net.WebRequest.Create(url);
+            ((HttpWebRequest)req).CookieContainer = _cookies;
+
+            var resp = req.GetResponse();
+
+            if (resp == null) return null;
+            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+            return sr.ReadToEnd().Trim();
+
         }
 
-        private void GetPagesCount(string content)
-        {
-            var regex = new Regex("<span>.*</span>");
-            var count = StripTags(regex.Match(content).Value);
-            if (count.Contains(","))
-                count = count.Remove(count.IndexOf(','), 1);
-            totalCount = int.Parse(count);
-        }
-
-        public int GetResultsCount()
-        {
-            return resultCount;
-        }
-
-        private static string HttpPost(string url, string parameters)
+        private string HttpPost(string url, string parameters)
         {
             try
             {
@@ -238,6 +212,12 @@ namespace wallbase
                 //Add these, as we're doing a POST
                 req.ContentType = "application/x-www-form-urlencoded";
                 req.Method = "POST";
+
+                ((HttpWebRequest)req).Referer = "http://wallbase.cc/home/";
+                //((HttpWebRequest)req).UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11";                
+                //add cookies if there are any
+                ((HttpWebRequest)req).CookieContainer = _cookies;
+
                 //We need to count how many bytes we're sending. Post'ed Faked Forms should be name=value&
                 byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameters);
                 req.ContentLength = bytes.Length;

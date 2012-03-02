@@ -29,8 +29,7 @@ namespace Pulse
         private Options optionsWindow;
 
         public static PictureManager PictureManager = new PictureManager();
-        public static ProviderManager ProviderManager = new ProviderManager();
-        public static IProvider CurrentProvider = null;
+        public static IInputProvider CurrentProvider = null;
 
         private DispatcherTimer timer;
         public static Translator Translator;
@@ -38,27 +37,6 @@ namespace Pulse
 
         private void ApplicationStartup(object sender, StartupEventArgs e)
         {
-            if (e.Args.Contains("/enableoembg"))
-            {
-                EnableOEMBackground();
-                Shutdown();
-                return;
-            }
-
-            if (e.Args.Contains("/disableoembg"))
-            {
-                DisableOEMBackground();
-                Shutdown();
-                return;
-            }
-
-            if (e.Args.Contains("/createdirs"))
-            {
-                CreateDirs();
-                Shutdown();
-                return;
-            }
-
             Settings = Settings.LoadFromFile("settings.conf") ?? new Settings();
 
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Language);
@@ -92,71 +70,23 @@ namespace Pulse
                 timer.Start();
 
             Translator = new Translator();
-            //Translator.Translated += TranslatorTranslated;
-            WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
+            
+            //WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
 
             //load provider from settings
-            CurrentProvider = ProviderManager.InitializeProvider(Settings.Provider);
+            CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.Provider);
 
             if (CurrentProvider == null)
             {
                 MessageBox.Show("A provider is not currently selected.  Please choose a wallpaper provider from the options menu.");
             }
-        }
-
-        #region OEMBackground
-
-        private void EnableOEMBackground()
-        {
-            try
+            else
             {
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("Microsoft").OpenSubKey("Windows")
-                    .OpenSubKey("CurrentVersion").OpenSubKey("Authentication").OpenSubKey("LogonUI").OpenSubKey("Background", true))
-                {
-                    key.SetValue("OEMBackground", 1, RegistryValueKind.DWord);
-                    key.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "Pulse Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                //get next photo on startup if requested
+                if (Settings.DownloadOnAppStartup) DownloadNextPicture();
+
             }
         }
-
-        private void DisableOEMBackground()
-        {
-            try
-            {
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey("Software", RegistryKeyPermissionCheck.ReadWriteSubTree).OpenSubKey("Microsoft").OpenSubKey("Windows")
-                    .OpenSubKey("CurrentVersion").OpenSubKey("Authentication").OpenSubKey("LogonUI").OpenSubKey("Background", true))
-                {
-                    key.DeleteValue("OEMBackground", false);
-                    key.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), "Pulse Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void SetAccessRules()
-        {
-            DirectorySecurity dirSec = Directory.GetAccessControl(Environment.SystemDirectory + "\\oobe\\info\\backgrounds");
-            dirSec.AddAccessRule(new FileSystemAccessRule(Environment.UserDomainName + "\\" + Environment.UserName, FileSystemRights.FullControl, AccessControlType.Allow));
-            Directory.SetAccessControl(Environment.SystemDirectory + "\\oobe\\info\\backgrounds", dirSec);
-
-        }
-
-        private void CreateDirs()
-        {
-            if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info"))
-                Directory.CreateDirectory(Environment.SystemDirectory + "\\oobe\\info");
-            if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info\\backgrounds"))
-                Directory.CreateDirectory(Environment.SystemDirectory + "\\oobe\\info\\backgrounds");
-            SetAccessRules();
-        }
-        #endregion
         
         public static void Log(string message)
         {
@@ -273,6 +203,8 @@ namespace Pulse
 
         void ShowCacheFolderMenuItemClick(object sender, EventArgs e)
         {
+            if (!Directory.Exists(Settings.CachePath)) Directory.CreateDirectory(Settings.CachePath);
+            //launch directory
             Process.Start("explorer.exe", Settings.CachePath);
         }
 
@@ -290,6 +222,12 @@ namespace Pulse
                 //save the settings file
                 Settings.Save(App.Path + "\\settings.conf");
 
+                try
+                {
+                    //delete the file from the local disk
+                    File.Delete(PictureManager.CurrentPicture.LocalPath);
+                }catch{}
+
                 //skip to next photo
                 SkipToNextPicture();
             }
@@ -298,7 +236,7 @@ namespace Pulse
         void OptionsWindowClosed(object sender, EventArgs e)
         {
             optionsWindow.Closed -= OptionsWindowClosed;
-            WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
+            //WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
         }
 
         void OptionsWindowUpdateSettings(object sender, EventArgs e)
@@ -339,7 +277,7 @@ namespace Pulse
                 MaxPictureCount = App.Settings.MaxPictureDownloadCount,
                 SearchProvider = App.CurrentProvider,
                 BannedURLs = App.Settings.BannedImages,
-                ProviderSearchSettings = App.Settings.ProviderSettings.ContainsKey(App.Settings.Provider) ? App.Settings.ProviderSettings[App.Settings.Provider] : string.Empty
+                ProviderSearchSettings = App.Settings.ProviderSettings.ContainsKey(App.Settings.Provider) ? App.Settings.ProviderSettings[App.Settings.Provider].ProviderConfig : string.Empty
             };
 
             if (App.Settings.Language == "ru-RU" || App.Settings.Provider != "Rewalls")
@@ -366,38 +304,31 @@ namespace Pulse
             }
         }
 
-        void PmanagerPictureDownloaded(string picPath)
+        void PmanagerPictureDownloaded(Picture pic)
         {
-            //enable image banning
-            banImageMenuItem.Enabled = true;
-                
-            //set the wallpaper to the new image
-            WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, picPath, WinAPI.SPIF_UPDATEINIFILE).ToString();
-                
-            if (App.Settings.ChangeLogonBg)
+            if (pic != null)
             {
-                if (!Directory.Exists(Environment.SystemDirectory + "\\oobe\\info") || !Directory.Exists(Environment.SystemDirectory + "\\oobe\\info\\backgrounds"))
+                //enable image banning
+                banImageMenuItem.Enabled = true;
+
+                //call all activated output providers in order
+                foreach (var op in Settings.ProviderSettings.Values.Where(x => x.Active).OrderBy(x=> x.ExecutionOrder))
                 {
-                    var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/createdirs" };
-                    var proc = Process.Start(p);
-                    proc.WaitForExit();
-                }
-                var info = new FileInfo(picPath);
-                if (info.Length > 0)
-                {
-                    File.Copy(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", true);
-                    info = new FileInfo(Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg");
-                    if (info.Length / 1024 > 256)
+                    if (!typeof(IOutputProvider).IsAssignableFrom(op.Instance.GetType())) continue;
+                    //wrap each in a try/catch block so we avoid killing pulse on error
+                    try
                     {
-                        PictureManager.ReduceQuality(App.Path + "\\Cache\\" + PictureManager.CurrentPicture.Id + ".jpg", Environment.SystemDirectory + "\\oobe\\info\\backgrounds\\backgroundDefault.jpg", 90);
+                        ((IOutputProvider)op.Instance).ProcessPicture(pic);
+                    }
+                    catch(Exception ex) {
+                        Log(string.Format("Error processing output plugin '{0}'.  Error: {1}", op.ProviderName, ex.ToString()));
                     }
                 }
             }
 
-
             var stream = GetResourceStream(new Uri("/Pulse;component/Resources/icon_small.ico", UriKind.Relative)).Stream;
             trayIcon.Icon = new Icon(stream);
-            stream.Close();
+            stream.Close();            
         }
 
         void PictureManager_PictureDownloading()
