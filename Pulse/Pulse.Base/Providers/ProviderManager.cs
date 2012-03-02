@@ -9,16 +9,38 @@ namespace Pulse.Base
 {
     public class ProviderManager
     {
-        public IProvider CurrentProvider { get; set; }
+        public static ProviderManager Instance
+        {
+            get
+            {
+                if (_Instance == null) _Instance = new ProviderManager();
 
-        public Dictionary<string,Type> Providers { 
-            get{
+                return _Instance;
+            }
+        }
+
+        private static ProviderManager _Instance;
+
+        public Dictionary<string, Type> Providers
+        {
+            get
+            {
                 if (_Providers == null) { _Providers = FindProviders(); }
                 return _Providers;
             }
         }
 
         private Dictionary<string, Type> _Providers;
+
+        private ProviderManager()
+        {
+
+        }
+
+        public Dictionary<string, Type> GetProvidersByType<T>() where T : IProvider
+        {
+            return Providers.Where(type => typeof(T).IsAssignableFrom(type.Value)).ToDictionary(type => type.Key, type => type.Value);
+        }
 
         private Dictionary<string, Type> FindProviders()
         {
@@ -29,14 +51,14 @@ namespace Pulse.Base
             //if no providers directory, return
             if (!Directory.Exists(providersDirectory)) return result;
 
-
+            //get dll's in provider directory, if none found return empty results
             var files = from x in Directory.GetFiles(providersDirectory)
-                        where x.EndsWith(".dll")
+                        where x.EndsWith(".dll") || x.EndsWith(".exe")
                         select x;
 
             if (files.Count() == 0) return result;
 
-            //for each providers dll look through the classes for ones that implement iProvider
+            //for each providers dll look through the classes for ones that implement the passed in type
             foreach (var f in files)
             {
                 var assembly = Assembly.LoadFrom(f);
@@ -46,10 +68,6 @@ namespace Pulse.Base
 
                 foreach (Type ipType in providerType)
                 {
-                    ////get the type and initialize it
-                    //var aProv = Activator.CreateInstance(ipType) as IProvider;
-                    //aProv.Initialize();
-
                     //look for a description attribute on the class to use as the name
                     var strName = System.IO.Path.GetFileNameWithoutExtension(f);
                     var attrDescription = ipType.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
@@ -68,18 +86,30 @@ namespace Pulse.Base
 
         public IProvider InitializeProvider(string name)
         {
+            return InitializeProvider(name, null);
+        }
+
+        public IProvider InitializeProvider(string name, params object[] activationArgs)
+        {
             var ipType = Providers[name];
 
             if (ipType == null) return null;
 
-            return InitializeProvider(ipType);
+            return InitializeProvider(ipType, activationArgs);
         }
 
         public static IProvider InitializeProvider(Type ipType)
         {
+            return InitializeProvider(ipType, null);
+        }
+
+        public static IProvider InitializeProvider(Type ipType, params object[] activationArgs)
+        {
             if (ipType == null) return null;
 
             var aProv = Activator.CreateInstance(ipType) as IProvider;
+            if (activationArgs != null) aProv.Activate(activationArgs);
+
             aProv.Initialize();
 
             return aProv;
@@ -100,6 +130,19 @@ namespace Pulse.Base
 
             if (ipType == null) return null;
 
+            //Find any instances of the user control definition attribute on the class
+            var attrConfig = ipType.GetCustomAttributes(typeof(ProviderConfigurationUserControlAttribute), false);
+
+            //if none found, return null
+            if (attrConfig.Length == 0) return null;
+
+            Type tConfit = (attrConfig[0] as ProviderConfigurationUserControlAttribute).UserControlType;
+
+            return tConfit;
+        }
+
+        public static Type HasConfigurationWindow(Type ipType)
+        {
             //Find any instances of the user control definition attribute on the class
             var attrConfig = ipType.GetCustomAttributes(typeof(ProviderConfigurationUserControlAttribute), false);
 

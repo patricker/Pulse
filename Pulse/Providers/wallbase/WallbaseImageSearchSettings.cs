@@ -5,13 +5,46 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Windows;
 using System.Drawing;
+using System.Security.Cryptography;
+using System.Net;
+using Pulse.Base;
 
 namespace wallbase
 {
     public class WallbaseImageSearchSettings : Pulse.Base.XmlSerializable<WallbaseImageSearchSettings>
     {
+        private const string Url = "http://wallbase.cc/{0}/";
+
+        //authentication info
+        public string Username { get; set; }
+        [XmlIgnore()]
+        public string Password { get; set; }
+
+        [XmlIgnore()]
+        public CookieContainer Cookies { get; set; }
+
+        [XmlElement("Password")]
+        public string xmlPassword {
+            get { return Pulse.Base.GeneralHelper.Protect(Password); }
+            set {
+                //don't mess with empty passwords
+                if (string.IsNullOrEmpty(value)) return;
+                //if there is a password try to unprotect it
+                Password = Pulse.Base.GeneralHelper.Unprotect(value); } 
+        }
+
         //search location
         public string SA { get; set; }
+
+        //categories
+        public bool WG { get; set; }
+        public bool W { get; set; }
+        public bool HR { get; set; }
+
+        //Purity
+        public bool SFW { get; set; }
+        public bool SKETCHY { get; set; }
+        public bool NSFW { get; set; }
 
         //color, used for color searches (color searching is only available with "Search" type
         [XmlIgnore()]
@@ -24,6 +57,8 @@ namespace wallbase
             set { Color = ColorTranslator.FromHtml(value); }
         }
 
+        //collection ID for collection searches
+        public string CollectionID { get; set; }
 
         //Image sizing information
         public string SO { get; set; }
@@ -38,14 +73,99 @@ namespace wallbase
         {
             SA = "search";
 
+            WG = true;
+            W = true;
+
+            SFW = true;
+
             SO = "gteq";
-            ImageWidth = (int)SystemParameters.PrimaryScreenWidth;
-            ImageHeight = (int)SystemParameters.PrimaryScreenHeight;
+            ImageWidth = PictureManager.PrimaryScreenResolution.First;
+            ImageHeight = PictureManager.PrimaryScreenResolution.Second;
 
             OB = "relevance";
             OBD = "desc";
 
             Color = System.Drawing.Color.Empty;
+        }
+
+        public string BuildPurityString()
+        {
+            return Convert.ToInt32(SFW).ToString() +
+                Convert.ToInt32(SKETCHY).ToString() +
+                Convert.ToInt32(NSFW).ToString();
+        }
+
+        public string BuildCategoryString()
+        {
+            return (WG ? "2" : "") +
+                (W ? "1" : "") +
+                (HR ? "3":"");
+        }
+
+        public string BuildResolutionString()
+        {
+            return ImageHeight > 0 && ImageWidth > 0 ? ImageWidth.ToString() + "x" + ImageHeight.ToString() : "0";
+        }
+
+        public string BuildURL()
+        {
+            string areaURL = string.Format(Url, SA);
+            var resolutionString = BuildResolutionString();
+            var pageSize = GetPageSize();
+
+            //Search uses the post params, but random, top list, & collections do not
+            // random includes the options in the URL string
+            if (SA != "search")
+            {
+                //toplist put's it's page index before the categories
+                if (SA == "toplist")
+                {
+                    //prepend placeholder for page number.  With toplist there is always a page numer (starting at 0, multiplied by item per page count)s
+                    areaURL += "{0}/" + string.Format("{4}/{0}/{1}/0/{3}/{2}/3d", SO, resolutionString, pageSize.ToString(), BuildPurityString(), BuildCategoryString());
+                }
+                else if (SA == "random")
+                {
+                    //random does not need paging, we just reload the random page time and time again
+                    areaURL += string.Format("{4}/{0}/{1}/0/{3}/{2}", SO, resolutionString, pageSize.ToString(), BuildPurityString(), BuildCategoryString());
+                }
+                else if (SA == "user/collection")
+                {
+                    areaURL += string.Format("{0}/{1}/0", CollectionID, Convert.ToInt32(NSFW).ToString());
+                }
+            }
+            else
+            {
+                //if there is a color option and SA = search then add
+                if (SA == "search" && Color != System.Drawing.Color.Empty)
+                {
+                    areaURL += string.Format("color/{0}/{1}/{2}/", Color.R.ToString(), Color.G.ToString(), Color.B.ToString());
+                }
+
+                //place holder for page number
+                areaURL += "{0}";
+            }
+
+            return areaURL;
+        }
+
+        public int GetPageSize()
+        {
+            //override page size, since user collections dont' seem to be changeable from 32
+            if (SA == "user/collection") return 32;
+            //if not user collection then max size
+            return 60;
+        }
+
+        public string GetPostParams(string search)
+        {
+            string postParams = string.Empty;
+            
+            if(SA=="search") {
+            postParams = string.Format("query={0}&board={7}&nsfw={6}&res_opt={2}&res={3}&aspect=0&orderby={4}&orderby_opt={5}&thpp={1}&section=wallpapers",
+                search, GetPageSize().ToString(), SO, BuildResolutionString(), OB, OBD, BuildPurityString(), BuildCategoryString());
+            }
+
+            return postParams;
         }
 
         public class SearchArea
@@ -60,6 +180,7 @@ namespace wallbase
                 sa.Add(new SearchArea() { Name = "Search", Value = "search" });
                 sa.Add(new SearchArea() { Name = "Top List", Value = "toplist" });
                 sa.Add(new SearchArea() { Name = "Random", Value = "random" });
+                sa.Add(new SearchArea() { Name = "Collection", Value = "user/collection" });
 
                 return sa;
             }

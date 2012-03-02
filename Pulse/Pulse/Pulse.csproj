@@ -74,7 +74,6 @@
     <Compile Include="ProviderSettingsWindow.xaml.cs">
       <DependentUpon>ProviderSettingsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Settings.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

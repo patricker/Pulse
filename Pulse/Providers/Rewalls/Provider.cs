@@ -13,7 +13,7 @@ using Pulse.Base;
 namespace Rewalls
 {
     [System.ComponentModel.Description("Rewalls")]
-    public class Provider : IProvider
+    public class Provider : IInputProvider
     {
         private WebClient webClient;
 
@@ -32,6 +32,10 @@ namespace Rewalls
             webClient.Headers["User-Agent"] =
                 "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 8.0) (compatible; MSIE 8.0; Windows NT 5.1;)";
         }
+
+        public void Activate(object args) { }
+        public void Deactivate(object args) { }
+
 
         public PictureList GetPictures(PictureSearch ps)
         {

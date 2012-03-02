@@ -11,7 +11,7 @@ namespace GoogleImages
 {
     [ProviderConfigurationUserControl(typeof(ProviderPreferences))]
     [System.ComponentModel.Description("Google Images")]
-    public class Provider : IProvider
+    public class Provider : IInputProvider
     {
         private Regex imagesRegex2 = new Regex(@"(imgurl=)(?<imgurl>http[^&>]*)([>&]{1})");
         private string baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}{1}&start={2}";
@@ -24,6 +24,10 @@ namespace GoogleImages
         {
             //nothing to do here
         }
+
+        public void Activate(object args) { }
+        public void Deactivate(object args) { }
+
 
         public PictureList GetPictures(PictureSearch ps)
         {

@@ -13,9 +13,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallbase", "Providers\wallb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleImages", "Providers\GoogleImages\GoogleImages.csproj", "{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Input", "Input", "{C42469DC-7D87-4BDF-84B8-3FF5316BBB72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Output", "Output", "{A5762A8E-6988-4832-9606-DB53FE1635FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogonBackground", "Providers\LogonBackground\LogonBackground.csproj", "{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalDirectory", "Providers\LocalDirectory\LocalDirectory.csproj", "{624D0297-58E5-4EA7-9FDC-8FA03E82770C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperSetter", "Providers\WallpaperSetter\WallpaperSetter.csproj", "{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 9
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -37,6 +47,18 @@ Global
 		SccProjectTopLevelParentUniqueName5 = Pulse.sln
 		SccProjectName5 = Providers/GoogleImages
 		SccLocalPath5 = Providers\\GoogleImages
+		SccProjectUniqueName6 = Providers\\LogonBackground\\LogonBackground.csproj
+		SccProjectTopLevelParentUniqueName6 = Pulse.sln
+		SccProjectName6 = Providers/LogonBackground
+		SccLocalPath6 = Providers\\LogonBackground
+		SccProjectUniqueName7 = Providers\\LocalDirectory\\LocalDirectory.csproj
+		SccProjectTopLevelParentUniqueName7 = Pulse.sln
+		SccProjectName7 = Providers/LocalDirectory
+		SccLocalPath7 = Providers\\LocalDirectory
+		SccProjectUniqueName8 = Providers\\WallpaperSetter\\WallpaperSetter.csproj
+		SccProjectTopLevelParentUniqueName8 = Pulse.sln
+		SccProjectName8 = Providers/WallpaperSetter
+		SccLocalPath8 = Providers\\WallpaperSetter
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,13 +119,48 @@ Global
 		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|x86.ActiveCfg = Release|Any CPU
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|x86.ActiveCfg = Debug|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|x86.Build.0 = Debug|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Any CPU.ActiveCfg = Release|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Mixed Platforms.Build.0 = Release|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|x86.ActiveCfg = Release|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|x86.Build.0 = Release|x86
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C}.Release|x86.ActiveCfg = Release|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9014327D-43C7-4C75-AE6D-AFDC48670035} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
-		{921F5326-5B28-462D-8220-3D3507438C27} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
-		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
+		{C42469DC-7D87-4BDF-84B8-3FF5316BBB72} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
+		{A5762A8E-6988-4832-9606-DB53FE1635FC} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
+		{921F5326-5B28-462D-8220-3D3507438C27} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{9014327D-43C7-4C75-AE6D-AFDC48670035} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{624D0297-58E5-4EA7-9FDC-8FA03E82770C} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
+		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 	EndGlobalSection
 EndGlobal

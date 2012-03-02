@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.Windows;
+using Pulse.Base;
 
 namespace GoogleImages
 {
@@ -22,8 +23,8 @@ namespace GoogleImages
         public string Color { get; set; }
 
         public GoogleImageSearchSettings(){
-           ImageWidth = (int)SystemParameters.PrimaryScreenWidth;
-           ImageHeight = (int)SystemParameters.PrimaryScreenHeight;
+           ImageWidth = PictureManager.PrimaryScreenResolution.First;
+           ImageHeight = PictureManager.PrimaryScreenResolution.Second;
         }
 
         public class GoogleImageColors

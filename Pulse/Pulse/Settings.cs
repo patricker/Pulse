@@ -21,7 +21,18 @@ namespace Pulse
             PreFetch = false;
             MaxPictureDownloadCount = 100;
             CachePath = Path.Combine(App.Path, "Cache");
-            ProviderSettings = new SerializableDictionary<string, string>();
+            ProviderSettings = new SerializableDictionary<string, ActiveProviderInfo>();
+            DownloadOnAppStartup = false;
+
+            //set wallpaper changer as a default provider for output
+            ProviderSettings.Add("Desktop Wallpaper", new ActiveProviderInfo()
+            {
+                Active = true,
+                AsyncOK = false,
+                ExecutionOrder = 1,
+                ProviderConfig = string.Empty,
+                ProviderName = "Desktop Wallpaper"
+            });
 
             switch (DateTime.Now.Month)
             {
@@ -46,8 +57,6 @@ namespace Pulse
                     Search = Properties.Resources.Autumn;
                     break;
             }
-
-            ChangeLogonBg = false;
         }
 
         public string Provider { get; set; }
@@ -57,12 +66,12 @@ namespace Pulse
         public List<string> BannedImages { get; set; }
         
         public bool DownloadAutomatically { get; set; }
+        public bool DownloadOnAppStartup { get; set; }
         public double RefreshInterval { get; set; }
         public bool PreFetch { get; set; }
         public int MaxPictureDownloadCount { get; set; }
         public string CachePath { get; set; }
 
-        public bool ChangeLogonBg { get; set; }
 
         public string Language { get; set; }
         
@@ -70,7 +79,7 @@ namespace Pulse
         public bool ClearOldPics { get; set; }
 
         //provider settings
-        public SerializableDictionary<string, string> ProviderSettings { get; set; }
+        public SerializableDictionary<string, ActiveProviderInfo> ProviderSettings { get; set; }
 
 
         //read-only split filtered words

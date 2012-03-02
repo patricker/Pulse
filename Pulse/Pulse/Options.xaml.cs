@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -25,9 +26,15 @@ namespace Pulse
     /// </summary>
     public partial class Options : Window
     {
+        public ObservableCollection<ActiveProviderInfo> OutputProviderInfos
+        {
+            get { return _OutputProviderInfos; }
+        }
+
         public event EventHandler UpdateSettings;
         private readonly List<string> langCodes = new List<string>();
         private string _tempProviderConfig = string.Empty;
+        ObservableCollection<ActiveProviderInfo> _OutputProviderInfos = new ObservableCollection<ActiveProviderInfo>();
 
         public Options()
         {
@@ -36,14 +43,6 @@ namespace Pulse
 
         private void WindowSourceInitialized(object sender, EventArgs e)
         {
-            var handle = new WindowInteropHelper(this).Handle;
-
-            var margins = new WinAPI.Margins { cyTopHeight = 34 };
-
-            HwndSource.FromHwnd(handle).CompositionTarget.BackgroundColor = Color.FromArgb(0, 0, 0, 0);
-
-            Dwm.ExtendGlassFrame(handle, ref margins);
-
             var fileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
             BuildTag.Text = Assembly.GetExecutingAssembly().GetName().Version + ".beta." + fileInfo.LastWriteTimeUtc.ToString("yyMMdd-HHmm");
 
@@ -51,6 +50,7 @@ namespace Pulse
                 SearchBox.Text = App.Settings.Search;
 
             AutoDownloadCheckBox.IsChecked = App.Settings.DownloadAutomatically;
+            DownloadOnStartCheckBox.IsChecked = App.Settings.DownloadOnAppStartup;
             if (App.Settings.RefreshInterval != 1)
                 RefreshIntervalSlider.Value = App.Settings.RefreshInterval;
             else
@@ -77,21 +77,16 @@ namespace Pulse
             ClearCacheCheckBox.IsChecked = App.Settings.ClearOldPics;
             ClearIntervalSlider.Value = App.Settings.ClearInterval;
 
-            FilterBox.Text = App.Settings.Filter;
 
-            if (Environment.OSVersion.Version.Major < 6 || Environment.OSVersion.Version.Minor < 1)
-                ChangeLogonBgCheckBox.Visibility = System.Windows.Visibility.Collapsed;
-            ChangeLogonBgCheckBox.IsChecked = App.Settings.ChangeLogonBg;
+            //if (Environment.OSVersion.Version.Major < 6 || Environment.OSVersion.Version.Minor < 1)
+            //    ChangeLogonBgCheckBox.Visibility = System.Windows.Visibility.Collapsed;
+            //ChangeLogonBgCheckBox.IsChecked = App.Settings.ChangeLogonBg;
 
-            if (App.Settings.Language != "ru-RU")
+            //input providers
+            var inputProviders = ProviderManager.Instance.GetProvidersByType<IInputProvider>();
+            if (inputProviders.Count > 0)
             {
-                FilterPanel.Visibility = System.Windows.Visibility.Collapsed;
-            }
-
-
-            if (App.PictureManager != null && App.ProviderManager.Providers != null)
-            {
-                foreach (var p in App.ProviderManager.Providers)
+                foreach (var p in inputProviders)
                 {
                     ProvidersBox.Items.Add(p.Key);
                 }
@@ -101,7 +96,47 @@ namespace Pulse
                 HandleProviderSettingsEnableAndLoad();
             }
 
+            //output providers
+            foreach (var op in ProviderManager.Instance.GetProvidersByType<IOutputProvider>())
+            {
+                if (App.Settings.ProviderSettings.ContainsKey(op.Key))
+                {
+                    var ep = App.Settings.ProviderSettings[op.Key];
+
+                    _OutputProviderInfos.Add(new ActiveProviderInfo()
+                    {
+                        Active = ep.Active,
+                        AsyncOK = ep.AsyncOK,
+                        ExecutionOrder = ep.ExecutionOrder,
+                        ProviderConfig = ep.ProviderConfig,
+                        ProviderName = ep.ProviderName
+                    });
+                }
+                else
+                {
+                    _OutputProviderInfos.Add(new ActiveProviderInfo()
+                    {
+                        Active = false,
+                        AsyncOK = false,
+                        ExecutionOrder = 0,
+                        ProviderConfig = string.Empty,
+                        ProviderName = op.Key
+                    });
+                }
+            }
+
+            //sort
+            SortOutputProviders();
+
             ApplyButton.IsEnabled = false;
+        }
+
+        private void SortOutputProviders()
+        {
+            _OutputProviderInfos = new ObservableCollection<ActiveProviderInfo>(
+                _OutputProviderInfos.OrderBy(x => x.Active)
+                .ThenBy(x => x.ExecutionOrder)
+                .ThenBy(x => x.ProviderName));
         }
 
         private void OkButtonClick(object sender, RoutedEventArgs e)
@@ -133,21 +168,13 @@ namespace Pulse
             // on some sites searching with no query is fine
             App.Settings.Search = SearchBox.Text == Properties.Resources.OptionsSearchBox ? "":SearchBox.Text;
             App.Settings.DownloadAutomatically = (bool)AutoDownloadCheckBox.IsChecked;
+            App.Settings.DownloadOnAppStartup = (bool)DownloadOnStartCheckBox.IsChecked;
             App.Settings.ClearOldPics = (bool)ClearCacheCheckBox.IsChecked;
             App.Settings.ClearInterval = (int)ClearIntervalSlider.Value;
-            App.Settings.Filter = FilterBox.Text;
-            if (!string.IsNullOrEmpty(ProvidersBox.Text))
-                App.Settings.Provider = ProvidersBox.Text;
 
             //set pre-fetch flag
             App.Settings.PreFetch = (bool)PreFetchCheckBox.IsChecked;
-
-            //save provider config if it exists
-            if (!string.IsNullOrEmpty(_tempProviderConfig))
-            {
-                App.Settings.ProviderSettings[App.Settings.Provider] = _tempProviderConfig;
-            }
-
+            
             if (RefreshIntervalSlider.Value > 0)
                 App.Settings.RefreshInterval = RefreshIntervalSlider.Value;
             else
@@ -156,33 +183,70 @@ namespace Pulse
             if (LanguageComboBox.SelectedIndex >= 0)
                 App.Settings.Language = langCodes[LanguageComboBox.SelectedIndex];
 
-            if (App.Settings.ChangeLogonBg != (bool)ChangeLogonBgCheckBox.IsChecked)
+            //Input provider settings (only if provider changed)
+            if (!string.IsNullOrEmpty(ProvidersBox.Text) && App.Settings.Provider != ProvidersBox.Text)
             {
-                App.Settings.ChangeLogonBg = (bool)ChangeLogonBgCheckBox.IsChecked;
-                //HKLM\Software\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background
-                if (App.Settings.ChangeLogonBg)
+                //deactivate the old provider
+                App.Settings.ProviderSettings.Remove(App.Settings.Provider);
+                
+                //set new provider
+                App.Settings.Provider = ProvidersBox.Text;
+            
+                //initialize the new provider
+                App.CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(App.Settings.Provider);
+            }
+
+            //save provider config if it exists
+            if (!string.IsNullOrEmpty(_tempProviderConfig))
+            {
+                if (!App.Settings.ProviderSettings.ContainsKey(App.Settings.Provider))
                 {
-                    var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/enableoembg" };
-                    Process.Start(p);
+                    App.Settings.ProviderSettings[App.Settings.Provider] = new ActiveProviderInfo() { 
+                        Active=true, AsyncOK = false, 
+                        ExecutionOrder = 0, ProviderConfig = _tempProviderConfig, 
+                        ProviderName = App.Settings.Provider};
                 }
                 else
                 {
-                    var p = new ProcessStartInfo { Verb = "runas", FileName = Assembly.GetExecutingAssembly().Location, Arguments = "/disableoembg" };
-                    Process.Start(p);
+                    App.Settings.ProviderSettings[App.Settings.Provider].ProviderConfig = _tempProviderConfig;
                 }
             }
 
-            if (App.PictureManager != null && App.ProviderManager.Providers != null)
+            //save output providers
+            foreach (ActiveProviderInfo api in OutputProviderInfos)
             {
-                foreach (KeyValuePair<string, Type> p in App.ProviderManager.Providers)
+                if (App.Settings.ProviderSettings.ContainsKey(api.ProviderName))
                 {
-                    if (p.Key == App.Settings.Provider && App.CurrentProvider.GetType() != p.Value)
+                    //check if the existing item is different then the previous
+                    if (App.Settings.ProviderSettings[api.ProviderName].GetComparisonHashCode() != api.GetComparisonHashCode())
                     {
-                        App.CurrentProvider = App.ProviderManager.InitializeProvider(p.Key);
+                        //since they are different check if we deactivated or just changed a setting
+                        if (api.Active)
+                        {
+                            App.Settings.ProviderSettings[api.ProviderName] = api;
+                        }
+                        else
+                        {
+                            //validate that active state has changed, if it has then deactivate
+                            if (App.Settings.ProviderSettings[api.ProviderName].Active != api.Active)
+                            {
+                                App.Settings.ProviderSettings[api.ProviderName].Instance.Deactivate(null);
+                            }
+
+                            App.Settings.ProviderSettings.Remove(api.ProviderName);
+                        }
                     }
                 }
+                else if (api.Active)
+                {
+                    App.Settings.ProviderSettings.Add(api.ProviderName, api);
+
+                    //activate new provider
+                    api.Instance.Activate(null);
+                }
             }
 
+            //save config file
             App.Settings.Save(App.Path + "\\settings.conf");
 
             if (UpdateSettings != null)
@@ -190,6 +254,12 @@ namespace Pulse
                 UpdateSettings(null, EventArgs.Empty);
             }
         }
+
+        private void OutputProvidersCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            ApplyButton.IsEnabled = true;
+        }
+
 
         private void SearchBoxIsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -283,12 +353,12 @@ namespace Pulse
         private void HandleProviderSettingsEnableAndLoad()
         {
             //enable or disable settings button depending on settings availability
-            ProviderSettings.IsEnabled = (ProvidersBox.SelectedValue != null) && App.ProviderManager.HasConfigurationWindow(ProvidersBox.SelectedValue.ToString()) != null;
+            ProviderSettings.IsEnabled = (ProvidersBox.SelectedValue != null) && ProviderManager.Instance.HasConfigurationWindow(ProvidersBox.SelectedValue.ToString()) != null;
 
             //load provider config from settings if it exists
             if (ProvidersBox.SelectedValue != null && App.Settings.ProviderSettings.ContainsKey(ProvidersBox.SelectedValue.ToString()))
             {
-                _tempProviderConfig = App.Settings.ProviderSettings[ProvidersBox.SelectedValue.ToString()];
+                _tempProviderConfig = App.Settings.ProviderSettings[ProvidersBox.SelectedValue.ToString()].ProviderConfig;
             }
             else { _tempProviderConfig = string.Empty; }
         }
@@ -305,7 +375,7 @@ namespace Pulse
         private void ProviderSettings_Click(object sender, RoutedEventArgs e)
         {
             //get the usercontrol instance from Provider Manager
-            var initSettings = App.ProviderManager.InitializeConfigurationWindow(ProvidersBox.SelectedValue.ToString());
+            var initSettings = ProviderManager.Instance.InitializeConfigurationWindow(ProvidersBox.SelectedValue.ToString());
             if (initSettings == null) return;
 
             //dialog window which will house the user control

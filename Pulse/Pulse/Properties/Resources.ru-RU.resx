@@ -174,6 +174,9 @@
   <data name="OptionsDownloadAutomatically" xml:space="preserve">
     <value>Загружать изображения автоматически</value>
   </data>
+  <data name="OptionsDownloadOnStart" xml:space="preserve">
+    <value>Download Picture on Startup</value>
+  </data>
   <data name="OptionsFilter" xml:space="preserve">
     <value>Фильтр</value>
   </data>
@@ -212,6 +215,9 @@
   </data>
   <data name="OptionsOlder" xml:space="preserve">
     <value>Старше</value>
+  </data>
+  <data name="OptionsOutputs" xml:space="preserve">
+    <value>Outputs</value>
   </data>
   <data name="OptionsPreFetch" xml:space="preserve">
     <value>Pre Fetch</value>

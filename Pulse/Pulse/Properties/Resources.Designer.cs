@@ -232,6 +232,15 @@ namespace Pulse.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change picture on startup.
+        /// </summary>
+        public static string OptionsDownloadOnStart {
+            get {
+                return ResourceManager.GetString("OptionsDownloadOnStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filter.
         /// </summary>
         public static string OptionsFilter {
@@ -345,6 +354,15 @@ namespace Pulse.Properties {
         public static string OptionsOlder {
             get {
                 return ResourceManager.GetString("OptionsOlder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outputs.
+        /// </summary>
+        public static string OptionsOutputs {
+            get {
+                return ResourceManager.GetString("OptionsOutputs", resourceCulture);
             }
         }
         

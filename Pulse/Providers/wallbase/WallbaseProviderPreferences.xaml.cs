@@ -29,13 +29,27 @@ namespace wallbase
         public override void LoadConfiguration(string config) {
             wiss = string.IsNullOrEmpty(config) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(config);
 
+            txtUserID.Text = wiss.Username;
+            txtPassword.Password = wiss.Password;
+
             cbArea.SelectedValue = wiss.SA;
+
+            cbWG.IsChecked = wiss.WG;
+            cbW.IsChecked = wiss.W;
+            cbHR.IsChecked = wiss.HR;
+
+            cbSFW.IsChecked = wiss.SFW;
+            cbSketchy.IsChecked = wiss.SKETCHY;
+            cbNSFW.IsChecked = wiss.NSFW;
+
             cbImageSizeType.SelectedValue = wiss.SO;
             cbOrderBy.SelectedValue = wiss.OB;
             cbOrderByDirection.SelectedValue = wiss.OBD;
 
             txtWidth.Text = wiss.ImageWidth.ToString();
             txtHeight.Text = wiss.ImageHeight.ToString();
+
+            txtCollectionID.Text = wiss.CollectionID;
 
             if (wiss.Color != System.Drawing.Color.Empty)
             {
@@ -47,6 +61,17 @@ namespace wallbase
 
         public override string SaveConfiguration()
         {
+            wiss.Username = txtUserID.Text;
+            wiss.Password = txtPassword.Password;
+
+            wiss.WG = cbWG.IsChecked.Value;
+            wiss.W = cbW.IsChecked.Value;
+            wiss.HR = cbHR.IsChecked.Value;
+
+            wiss.SFW = cbSFW.IsChecked.Value;
+            wiss.SKETCHY = cbSketchy.IsChecked.Value;
+            wiss.NSFW = cbNSFW.IsChecked.Value;
+
             wiss.SA = cbArea.SelectedValue.ToString();
             wiss.SO = cbImageSizeType.SelectedValue.ToString();
             wiss.OB = cbOrderBy.SelectedValue.ToString();
@@ -63,6 +88,8 @@ namespace wallbase
             {
                 wiss.Color = System.Drawing.Color.Empty;
             }
+
+            wiss.CollectionID = txtCollectionID.Text;
 
             return wiss.Save();
         }
