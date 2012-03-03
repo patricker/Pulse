@@ -248,11 +248,16 @@ namespace Pulse.Base
                 wcLocal.DownloadFileCompleted += ClientDownloadFileCompleted;
             }
 
-            if (async) wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath, pic);
-            else {
-                wcLocal.DownloadFile(new Uri(pic.Url), picturePath);
-                PictureDownloaded(pic);
-            }            
+            try
+            {
+                if (async) wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath, pic);
+                else
+                {
+                    wcLocal.DownloadFile(new Uri(pic.Url), picturePath);
+                    PictureDownloaded(pic);
+                }
+            }
+            catch { }
         }
 
         void ClientDownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
