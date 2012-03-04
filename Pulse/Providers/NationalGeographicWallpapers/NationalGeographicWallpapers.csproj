@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{624D0297-58E5-4EA7-9FDC-8FA03E82770C}</ProjectGuid>
+    <ProjectGuid>{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LocalDirectory</RootNamespace>
-    <AssemblyName>LocalDirectory</AssemblyName>
+    <RootNamespace>NationalGeographicWallpapers</RootNamespace>
+    <AssemblyName>NationalGeographicWallpapers</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -43,9 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LocalDirectorySettings.cs" />
+    <Compile Include="NationalGeographicProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj">

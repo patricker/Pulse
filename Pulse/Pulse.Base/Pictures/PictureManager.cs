@@ -150,7 +150,7 @@ namespace Pulse.Base
                 var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.SearchProvider.GetType().ToString() + ".xml");
 
                 //check if we should load from file
-                if((Pictures == null || (Pictures != null && ps.GetSearchHash() != Pictures.SearchSettingsHash)) && File.Exists(fPath))
+                if((Pictures != null && ps.GetSearchHash() != Pictures.SearchSettingsHash) && File.Exists(fPath))
                 {
                     try
                     {
@@ -221,7 +221,8 @@ namespace Pulse.Base
         public void GetPicture(Picture pic, string saveFolder, bool hookEvent, bool async)
         {
             //check if the requested image exists, if it does then fire event if needed and return
-            var picturePath = Path.Combine(saveFolder, pic.Id + ".jpg");
+            //if image already has a local path then use it (just what we need for local provider where images are not stored in cache).
+            var picturePath = string.IsNullOrEmpty(pic.LocalPath) ? Path.Combine(saveFolder, pic.Id + ".jpg") : pic.LocalPath;
             pic.LocalPath = picturePath;
 
             var fi = new FileInfo(picturePath);
