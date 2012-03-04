@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
+using Pulse.Base;
 
 namespace NASAAPOD
 {
@@ -24,15 +25,24 @@ namespace NASAAPOD
             Regex regPic = new Regex("<IMG SRC=\"(?<picURL>image.*)\"");
             var matches = reg.Matches(pg);
 
-            var pl = new Pulse.Base.PictureList();
+            var pl = new Pulse.Base.PictureList() { FetchDate = DateTime.Now };
 
-            for (int i = 0; i < ps.MaxPictureCount; i++)
-            {
-                var photoPage = wc.DownloadString("http://apod.nasa.gov/apod/" + matches[i].Groups["picPage"].Value);
-                var photoURL = regPic.Match(photoPage).Groups["picURL"].Value;
+            //if max picture count is 0, then no maximum, else specified max
+            var maxPictureCount = ps.MaxPictureCount > 0 ? (ps.MaxPictureCount + ps.BannedURLs.Where(u => u.StartsWith("http://apod.nasa.gov/apod/")).Count()) : int.MaxValue;
+            maxPictureCount = Math.Min(matches.Count, maxPictureCount);
 
-                pl.Pictures.Add(new Pulse.Base.Picture() { Url = "http://apod.nasa.gov/apod/" + photoURL, Id = System.IO.Path.GetFileNameWithoutExtension(photoURL) });
-            }
+            //counts might be a bit off in the event of bannings, but hopefully it won't be too far off.
+            var matchesToGet = (from Match c in matches select c)
+                .OrderBy(x => Guid.NewGuid())
+                .Take(maxPictureCount);
+
+            //build url's, skip banned items, randomly sort the items and only bring back the desired number
+            // all in one go
+            pl.Pictures.AddRange((from Match c in matchesToGet
+                                 let photoPage = new WebClient().DownloadString("http://apod.nasa.gov/apod/" + c.Groups["picPage"].Value)
+                                 let photoURL = "http://apod.nasa.gov/apod/" + regPic.Match(photoPage).Groups["picURL"].Value
+                                 where !ps.BannedURLs.Contains(photoURL)
+                                 select new Picture() {Url = photoURL, Id=System.IO.Path.GetFileNameWithoutExtension(photoURL)}));
 
             return pl;
         }

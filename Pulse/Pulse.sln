@@ -27,9 +27,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AeroGlassChanger", "Provide
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NASAAPOD", "Providers\NASAAPOD\NASAAPOD.csproj", "{F55894BE-FD6B-4C97-8C7E-520BB45D1094}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NationalGeographicWallpapers", "Providers\NationalGeographicWallpapers\NationalGeographicWallpapers.csproj", "{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 11
+		SccNumberOfProjects = 12
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -71,6 +73,10 @@ Global
 		SccProjectTopLevelParentUniqueName10 = Pulse.sln
 		SccProjectName10 = Providers/NASAAPOD
 		SccLocalPath10 = Providers\\NASAAPOD
+		SccProjectUniqueName11 = Providers\\NationalGeographicWallpapers\\NationalGeographicWallpapers.csproj
+		SccProjectTopLevelParentUniqueName11 = Pulse.sln
+		SccProjectName11 = Providers/NationalGeographicWallpapers
+		SccLocalPath11 = Providers\\NationalGeographicWallpapers
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +187,16 @@ Global
 		{F55894BE-FD6B-4C97-8C7E-520BB45D1094}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F55894BE-FD6B-4C97-8C7E-520BB45D1094}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F55894BE-FD6B-4C97-8C7E-520BB45D1094}.Release|x86.ActiveCfg = Release|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,6 +209,7 @@ Global
 		{9014327D-43C7-4C75-AE6D-AFDC48670035} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{624D0297-58E5-4EA7-9FDC-8FA03E82770C} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{F55894BE-FD6B-4C97-8C7E-520BB45D1094} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 		{DE533383-3E9D-494B-855F-89A00E31AEEB} = {A5762A8E-6988-4832-9606-DB53FE1635FC}

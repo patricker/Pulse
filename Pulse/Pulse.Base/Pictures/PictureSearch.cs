@@ -10,6 +10,16 @@ namespace Pulse.Base
         //provider to use for search
         [System.Xml.Serialization.XmlIgnore()]
         public IInputProvider SearchProvider { get; set; }
+        //for serialization
+        public string SearchProviderXML
+        {
+            get
+            {
+                return SearchProvider.GetType().ToString();
+            }
+            set { }
+        }
+
         //search query
         public string SearchString {get; set; }
         //ignored works (not supported by all providers
