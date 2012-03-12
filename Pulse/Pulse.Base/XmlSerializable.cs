@@ -13,9 +13,16 @@ namespace Pulse.Base
     {
         public virtual void Save(string path)
         {
-            using (FileStream f = File.Create(path))
+            try
             {
-                Save(f);
+                using (FileStream f = File.Create(path))
+                {
+                    Save(f);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write(string.Format("Error saving object of type '{0}' to file '{1}'. Error Details: {2}", typeof(T).ToString(), path, ex.ToString()), Log.LoggerLevels.Errors);
             }
         }
 
@@ -84,6 +91,8 @@ namespace Pulse.Base
             }
             catch (Exception ex)
             {
+                Log.Logger.Write(string.Format("Error loading object from XML. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+
             }
 
             return result;

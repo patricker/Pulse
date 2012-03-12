@@ -53,6 +53,7 @@
     <Compile Include="HttpUtility.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Log.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Providers\ActiveProviderInfo.cs" />
     <Compile Include="GeneralHelper.cs" />

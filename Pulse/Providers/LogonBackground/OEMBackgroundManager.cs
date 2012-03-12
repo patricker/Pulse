@@ -73,7 +73,9 @@ namespace LogonBackground
 
                 //delete any existing files
                 try { File.Delete(outPutFile); }
-                catch { }
+                catch(Exception ex) {
+                    Log.Logger.Write(string.Format("Error deleting existing Logon Background located at '{0}'. Exception details: {1}",outPutFile, ex.ToString()), Log.LoggerLevels.Errors);                
+                }
 
                 //check if image resolution is a valid aspect ratio, if not try and fix it
                 Image img = Image.FromFile(p.LocalPath);

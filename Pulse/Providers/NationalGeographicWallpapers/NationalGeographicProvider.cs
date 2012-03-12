@@ -37,7 +37,9 @@ namespace NationalGeographicWallpapers
 
                     pl.Pictures.AddRange(pics);
                 }
-                catch { }
+                catch(Exception ex) {
+                    Log.Logger.Write(string.Format("Error loading/parsing National Geographic pictures from XML.  XML file URL: '{0}'. Exception details: {1}", _baseURL + xmlFile, ex.ToString()), Log.LoggerLevels.Errors);
+                }
 
                 if (pl.Pictures.Count >= (ps.MaxPictureCount > 0 ? ps.MaxPictureCount : int.MaxValue))
                     break;
