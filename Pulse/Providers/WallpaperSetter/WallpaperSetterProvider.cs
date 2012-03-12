@@ -22,7 +22,7 @@ namespace WallpaperSetter
         public void ProcessPicture(Picture p)
         {
             //set the wallpaper to the new image
-            WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, p.LocalPath, WinAPI.SPIF_UPDATEINIFILE);
+            WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, p.LocalPath, WinAPI.SPIF_UPDATEINIFILE | WinAPI.SPIF_SENDWININICHANGE);
         }       
 
         public void Deactivate(object args)

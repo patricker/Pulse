@@ -157,7 +157,9 @@ namespace Pulse.Base
                         Pictures = PictureList.LoadFromFile(fPath);
                         if(Pictures != null) loadedFromFile = true;
                     }
-                    catch (Exception ex) { }
+                    catch (Exception ex) {
+                        Log.Logger.Write(string.Format("Error loading picture cache from file, cache will not be used. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+                    }
                 }
 
                 if (PictureDownloading != null)
@@ -227,7 +229,8 @@ namespace Pulse.Base
 
             var fi = new FileInfo(picturePath);
 
-            if(fi.Exists) {
+            if (fi.Exists)
+            {
                 if (fi.Length > 0)
                 {
                     //if the wallpaper image already exists, and passes our 0 size check then fire the event
@@ -236,13 +239,20 @@ namespace Pulse.Base
 
                     return;
                 }
-                    //if file size is 0 then delete so we can retry
-                else { try { fi.Delete(); } catch { } }
+                //if file size is 0 then delete so we can retry
+                else
+                {
+                    try { fi.Delete(); }
+                    catch (Exception ex)
+                    {
+                        Log.Logger.Write(string.Format("Error deleting 0 byte file '{0}' while preparint to redownload it. Exception details: {1}", fi.FullName, ex.ToString()), Log.LoggerLevels.Errors);
+                    }
+                }
             }
 
             //if the picture does not exist localy (or failed 0 size check) then download
             var wcLocal = new WebClient();
-                
+
             //if this will become our background image them hook into the event
             if (hookEvent && async)
             {
@@ -258,7 +268,10 @@ namespace Pulse.Base
                     PictureDownloaded(pic);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Logger.Write(string.Format("Error downloading new picture. Url: '{0}', Save Path: '{1}'. Exception details: {2}", pic.Url, picturePath, ex.ToString()), Log.LoggerLevels.Errors);
+            }
         }
 
         void ClientDownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)

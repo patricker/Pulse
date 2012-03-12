@@ -37,30 +37,56 @@ namespace Pulse
 
         private void ApplicationStartup(object sender, StartupEventArgs e)
         {
+            //App startup, load settings
+            Log.Logger.Write("Pulse starting up", Log.LoggerLevels.Information);
+
+            //Hook global exception handler for the app domain
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            
+            //load settings from file
             Settings = Settings.LoadFromFile("settings.conf") ?? new Settings();
+
+            if (Log.Logger.LoggerLevel == Log.LoggerLevels.Verbose)
+            {
+                Log.Logger.Write(string.Format("Settings loaded, settings are: {0}", Environment.NewLine + Settings.Save()), Log.LoggerLevels.Verbose);
+            }
 
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Language);
             System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Language);
 
+            Log.Logger.Write(string.Format("Current Culture: {0}, UI Culture: {1}", 
+                Thread.CurrentThread.CurrentCulture.ToString(),
+                Thread.CurrentThread.CurrentUICulture.ToString()),
+                Log.LoggerLevels.Information);
+
             //Create system tray icon
             AddIcon();
 
+            Log.Logger.Write(string.Format("Clear old pics flag set to '{0}'", App.Settings.ClearOldPics.ToString()), Log.LoggerLevels.Verbose);
             //clear out old pictures on startup after 3 days
             // this should be on a timer job for people who never turn off their computers
             if (App.Settings.ClearOldPics && Directory.Exists(Settings.CachePath))
             {
-                foreach (var f in Directory.GetFiles(Settings.CachePath))
+                var oFiles = Directory.GetFiles(Settings.CachePath).Where(x => DateTime.Now.Subtract(File.GetCreationTime(x)).TotalDays >= App.Settings.ClearInterval);
+
+                Log.Logger.Write(string.Format("Deleting {0} expired pics", App.Settings.ClearOldPics.ToString()), Log.LoggerLevels.Information);
+
+                try
                 {
-                    if (File.GetCreationTime(f).CompareTo(DateTime.Now.AddDays(1 - App.Settings.ClearInterval)) <= 0)
+                    foreach (var f in oFiles)
                     {
+                        Log.Logger.Write(string.Format("Deleting '{0}'", f), Log.LoggerLevels.Verbose);
                         File.Delete(f);
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Write(string.Format("Error cleaning out old pictures. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
                 }
             }
 
             PictureManager.PictureDownloaded += PmanagerPictureDownloaded;
             PictureManager.PictureDownloading += PictureManager_PictureDownloading;
-
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMinutes(Settings.RefreshInterval);
@@ -71,8 +97,6 @@ namespace Pulse
 
             Translator = new Translator();
             
-            //WinAPI.SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
-
             //load provider from settings
             CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.Provider);
 
@@ -82,34 +106,24 @@ namespace Pulse
             }
             else
             {
-                //get next photo on startup if requested
-                if (Settings.DownloadOnAppStartup) DownloadNextPicture();
+                Log.Logger.Write(string.Format("Autodownload wallpaper on startup is: '{0}'", Settings.DownloadOnAppStartup.ToString()),
+                    Log.LoggerLevels.Information);
 
+                //get next photo on startup if requested
+                if (Settings.DownloadOnAppStartup)
+                {
+                    Log.Logger.Write("DownloadNextPicture called because 'Settings.DownloadOnAppStartup' == true", Log.LoggerLevels.Verbose);
+
+                    DownloadNextPicture();
+                }
             }
         }
         
-        public static void Log(string message)
-        {
-            if (!Directory.Exists(App.Path + "\\Logs"))
-                Directory.CreateDirectory(App.Path + "\\Logs");
-            if (!File.Exists(App.Path + "\\Logs\\log.txt"))
-            {
-                File.WriteAllText(App.Path + "\\Logs\\log.txt", string.Empty);
-            }
-
-            try
-            {
-                File.AppendAllText(App.Path + "\\Logs\\log.txt",
-                   DateTime.Now + " -------------- " + (char)(13) + (char)(10) + "OS: " + Environment.OSVersion.VersionString + (char)(13) + (char)(10) + message + (char)(13) + (char)(10));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Can't write log. " + ex.Message);
-            }
-        }
-
         void TimerTick(object sender, EventArgs e)
         {
+            Log.Logger.Write("DownloadNextPicture called from 'TimerTick'",
+                Log.LoggerLevels.Verbose);
+
             DownloadNextPicture();
         }
 
@@ -226,7 +240,11 @@ namespace Pulse
                 {
                     //delete the file from the local disk
                     File.Delete(PictureManager.CurrentPicture.LocalPath);
-                }catch{}
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Write(string.Format("Error deleting banned pictures. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+                }
 
                 //skip to next photo
                 SkipToNextPicture();
@@ -321,7 +339,7 @@ namespace Pulse
                         ((IOutputProvider)op.Instance).ProcessPicture(pic);
                     }
                     catch(Exception ex) {
-                        Log(string.Format("Error processing output plugin '{0}'.  Error: {1}", op.ProviderName, ex.ToString()));
+                        Log.Logger.Write(string.Format("Error processing output plugin '{0}'.  Error: {1}", op.ProviderName, ex.ToString()), Log.LoggerLevels.Errors);
                     }
                 }
             }
@@ -338,12 +356,18 @@ namespace Pulse
             stream.Close();
         }
 
-        private void ApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            Log("Unhandled exception!");
-            Log(e.Exception.ToString());
-            MessageBox.Show(e.Exception.Message, "Pulse error", MessageBoxButton.OK, MessageBoxImage.Error);
-            e.Handled = true;
+        //private void ApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        //{
+        //    Log.Logger.Write("Unhandled exception! Error Details: " + e.Exception.ToString(), Log.LoggerLevels.Errors);
+
+        //    MessageBox.Show(e.Exception.Message, "Pulse error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    e.Handled = true;
+        //}
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
+            Log.Logger.Write("Unhandled exception! Error Details: " + args.ExceptionObject.ToString(), Log.LoggerLevels.Errors);
+
+            MessageBox.Show("Pulse has encountered an exception and will exit.  The exception has been logged to the Pulse Log file.  Please post on the Issue Tracker page located on the Pulse Website @ http://pulse.codeplex.com/.  Exception details: " + ((Exception)args.ExceptionObject).Message, "Pulse Error!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

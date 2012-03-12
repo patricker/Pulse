@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using Pulse.Base;
 using System.Threading;
+using System.IO;
 
 namespace wallbase
 {
@@ -18,6 +19,7 @@ namespace wallbase
         private int totalCount;
         private int resultCount;
         private CookieContainer _cookies = new CookieContainer();
+        //private string _cookies = string.Empty;
 
         private Random rnd = new Random();
 
@@ -36,12 +38,13 @@ namespace wallbase
             WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.ProviderSearchSettings) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
             
             //if we have a username/password and we aren't already authenticated then authenticate
-            if (_cookies.Count == 0 && !string.IsNullOrEmpty(wiss.Username) && !string.IsNullOrEmpty(wiss.Password))
+            if (!string.IsNullOrEmpty(wiss.Username) && !string.IsNullOrEmpty(wiss.Password))
             {
-                var test = HttpGet("http://wallbase.cc/home");
+                //var test = HttpGet("http://wallbase.cc/home");
                 //usrname=$USER&pass=$PASS&nopass_email=Type+in+your+e-mail+and+press+enter&nopass=0&1=1
-                var hit1 = HttpPost("http://wallbase.cc/user/login", string.Format("usrname={0}&pass={1}&nopass_email=Type+in+your+e-mail+and+press+enter&nopass=0&1=1", wiss.Username, wiss.Password));
+                var hit1 = HttpPost("http://wallbase.cc/user/login", string.Format("usrname={0}&pass={1}&nopass_email=Type+in+your+e-mail+and+press+enter&nopass=0", wiss.Username, Pulse.Base.HttpUtility.UrlEncode(wiss.Password)));
                 var hitConfirm = HttpPost("http://wallbase.cc/user/adult_confirm/1", "");
+                var test2 = HttpPost("http://wallbase.cc/home", "");
             }
                                     
             //if max picture count is 0, then no maximum, else specified max
@@ -122,15 +125,27 @@ namespace wallbase
                                 ManualResetEvent mre = (ManualResetEvent)states[0];
                                 Picture p = (Picture)states[1];
 
-                                p.Url = GetDirectPictureUrl(p.Url);
-                                p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
-
-                                if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
+                                try
                                 {
-                                    result.Pictures.Add(p);
+                                    p.Url = GetDirectPictureUrl(p.Url);
+                                    p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
+
+                                    if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
+                                    {
+                                        Log.Logger.Write(string.Format("Skipping banned image in wallbase.cc provider, '{0}'.", p.Url), Log.LoggerLevels.Verbose);
+
+                                        result.Pictures.Add(p);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Logger.Write(string.Format("Error downloading picture object from '{0}'. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+                                }
+                                finally
+                                {
+                                    mre.Set();
                                 }
 
-                                mre.Set();
                             }), new object[] { manualEvents[i], toProcess[i] });
                         }
 
@@ -139,7 +154,10 @@ namespace wallbase
                         WaitHandle.WaitAll(manualEvents, 60 * 1000);
                     }
                 }
-                catch { }
+                catch(Exception ex) {
+                    Log.Logger.Write(string.Format("Error during multi-threaded wallbase.cc image get.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+
+                }
                 finally
                 {
                     mreThread.Set();
@@ -191,32 +209,31 @@ namespace wallbase
             return string.Empty;
         }
 
-        private string HttpGet(string url)
-        {
-            System.Net.WebRequest req = System.Net.WebRequest.Create(url);
-            ((HttpWebRequest)req).CookieContainer = _cookies;
-
-            var resp = req.GetResponse();
-
-            if (resp == null) return null;
-            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-            return sr.ReadToEnd().Trim();
-
-        }
-
         private string HttpPost(string url, string parameters)
         {
             try
             {
-                System.Net.WebRequest req = System.Net.WebRequest.Create(url);
-                //Add these, as we're doing a POST
-                req.ContentType = "application/x-www-form-urlencoded";
+                HttpWebRequest req = (HttpWebRequest)System.Net.WebRequest.Create(url);
+                //as we're doing a POST
                 req.Method = "POST";
+                req.CookieContainer = _cookies;
+                req.ContentType = "application/x-www-form-urlencoded";
 
-                ((HttpWebRequest)req).Referer = "http://wallbase.cc/home/";
-                //((HttpWebRequest)req).UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11";                
-                //add cookies if there are any
-                ((HttpWebRequest)req).CookieContainer = _cookies;
+                req.Headers[HttpRequestHeader.CacheControl] = "max-age=0";
+                req.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.78 Safari/535.11";
+                req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                //req.Headers[HttpRequestHeader.AcceptEncoding] = "gzip,deflate,sdch";
+                req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                req.Headers[HttpRequestHeader.AcceptLanguage] = "en-US,en;q=0.8";
+                req.Headers[HttpRequestHeader.AcceptCharset] = "ISO-8859-1,utf-8;q=0.7,*;q=0.3";
+
+                //if (!string.IsNullOrEmpty(_cookies))
+                //{
+                //    req.Headers.Add("Cookie", _cookies);
+                //}
+                
+                req.Referer = "http://wallbase.cc/home";
+                //req.AllowAutoRedirect = false;
 
                 //We need to count how many bytes we're sending. Post'ed Faked Forms should be name=value&
                 byte[] bytes = System.Text.Encoding.ASCII.GetBytes(parameters);
@@ -224,14 +241,51 @@ namespace wallbase
                 System.IO.Stream os = req.GetRequestStream();
                 os.Write(bytes, 0, bytes.Length); //Push it out there
                 os.Close();
-                System.Net.WebResponse resp = req.GetResponse();
 
-                if (resp == null) return null;
-                System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-                return sr.ReadToEnd().Trim();
+                //get response
+                using (System.Net.HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
+                {
+                    //if (!string.IsNullOrEmpty(resp.GetResponseHeader("Set-Cookie")))
+                    //{
+                    //    _cookies = resp.GetResponseHeader("Set-Cookie");
+                    //}
+
+                    //clear cookies from container and use response ones
+                    //_cookies = new CookieContainer();
+
+                    ////parse code copied and modified from: http://stackoverflow.com/a/3349654/328968 (credit where it's due)
+                    
+                    ////parse cookies
+                    //var setCookie = resp.GetResponseHeader("Set-Cookie");
+
+                    ////remove all expiration sections as they just muck up our logic
+                    //Regex regExpires = new Regex("(?<name>.*?)=(?<value>.*?); expires=(?<expires>.*?); path=(?<path>.*?); domain=(?<domain>.*?)(,|\\Z)");
+
+                    ////setCookie = regExpires.Replace(setCookie, "");
+                    //var matches = regExpires.Matches(setCookie);
+
+                    //foreach (Match m in matches)
+                    //{
+
+                    //    var c = new Cookie(m.Groups["name"].Value, m.Groups["value"].Value, m.Groups["path"].Value, m.Groups["domain"].Value);
+                    //    c.Expires = DateTime.Parse(m.Groups["expires"].Value);
+
+                    //    _cookies.Add(c);
+                    //}
+
+
+                    //check response
+                    if (resp == null) return null;
+                    using (Stream st = resp.GetResponseStream())
+                    {
+                        System.IO.StreamReader sr = new System.IO.StreamReader(st);
+                        return sr.ReadToEnd().Trim();
+                    }
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Logger.Write(string.Format("Error in HttpPost request. Url: '{0}', Post Parameteres: '{1}'. Exception details: {2}", url, parameters, ex.ToString()), Log.LoggerLevels.Errors);
                 return null;
             }
         }
