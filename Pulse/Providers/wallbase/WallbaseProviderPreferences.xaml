@@ -12,8 +12,8 @@
                   DisplayMemberPath="Name"
                   SelectedValuePath="Value"/>
         <Label Content="Login: " Height="28" HorizontalAlignment="Left" Margin="14,21,0,0" Name="label9" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="56,23,0,0" Name="txtUserID" VerticalAlignment="Top" Width="120" IsEnabled="True" />
-        <PasswordBox Height="23" HorizontalAlignment="Left" Margin="223,23,0,0" Name="txtPassword" VerticalAlignment="Top" Width="120" IsEnabled="True" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="56,23,0,0" Name="txtUserID" VerticalAlignment="Top" Width="120" IsEnabled="False" />
+        <PasswordBox Height="23" HorizontalAlignment="Left" Margin="223,23,0,0" Name="txtPassword" VerticalAlignment="Top" Width="120" IsEnabled="False" />
         <Label Content="Pass: " Height="28" HorizontalAlignment="Left" Margin="182,21,0,0" Name="label10" VerticalAlignment="Top" />
         <TextBlock Height="23" HorizontalAlignment="Left" Margin="12,5,0,0" Name="textBlock2" Text="Authentication is optional but enables some features." VerticalAlignment="Top" Width="327" TextWrapping="Wrap" />
         <GroupBox Header="Categories" Height="52" HorizontalAlignment="Left" Margin="6,88,0,0" Name="groupBox1" VerticalAlignment="Top" Width="131">
@@ -27,7 +27,7 @@
             <Grid Height="31">
                 <CheckBox Content="SFW" Height="16" HorizontalAlignment="Left" Margin="6,5,0,0" Name="cbSFW" VerticalAlignment="Top" IsChecked="True" ToolTip="Clean Wallpapers" />
                 <CheckBox Content="SKETCHY" Height="16" HorizontalAlignment="Left" Margin="52,5,0,0" Name="cbSketchy" VerticalAlignment="Top" ToolTip="Wallpapers with soft/erotic poses, blood, etc..." />
-                <CheckBox Content="NSFW" Height="16" HorizontalAlignment="Left" Margin="123,6,0,0" Name="cbNSFW" VerticalAlignment="Top" ToolTip="(LOGIN REQUIRED!) Wallpaper with visible boobs, testicles/vagina, gore etc." IsEnabled="True" />
+                <CheckBox Content="NSFW" Height="16" HorizontalAlignment="Left" Margin="123,6,0,0" Name="cbNSFW" VerticalAlignment="Top" ToolTip="(LOGIN REQUIRED!) Wallpaper with visible boobs, testicles/vagina, gore etc." IsEnabled="False" />
             </Grid>
         </GroupBox>
         <GroupBox Header="Resolution" Height="53" HorizontalAlignment="Left" Margin="6,141,0,0" Name="groupBox3" VerticalAlignment="Top" Width="331">
