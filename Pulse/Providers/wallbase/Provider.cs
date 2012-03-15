@@ -16,7 +16,6 @@ namespace wallbase
     [ProviderConfigurationUserControl(typeof(WallbaseProviderPreferences))]
     public class Provider : IInputProvider
     {
-        private int totalCount;
         private int resultCount;
         private CookieContainer _cookies = new CookieContainer();
         //private string _cookies = string.Empty;

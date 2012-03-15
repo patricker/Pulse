@@ -35,7 +35,7 @@ namespace Pulse.Base
 
         private string LogFilePath { 
             get {
-                return Path.Combine(LogDirectory, DateTime.Now.ToString("Pulse_yyyyMMdd_HHmmss.txt"));
+                return Path.Combine(LogDirectory, string.Format("Pulse_{0}.txt", DateTime.Now.ToString("yyyyMMdd_HHmmss")));
             } 
         }
 
