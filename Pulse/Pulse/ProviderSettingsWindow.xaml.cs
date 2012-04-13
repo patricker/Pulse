@@ -31,7 +31,7 @@ namespace Pulse
             _uc = uc;
 
             this.Title = Properties.Resources.ProviderSettingsTitle + providerName;
-            spContent.Children.Add(uc);
+            //spContent.Children.Add(uc);
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)

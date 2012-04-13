@@ -59,9 +59,16 @@ namespace Pulse.Base
                 return null;
             }
 
-            using (StreamReader sr = new StreamReader(path))
+            try
             {
-                return Load(sr);
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    return Load(sr);
+                }
+            } catch(Exception ex) {
+                Log.Logger.Write(string.Format("Error loading object from file '{0}'. Exception details: {1}", path, ex.ToString()), Log.LoggerLevels.Errors);
+
+                return null;
             }
         }
 

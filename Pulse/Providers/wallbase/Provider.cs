@@ -13,7 +13,7 @@ using System.IO;
 namespace wallbase
 {
     [System.ComponentModel.Description("Wallbase")]
-    [ProviderConfigurationUserControl(typeof(WallbaseProviderPreferences))]
+    [ProviderConfigurationUserControl(typeof(WallbaseProviderPrefs))]
     public class Provider : IInputProvider
     {
         private int resultCount;

@@ -71,13 +71,30 @@ namespace Pulse.Base
                     //look for a description attribute on the class to use as the name
                     var strName = System.IO.Path.GetFileNameWithoutExtension(f);
                     var attrDescription = ipType.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
+                    var attrPlatform = ipType.GetCustomAttributes(typeof(Pulse.Base.ProviderPlatformAttribute), true);
+
+                    if (attrPlatform.Length > 0)
+                    {
+                        var ppa = from ProviderPlatformAttribute ppaI in attrPlatform 
+                                  where ppaI.Platform == Environment.OSVersion.Platform
+                                  select ppaI;
+
+
+                        if (ppa.Count() == 0)
+                        {
+                            continue;
+                        }
+                    }
 
                     if (attrDescription.Length >= 1)
                     {
                         strName = (attrDescription[0] as System.ComponentModel.DescriptionAttribute).Description;
                     }
 
-                    result.Add(strName, ipType);
+                    if (!result.ContainsKey(strName))
+                    {
+                        result.Add(strName, ipType);
+                    }
                 }
             }
 
