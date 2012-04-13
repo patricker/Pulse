@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pulse", "Pulse\Pulse.csproj", "{262CDF1E-51A0-40B2-B10B-83629F8CF620}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pulse.Base", "Pulse.Base\Pulse.Base.csproj", "{53B10354-56C0-4440-BBB2-F1F0C330E120}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}"
@@ -29,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NASAAPOD", "Providers\NASAA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NationalGeographicWallpapers", "Providers\NationalGeographicWallpapers\NationalGeographicWallpapers.csproj", "{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PulseForm", "PulseForm\PulseForm.csproj", "{9C42DE2A-4997-4F68-BD70-7350652DEC37}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 12
@@ -42,41 +42,41 @@ Global
 		SccProjectUniqueName2 = Pulse.Base\\Pulse.Base.csproj
 		SccProjectName2 = Pulse.Base
 		SccLocalPath2 = Pulse.Base
-		SccProjectUniqueName3 = Pulse\\Pulse.csproj
-		SccProjectName3 = Pulse
-		SccLocalPath3 = Pulse
-		SccProjectUniqueName4 = Providers\\wallbase\\wallbase.csproj
+		SccProjectUniqueName3 = Providers\\wallbase\\wallbase.csproj
+		SccProjectTopLevelParentUniqueName3 = Pulse.sln
+		SccProjectName3 = Providers/wallbase
+		SccLocalPath3 = Providers\\wallbase
+		SccProjectUniqueName4 = Providers\\GoogleImages\\GoogleImages.csproj
 		SccProjectTopLevelParentUniqueName4 = Pulse.sln
-		SccProjectName4 = Providers/wallbase
-		SccLocalPath4 = Providers\\wallbase
-		SccProjectUniqueName5 = Providers\\GoogleImages\\GoogleImages.csproj
+		SccProjectName4 = Providers/GoogleImages
+		SccLocalPath4 = Providers\\GoogleImages
+		SccProjectUniqueName5 = Providers\\LogonBackground\\LogonBackground.csproj
 		SccProjectTopLevelParentUniqueName5 = Pulse.sln
-		SccProjectName5 = Providers/GoogleImages
-		SccLocalPath5 = Providers\\GoogleImages
-		SccProjectUniqueName6 = Providers\\LogonBackground\\LogonBackground.csproj
+		SccProjectName5 = Providers/LogonBackground
+		SccLocalPath5 = Providers\\LogonBackground
+		SccProjectUniqueName6 = Providers\\LocalDirectory\\LocalDirectory.csproj
 		SccProjectTopLevelParentUniqueName6 = Pulse.sln
-		SccProjectName6 = Providers/LogonBackground
-		SccLocalPath6 = Providers\\LogonBackground
-		SccProjectUniqueName7 = Providers\\LocalDirectory\\LocalDirectory.csproj
+		SccProjectName6 = Providers/LocalDirectory
+		SccLocalPath6 = Providers\\LocalDirectory
+		SccProjectUniqueName7 = Providers\\WallpaperSetter\\WallpaperSetter.csproj
 		SccProjectTopLevelParentUniqueName7 = Pulse.sln
-		SccProjectName7 = Providers/LocalDirectory
-		SccLocalPath7 = Providers\\LocalDirectory
-		SccProjectUniqueName8 = Providers\\WallpaperSetter\\WallpaperSetter.csproj
+		SccProjectName7 = Providers/WallpaperSetter
+		SccLocalPath7 = Providers\\WallpaperSetter
+		SccProjectUniqueName8 = Providers\\AeroGlassChanger\\AeroGlassChanger.csproj
 		SccProjectTopLevelParentUniqueName8 = Pulse.sln
-		SccProjectName8 = Providers/WallpaperSetter
-		SccLocalPath8 = Providers\\WallpaperSetter
-		SccProjectUniqueName9 = Providers\\AeroGlassChanger\\AeroGlassChanger.csproj
+		SccProjectName8 = Providers/AeroGlassChanger
+		SccLocalPath8 = Providers\\AeroGlassChanger
+		SccProjectUniqueName9 = Providers\\NASAAPOD\\NASAAPOD.csproj
 		SccProjectTopLevelParentUniqueName9 = Pulse.sln
-		SccProjectName9 = Providers/AeroGlassChanger
-		SccLocalPath9 = Providers\\AeroGlassChanger
-		SccProjectUniqueName10 = Providers\\NASAAPOD\\NASAAPOD.csproj
+		SccProjectName9 = Providers/NASAAPOD
+		SccLocalPath9 = Providers\\NASAAPOD
+		SccProjectUniqueName10 = Providers\\NationalGeographicWallpapers\\NationalGeographicWallpapers.csproj
 		SccProjectTopLevelParentUniqueName10 = Pulse.sln
-		SccProjectName10 = Providers/NASAAPOD
-		SccLocalPath10 = Providers\\NASAAPOD
-		SccProjectUniqueName11 = Providers\\NationalGeographicWallpapers\\NationalGeographicWallpapers.csproj
-		SccProjectTopLevelParentUniqueName11 = Pulse.sln
-		SccProjectName11 = Providers/NationalGeographicWallpapers
-		SccLocalPath11 = Providers\\NationalGeographicWallpapers
+		SccProjectName10 = Providers/NationalGeographicWallpapers
+		SccLocalPath10 = Providers\\NationalGeographicWallpapers
+		SccProjectUniqueName11 = PulseForm\\PulseForm.csproj
+		SccProjectName11 = PulseForm
+		SccLocalPath11 = PulseForm
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,16 +87,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Debug|x86.ActiveCfg = Debug|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Debug|x86.Build.0 = Debug|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Release|Any CPU.ActiveCfg = Release|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Release|x86.ActiveCfg = Release|x86
-		{262CDF1E-51A0-40B2-B10B-83629F8CF620}.Release|x86.Build.0 = Release|x86
 		{53B10354-56C0-4440-BBB2-F1F0C330E120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{53B10354-56C0-4440-BBB2-F1F0C330E120}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53B10354-56C0-4440-BBB2-F1F0C330E120}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -138,11 +128,13 @@ Global
 		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}.Release|x86.ActiveCfg = Release|Any CPU
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Any CPU.Build.0 = Debug|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|x86.ActiveCfg = Debug|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Debug|x86.Build.0 = Debug|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Any CPU.ActiveCfg = Release|x86
+		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Any CPU.Build.0 = Release|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|Mixed Platforms.Build.0 = Release|x86
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E}.Release|x86.ActiveCfg = Release|x86
@@ -197,6 +189,18 @@ Global
 		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E}.Release|x86.ActiveCfg = Release|Any CPU
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Debug|Any CPU.Build.0 = Debug|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Debug|x86.ActiveCfg = Debug|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Debug|x86.Build.0 = Debug|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Release|Any CPU.ActiveCfg = Release|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Release|Any CPU.Build.0 = Release|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Release|Mixed Platforms.Build.0 = Release|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Release|x86.ActiveCfg = Release|x86
+		{9C42DE2A-4997-4F68-BD70-7350652DEC37}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

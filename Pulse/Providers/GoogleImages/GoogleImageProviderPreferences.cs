@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Forms;
 
 namespace GoogleImages
 {
-    /// <summary>
-    /// Interaction logic for ProviderPreferences.xaml
-    /// </summary>
-    public partial class ProviderPreferences : Pulse.Base.ProviderConfigurationBase
+    public partial class GoogleImageProviderPreferences : Pulse.Base.ProviderConfigurationBase
     {
-        private GoogleImageSearchSettings giss = null;
+        GoogleImageSearchSettings giss;
 
-        public ProviderPreferences()
+        public GoogleImageProviderPreferences()
         {
             InitializeComponent();
+        }
+
+        private void GoogleImageProviderPreferences_Load(object sender, EventArgs e)
+        {
+            //bind colors to colors combobox on load
+            var colors = GoogleImageSearchSettings.GoogleImageColors.GetColors();
+            comboBox1.DataSource = colors;
         }
 
         public override void LoadConfiguration(string config)
@@ -33,7 +32,7 @@ namespace GoogleImages
             {
                 giss = new GoogleImageSearchSettings();
             }
-                //deserialize
+            //deserialize
             else
             {
                 giss = GoogleImageSearchSettings.LoadFromXML(config);
@@ -54,14 +53,6 @@ namespace GoogleImages
             var s = giss.Save();
 
             return s;
-        }
-
-        private void ProviderConfigurationBase_Loaded(object sender, RoutedEventArgs e)
-        {
-            //bind colors to colors combobox on load
-            var colors = GoogleImageSearchSettings.GoogleImageColors.GetColors();
-            comboBox1.ItemsSource = colors;
-
         }
     }
 }

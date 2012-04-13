@@ -356,14 +356,6 @@ namespace Pulse
             stream.Close();
         }
 
-        //private void ApplicationDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        //{
-        //    Log.Logger.Write("Unhandled exception! Error Details: " + e.Exception.ToString(), Log.LoggerLevels.Errors);
-
-        //    MessageBox.Show(e.Exception.Message, "Pulse error", MessageBoxButton.OK, MessageBoxImage.Error);
-        //    e.Handled = true;
-        //}
-
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args) {
             Log.Logger.Write("Unhandled exception! Error Details: " + args.ExceptionObject.ToString(), Log.LoggerLevels.Errors);
 

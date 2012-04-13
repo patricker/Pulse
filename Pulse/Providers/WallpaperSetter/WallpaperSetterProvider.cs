@@ -7,18 +7,9 @@ using Pulse.Base;
 namespace WallpaperSetter
 {
     [System.ComponentModel.Description("Desktop Wallpaper")]
+    [ProviderPlatform(PlatformID.Win32NT, 6, 0)]
     public class WallpaperSetterProvider : IOutputProvider
     {
-        public void Initialize()
-        {
-
-        }
-
-        public void Activate(object args)
-        {
-
-        }
-
         public void ProcessPicture(Picture p)
         {
             //set the wallpaper to the new image
@@ -44,9 +35,8 @@ namespace WallpaperSetter
             return wallpaper;
         }
 
-        public void Deactivate(object args)
-        {
-            
-        }
+        public void Initialize() { }
+        public void Activate(object args) { }
+        public void Deactivate(object args) { }
     }
 }

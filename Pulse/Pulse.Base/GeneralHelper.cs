@@ -97,5 +97,27 @@ namespace Pulse.Base
                 return null;
             }
         }
+
+        /// <value>
+        /// Gets value indicating if the client is Linux/Unix based
+        /// Copyright (C) 2010, Kenneth Skovhede
+        /// http://www.hexad.dk, opensource@hexad.dk
+        /// </value>
+        public static bool IsClientLinux
+        {
+            get
+            {
+#if __MonoCS__
+                    if (Environment.OSVersion.Platform == PlatformID.Unix || (int)Environment.OSVersion.Platform == 6)
+                                        return true;
+#else
+                if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+                    return true;
+#endif
+                return false;
+
+            }
+        }
+
     }
 }
