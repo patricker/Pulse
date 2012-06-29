@@ -6,11 +6,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Pulse.Base;
 
 namespace AeroGlassChanger
 {
     //Most of this code came from http://aura.codeplex.com/ (Aura project)
     [System.ComponentModel.Description("Aero Glass Color Sync")]
+    [ProviderPlatform(PlatformID.Win32NT, 0, 0)]
     public class AeroGlassChangerProvider : Pulse.Base.IOutputProvider
     {
         public void ProcessPicture(Pulse.Base.Picture p)

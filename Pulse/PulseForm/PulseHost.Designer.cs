@@ -36,6 +36,7 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.niPulse = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmsTrayIcon.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -94,11 +95,18 @@
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
+            // niPulse
+            // 
+            this.niPulse.ContextMenuStrip = this.cmsTrayIcon;
+            this.niPulse.Text = "Pulse";
+            // 
             // frmPulseHost
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(406, 72);
+            this.ClientSize = new System.Drawing.Size(361, 58);
+            this.ContextMenuStrip = this.cmsTrayIcon;
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.Name = "frmPulseHost";
             this.ShowInTaskbar = false;
@@ -119,6 +127,7 @@
         private System.Windows.Forms.ToolStripMenuItem nextPictureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem banImageToolStripMenuItem;
         internal System.Windows.Forms.ContextMenuStrip cmsTrayIcon;
+        public System.Windows.Forms.NotifyIcon niPulse;
     }
 }
 

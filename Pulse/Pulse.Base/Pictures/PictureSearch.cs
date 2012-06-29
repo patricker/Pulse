@@ -22,8 +22,6 @@ namespace Pulse.Base
 
         //search query
         public string SearchString {get; set; }
-        //ignored works (not supported by all providers
-        public List<string> IgnoredWords { get; set; }
         //banned images
         public List<string> BannedURLs { get; set; }
         //the providers search string.  This can be in whatever format the provider needs
@@ -32,14 +30,11 @@ namespace Pulse.Base
         public string ProviderSearchSettings { get; set; }
         //Maximum number of pictures to download from provider.  0 means all
         public int MaxPictureCount { get; set; }
-        //whether or not the images should be prefetched
-        public bool PreFetch { get; set; }
         //Where to save the pictures
         public string SaveFolder { get; set; }
 
         public PictureSearch()
         {
-            IgnoredWords = new List<string>();
             BannedURLs = new List<string>();
         }
 

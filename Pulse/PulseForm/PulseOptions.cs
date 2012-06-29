@@ -63,6 +63,7 @@ namespace PulseForm
             //}
 
             //LanguageComboBox.Text = CultureInfo.GetCultureInfo(Settings.CurrentSettings.Language).NativeName;
+
             cbDeleteOldFiles.Checked = Settings.CurrentSettings.ClearOldPics;
             nudTempAge.Value = Settings.CurrentSettings.ClearInterval;
 
@@ -112,6 +113,8 @@ namespace PulseForm
 
             //sort
             SortOutputProviders();
+
+            dgvOutputProviders.DataSource = OutputProviderInfos;
 
             ApplyButton.Enabled = false;
         }
@@ -177,7 +180,7 @@ namespace PulseForm
                 Settings.CurrentSettings.Provider = cbProviders.Text;
 
                 //initialize the new provider
-                frmPulseHost.CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.CurrentSettings.Provider);
+                frmPulseHost.Runner.CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.CurrentSettings.Provider);
             }
 
             //save provider config if it exists
@@ -235,7 +238,7 @@ namespace PulseForm
             }
 
             //save config file
-            Settings.CurrentSettings.Save(Settings.Path + "\\settings.conf");
+            Settings.CurrentSettings.Save(Settings.AppPath + "\\settings.conf");
 
             if (UpdateSettings != null)
             {
@@ -285,10 +288,16 @@ namespace PulseForm
 
         private void ClearNowButtonClick(object sender, EventArgs e)
         {
-            if (Directory.Exists(Settings.Path + "\\Cache"))
+            if (Directory.Exists(Settings.AppPath + "\\Cache"))
             {
-                foreach (var f in Directory.GetFiles(Settings.Path + "\\Cache"))
-                    File.Delete(f);
+                foreach (var f in Directory.GetFiles(Settings.AppPath + "\\Cache"))
+                {
+                    try
+                    {
+                        File.Delete(f);
+                    }
+                    catch { }
+                }
             }
 
             MessageBox.Show("All cached items have been cleared.");
@@ -321,8 +330,9 @@ namespace PulseForm
             }
         }
 
-
-
-
+        private void dgvOutputProviders_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            ApplyButton.Enabled = true;
+        }
     }
 }

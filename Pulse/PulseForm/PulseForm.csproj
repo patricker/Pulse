@@ -74,8 +74,6 @@
     <Compile Include="PulseOptions.Designer.cs">
       <DependentUpon>PulseOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
-    <Compile Include="TrayIconWrapper.cs" />
     <EmbeddedResource Include="ProviderSettingsWindow.resx">
       <DependentUpon>ProviderSettingsWindow.cs</DependentUpon>
     </EmbeddedResource>

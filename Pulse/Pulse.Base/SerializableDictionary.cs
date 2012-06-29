@@ -13,6 +13,21 @@ namespace Pulse.Base
     [XmlRoot("dictionary")]
     public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable
     {
+        public SerializableDictionary() { }
+
+        public SerializableDictionary(TKey k, TValue v)
+        {
+            this.Add(k, v);
+        }
+
+        public SerializableDictionary(Dictionary<TKey, TValue> dict)
+        {
+            foreach (KeyValuePair<TKey, TValue> kvp in dict)
+            {
+                this.Add(kvp.Key, kvp.Value);
+            }
+        }
+
         public System.Xml.Schema.XmlSchema GetSchema()
         {
             return null;

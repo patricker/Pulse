@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{53B10354-56C0-4440-BBB2-F1F0C330E120}</ProjectGuid>
+    <ProjectGuid>{90B7DC3D-877E-4316-BE1F-9FA611E94D53}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Pulse.Base</RootNamespace>
-    <AssemblyName>Pulse.Base</AssemblyName>
+    <RootNamespace>MediaRSSProvider</RootNamespace>
+    <AssemblyName>MediaRSSProvider</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -22,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\Providers\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\Providers\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -39,39 +38,34 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DownloadManager.cs" />
-    <Compile Include="HttpUtility.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Log.cs" />
-    <Compile Include="Pair.cs" />
-    <Compile Include="ProviderPlatformAttribute.cs" />
-    <Compile Include="Providers\ActiveProviderInfo.cs" />
-    <Compile Include="GeneralHelper.cs" />
-    <Compile Include="Providers\IInputProvider.cs" />
-    <Compile Include="Providers\IOutputProvider.cs" />
-    <Compile Include="Pictures\Picture.cs" />
-    <Compile Include="Providers\IProvider.cs" />
-    <Compile Include="Pictures\PictureList.cs" />
-    <Compile Include="Pictures\PictureManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\ProviderConfigurationBase.cs">
+    <Compile Include="MediaRSSProviderPreferences.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Providers\ProviderConfigurationUserControlAttribute.cs" />
-    <Compile Include="Providers\ProviderManager.cs" />
-    <Compile Include="Pictures\PictureSearch.cs" />
-    <Compile Include="PulseRunner.cs" />
-    <Compile Include="SerializableDictionary.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Translator.cs" />
-    <Compile Include="XmlSerializable.cs" />
+    <Compile Include="MediaRSSProviderPreferences.Designer.cs">
+      <DependentUpon>MediaRSSProviderPreferences.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MediaRSSSearchSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj">
+      <Project>{53B10354-56C0-4440-BBB2-F1F0C330E120}</Project>
+      <Name>Pulse.Base</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MediaRSSProviderPreferences.resx">
+      <DependentUpon>MediaRSSProviderPreferences.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

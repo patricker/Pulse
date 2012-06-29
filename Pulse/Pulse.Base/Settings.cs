@@ -4,10 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.IO;
-using Pulse.Base;
 using System.Reflection;
 
-namespace PulseForm
+namespace Pulse.Base
 {
     public class Settings : XmlSerializable<Settings>
     {
@@ -19,7 +18,7 @@ namespace PulseForm
             Days
         }
 
-        public static readonly string Path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static readonly string AppPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static Settings CurrentSettings 
         {
@@ -41,12 +40,14 @@ namespace PulseForm
         public string Provider { get; set; }
 
         public string Search { get; set; }
-        public string Filter { get; set; }
         public List<string> BannedImages { get; set; }
         
         public bool DownloadAutomatically { get; set; }
         public bool DownloadOnAppStartup { get; set; }
+
         public int RefreshInterval { get; set; }
+        public IntervalUnits IntervalUnit { get; set; }
+
         public bool PreFetch { get; set; }
         public int MaxPictureDownloadCount { get; set; }
         public string CachePath { get; set; }
@@ -54,7 +55,6 @@ namespace PulseForm
         public string Language { get; set; }
         
         public int ClearInterval { get; set; }
-        public IntervalUnits IntervalUnit { get; set; }
         public bool ClearOldPics { get; set; }
 
         //provider settings
@@ -67,11 +67,13 @@ namespace PulseForm
             Language = CultureInfo.CurrentUICulture.Name;
             DownloadAutomatically = true;
             RefreshInterval = 20;
+            IntervalUnit = IntervalUnits.Minutes;
+
             ClearOldPics = false;
             ClearInterval = 3;
             PreFetch = false;
             MaxPictureDownloadCount = 100;
-            CachePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache");
+            CachePath = System.IO.Path.Combine(AppPath, "Cache");
             ProviderSettings = new SerializableDictionary<string, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
 

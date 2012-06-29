@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System;using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -21,7 +20,14 @@ namespace wallbase
 
         public override void LoadConfiguration(string config)
         {
-            wiss = string.IsNullOrEmpty(config) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(config);
+            try
+            {   if(!string.IsNullOrEmpty(config))
+                    wiss = WallbaseImageSearchSettings.LoadFromXML(config);
+            }
+            catch { }
+
+            if (wiss == null)
+                wiss = new WallbaseImageSearchSettings();
 
             txtUserID.Text = wiss.Username;
             txtPassword.Text = wiss.Password;
