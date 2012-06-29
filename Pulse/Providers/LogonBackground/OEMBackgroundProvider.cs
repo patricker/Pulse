@@ -9,6 +9,7 @@ using System.Reflection;
 namespace LogonBackground
 {
     [System.ComponentModel.Description("Logon Background")]
+    [ProviderPlatform(PlatformID.Win32NT, 0, 0)]
     public class OEMBackgroundProvider : IOutputProvider
     {
         public void Initialize()

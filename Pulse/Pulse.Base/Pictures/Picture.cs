@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace Pulse.Base
 {
@@ -30,6 +31,20 @@ namespace Pulse.Base
         public Picture()
         {
             Properties = new SerializableDictionary<string, string>();
+        }
+
+        public string CalculateLocalPath(string baseFolder)
+        {
+            return Path.Combine(baseFolder, Id + Path.GetExtension(Url));
+        }
+
+        public bool IsGood
+        {
+            get
+            {
+                FileInfo fi = new FileInfo(LocalPath);
+                return (fi.Exists && fi.Length > 0);
+            }
         }
     }
 }

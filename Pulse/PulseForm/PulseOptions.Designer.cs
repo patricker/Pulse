@@ -58,6 +58,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.dgvOutputProviders = new System.Windows.Forms.DataGridView();
+            this.colConfigure = new System.Windows.Forms.DataGridViewLinkColumn();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -68,11 +70,13 @@
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udInterval)).BeginInit();
+            this.tpOutputs.SuspendLayout();
             this.tpAbout.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvOutputProviders)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -138,7 +142,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(293, 17);
+            this.label1.Location = new System.Drawing.Point(319, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 20);
             this.label1.TabIndex = 2;
@@ -146,7 +150,7 @@
             // 
             // nudTempAge
             // 
-            this.nudTempAge.Location = new System.Drawing.Point(222, 14);
+            this.nudTempAge.Location = new System.Drawing.Point(234, 13);
             this.nudTempAge.Name = "nudTempAge";
             this.nudTempAge.Size = new System.Drawing.Size(64, 26);
             this.nudTempAge.TabIndex = 1;
@@ -197,6 +201,7 @@
             this.SearchBox.Name = "SearchBox";
             this.SearchBox.Size = new System.Drawing.Size(160, 26);
             this.SearchBox.TabIndex = 1;
+            this.SearchBox.TextChanged += new System.EventHandler(this.SearchBoxTextChanged);
             // 
             // cbProviders
             // 
@@ -212,7 +217,7 @@
             // 
             this.ProviderSettings.Location = new System.Drawing.Point(372, 1);
             this.ProviderSettings.Name = "ProviderSettings";
-            this.ProviderSettings.Size = new System.Drawing.Size(98, 28);
+            this.ProviderSettings.Size = new System.Drawing.Size(104, 28);
             this.ProviderSettings.TabIndex = 3;
             this.ProviderSettings.Text = "Settings";
             this.ProviderSettings.UseVisualStyleBackColor = true;
@@ -313,7 +318,7 @@
             // 
             this.cbUpdateFrequencyUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbUpdateFrequencyUnit.FormattingEnabled = true;
-            this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(253, 62);
+            this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(264, 61);
             this.cbUpdateFrequencyUnit.Name = "cbUpdateFrequencyUnit";
             this.cbUpdateFrequencyUnit.Size = new System.Drawing.Size(121, 28);
             this.cbUpdateFrequencyUnit.TabIndex = 9;
@@ -322,6 +327,7 @@
             // tpOutputs
             // 
             this.tpOutputs.AutoScroll = true;
+            this.tpOutputs.Controls.Add(this.dgvOutputProviders);
             this.tpOutputs.Location = new System.Drawing.Point(4, 29);
             this.tpOutputs.Name = "tpOutputs";
             this.tpOutputs.Padding = new System.Windows.Forms.Padding(3);
@@ -411,6 +417,28 @@
             this.panel1.Size = new System.Drawing.Size(517, 44);
             this.panel1.TabIndex = 4;
             // 
+            // dgvOutputProviders
+            // 
+            this.dgvOutputProviders.AllowUserToAddRows = false;
+            this.dgvOutputProviders.AllowUserToDeleteRows = false;
+            this.dgvOutputProviders.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dgvOutputProviders.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvOutputProviders.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colConfigure});
+            this.dgvOutputProviders.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvOutputProviders.Location = new System.Drawing.Point(3, 3);
+            this.dgvOutputProviders.Name = "dgvOutputProviders";
+            this.dgvOutputProviders.RowTemplate.Height = 28;
+            this.dgvOutputProviders.Size = new System.Drawing.Size(503, 448);
+            this.dgvOutputProviders.TabIndex = 0;
+            this.dgvOutputProviders.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellValueChanged);
+            // 
+            // colConfigure
+            // 
+            this.colConfigure.HeaderText = "Settings";
+            this.colConfigure.Name = "colConfigure";
+            this.colConfigure.Width = 74;
+            // 
             // frmPulseOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -434,12 +462,14 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udInterval)).EndInit();
+            this.tpOutputs.ResumeLayout(false);
             this.tpAbout.ResumeLayout(false);
             this.tpAbout.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvOutputProviders)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -475,5 +505,7 @@
         private System.Windows.Forms.CheckBox cbDeleteOldFiles;
         private System.Windows.Forms.NumericUpDown udInterval;
         private System.Windows.Forms.Label BuildTag;
+        private System.Windows.Forms.DataGridView dgvOutputProviders;
+        private System.Windows.Forms.DataGridViewLinkColumn colConfigure;
     }
 }

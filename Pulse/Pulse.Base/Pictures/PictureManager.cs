@@ -13,16 +13,7 @@ namespace Pulse.Base
 {
     public class PictureManager
     {
-        public Picture CurrentPicture { get; set; }
-        public PictureList Pictures;
-        
-        private readonly Random rnd = new Random();
-
-        public delegate void PictureDownloadedHandler(Picture filePath);
-        public event PictureDownloadedHandler PictureDownloaded;
-        public delegate void PictureDownloadingHandler();
-        public event PictureDownloadingHandler PictureDownloading;
-
+        #region "helpers"
         public static Pair<int, int> PrimaryScreenResolution { 
             get {
                 var rect = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
@@ -56,7 +47,6 @@ namespace Pulse.Base
             //save image to file
             img.Save(outPath, ici, epParameters);
         }
-
         
         //Patricker - This code came from a stackoverflow answer I posted a while back.  I converted it to C# from VB.Net and from
         // asp.net to windows.  Link: http://stackoverflow.com/questions/4436209/asp-net-version-of-timthumb-php-class/4506072#4506072
@@ -135,149 +125,56 @@ namespace Pulse.Base
 
             return bmpThumb;
         }
+        #endregion
 
-
-        public void GetPicture(PictureSearch ps)
+        public PictureList GetPictureList(PictureSearch ps)
         {
-            if (ps == null || ps.SearchProvider == null) return;
+            PictureList Pictures = null;
 
-            //if (client.IsBusy)
-            //    client.CancelAsync();
+            if (ps == null || ps.SearchProvider == null) return Pictures;
 
-            ThreadStart threadStarter = () =>
+            var loadedFromFile = false;
+            var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.GetSearchHash().ToString() + "_" + ps.SearchProvider.GetType().ToString() + ".xml");
+
+            Pictures = LoadCachedSearch(ps, fPath);
+            loadedFromFile = Pictures != null;
+            
+            //if we have no pictures to work with try and get them
+            if (Pictures == null || Pictures.Pictures.Count == 0)
             {
-                var loadedFromFile = false;
-                var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.SearchProvider.GetType().ToString() + ".xml");
+                Pictures = ps.SearchProvider.GetPictures(ps);
+                Pictures.SearchSettingsHash = ps.GetSearchHash();
+                loadedFromFile = false;
+            }
+            
+            //cache the picture list to file
+            if (!loadedFromFile)
+            {
+                Pictures.Save(fPath);
+            } 
 
-                //check if we should load from file
-                if((Pictures != null && ps.GetSearchHash() != Pictures.SearchSettingsHash) && File.Exists(fPath))
-                {
-                    try
-                    {
-                        Pictures = PictureList.LoadFromFile(fPath);
-                        if(Pictures != null) loadedFromFile = true;
-                    }
-                    catch (Exception ex) {
-                        Log.Logger.Write(string.Format("Error loading picture cache from file, cache will not be used. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
-                    }
-                }
-
-                if (PictureDownloading != null)
-                    PictureDownloading();
-                //if our search settings have changed then null our existing list
-                if (Pictures != null && ps.GetSearchHash() != Pictures.SearchSettingsHash)
-                    Pictures = null;
-                if (Pictures == null || Pictures.Pictures.Count == 0)
-                {
-                    Pictures = ps.SearchProvider.GetPictures(ps);
-                    Pictures.SearchSettingsHash = ps.GetSearchHash();
-                    loadedFromFile = false;
-                }
-                if (Pictures == null || Pictures.Pictures.Count == 0)
-                {
-                    //App.Log("Nothing found.");
-                    if (PictureDownloaded != null)
-                        PictureDownloaded(null);
-                    return;
-                }
-
-                //validate that the output directory exists
-                if (!Directory.Exists(ps.SaveFolder))
-                    Directory.CreateDirectory(ps.SaveFolder);
-
-                //pick the next picture at random
-                // only "non-random" bit is that we make sure that the next random picture isn't the same as our current one
-                var index = 0;
-                do
-                {
-                    index = rnd.Next(Pictures.Pictures.Count);
-                } while (CurrentPicture != null && CurrentPicture.Url == Pictures.Pictures[index].Url);
-
-                CurrentPicture = Pictures.Pictures[index];
-                //download current picture first
-                GetPicture(CurrentPicture, ps.SaveFolder, true, false);                
-
-                //if pre-fetch true, get the rest of the pictures
-                if (ps.PreFetch)
-                {
-                    for (int i = 0; i < Pictures.Pictures.Count; i++)
-                    {
-                        //skip the image we already processed
-                        if (i == index) continue;
-
-                        GetPicture(Pictures.Pictures[i], ps.SaveFolder, false, true);
-                    }
-                }
-
-                //cache the picture list to file
-                if (!loadedFromFile)
-                {
-                    Pictures.Save(fPath);
-                }
-            };
-            var thread = new Thread(threadStarter);
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            //return whatever list of pictures was found
+            return Pictures;
         }
 
-        public void GetPicture(Picture pic, string saveFolder, bool hookEvent, bool async)
+        public PictureList LoadCachedSearch(PictureSearch ps, string cachePath)
         {
-            //check if the requested image exists, if it does then fire event if needed and return
-            //if image already has a local path then use it (just what we need for local provider where images are not stored in cache).
-            var picturePath = string.IsNullOrEmpty(pic.LocalPath) ? Path.Combine(saveFolder, pic.Id + ".jpg") : pic.LocalPath;
-            pic.LocalPath = picturePath;
+            PictureList result = null;
 
-            var fi = new FileInfo(picturePath);
-
-            if (fi.Exists)
+            //check if we should load from file
+            if (File.Exists(cachePath))
             {
-                if (fi.Length > 0)
+                try
                 {
-                    //if the wallpaper image already exists, and passes our 0 size check then fire the event
-                    if (PictureDownloaded != null && hookEvent)
-                        PictureDownloaded(pic);
-
-                    return;
+                    result = PictureList.LoadFromFile(cachePath);
                 }
-                //if file size is 0 then delete so we can retry
-                else
+                catch (Exception ex)
                 {
-                    try { fi.Delete(); }
-                    catch (Exception ex)
-                    {
-                        Log.Logger.Write(string.Format("Error deleting 0 byte file '{0}' while preparint to redownload it. Exception details: {1}", fi.FullName, ex.ToString()), Log.LoggerLevels.Errors);
-                    }
+                    Log.Logger.Write(string.Format("Error loading picture cache from file, cache will not be used. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
                 }
             }
 
-            //if the picture does not exist localy (or failed 0 size check) then download
-            var wcLocal = new WebClient();
-
-            //if this will become our background image them hook into the event
-            if (hookEvent && async)
-            {
-                wcLocal.DownloadFileCompleted += ClientDownloadFileCompleted;
-            }
-
-            try
-            {
-                if (async) wcLocal.DownloadFileAsync(new Uri(pic.Url), picturePath, pic);
-                else
-                {
-                    wcLocal.DownloadFile(new Uri(pic.Url), picturePath);
-                    PictureDownloaded(pic);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Write(string.Format("Error downloading new picture. Url: '{0}', Save Path: '{1}'. Exception details: {2}", pic.Url, picturePath, ex.ToString()), Log.LoggerLevels.Errors);
-            }
-        }
-
-        void ClientDownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            if (PictureDownloaded != null)
-                PictureDownloaded((Picture)e.UserState);
+            return result;
         }
     }
 }
