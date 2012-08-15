@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pulse.Base", "Pulse.Base\Pu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rewalls", "Providers\Rewalls\Rewalls.csproj", "{9014327D-43C7-4C75-AE6D-AFDC48670035}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wallbase", "Providers\wallbase\wallbase.csproj", "{921F5326-5B28-462D-8220-3D3507438C27}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleImages", "Providers\GoogleImages\GoogleImages.csproj", "{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4}"
@@ -31,58 +29,74 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PulseForm", "PulseForm\Puls
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaRSSProvider", "Providers\MediaRSS\MediaRSSProvider.csproj", "{90B7DC3D-877E-4316-BE1F-9FA611E94D53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Piler", "Providers\Piler\Piler.csproj", "{750EF3AC-2191-42D1-9FB7-6301622F51B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1E7B8D85-3542-446F-BAA5-87F67FE0183F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAPI", "Providers\WinAPI\WinAPI.csproj", "{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{2DE0B04F-4F15-4FAC-83A0-88849593D557}"
+	ProjectSection(SolutionItems) = preProject
+		References\AppleScriptSlim.dll = References\AppleScriptSlim.dll
+		References\AppleScriptSlim.pdb = References\AppleScriptSlim.pdb
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 13
+		SccNumberOfProjects = 14
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = Providers\\Rewalls\\Rewalls.csproj
-		SccProjectTopLevelParentUniqueName1 = Pulse.sln
-		SccProjectName1 = Providers/Rewalls
-		SccLocalPath1 = Providers\\Rewalls
-		SccProjectUniqueName2 = Pulse.Base\\Pulse.Base.csproj
-		SccProjectName2 = Pulse.Base
-		SccLocalPath2 = Pulse.Base
-		SccProjectUniqueName3 = Providers\\wallbase\\wallbase.csproj
+		SccProjectUniqueName1 = Pulse.Base\\Pulse.Base.csproj
+		SccProjectName1 = Pulse.Base
+		SccLocalPath1 = Pulse.Base
+		SccProjectUniqueName2 = Providers\\wallbase\\wallbase.csproj
+		SccProjectTopLevelParentUniqueName2 = Pulse.sln
+		SccProjectName2 = Providers/wallbase
+		SccLocalPath2 = Providers\\wallbase
+		SccProjectUniqueName3 = Providers\\GoogleImages\\GoogleImages.csproj
 		SccProjectTopLevelParentUniqueName3 = Pulse.sln
-		SccProjectName3 = Providers/wallbase
-		SccLocalPath3 = Providers\\wallbase
-		SccProjectUniqueName4 = Providers\\GoogleImages\\GoogleImages.csproj
+		SccProjectName3 = Providers/GoogleImages
+		SccLocalPath3 = Providers\\GoogleImages
+		SccProjectUniqueName4 = Providers\\LogonBackground\\LogonBackground.csproj
 		SccProjectTopLevelParentUniqueName4 = Pulse.sln
-		SccProjectName4 = Providers/GoogleImages
-		SccLocalPath4 = Providers\\GoogleImages
-		SccProjectUniqueName5 = Providers\\LogonBackground\\LogonBackground.csproj
+		SccProjectName4 = Providers/LogonBackground
+		SccLocalPath4 = Providers\\LogonBackground
+		SccProjectUniqueName5 = Providers\\LocalDirectory\\LocalDirectory.csproj
 		SccProjectTopLevelParentUniqueName5 = Pulse.sln
-		SccProjectName5 = Providers/LogonBackground
-		SccLocalPath5 = Providers\\LogonBackground
-		SccProjectUniqueName6 = Providers\\LocalDirectory\\LocalDirectory.csproj
+		SccProjectName5 = Providers/LocalDirectory
+		SccLocalPath5 = Providers\\LocalDirectory
+		SccProjectUniqueName6 = Providers\\WallpaperSetter\\WallpaperSetter.csproj
 		SccProjectTopLevelParentUniqueName6 = Pulse.sln
-		SccProjectName6 = Providers/LocalDirectory
-		SccLocalPath6 = Providers\\LocalDirectory
-		SccProjectUniqueName7 = Providers\\WallpaperSetter\\WallpaperSetter.csproj
+		SccProjectName6 = Providers/WallpaperSetter
+		SccLocalPath6 = Providers\\WallpaperSetter
+		SccProjectUniqueName7 = Providers\\AeroGlassChanger\\AeroGlassChanger.csproj
 		SccProjectTopLevelParentUniqueName7 = Pulse.sln
-		SccProjectName7 = Providers/WallpaperSetter
-		SccLocalPath7 = Providers\\WallpaperSetter
-		SccProjectUniqueName8 = Providers\\AeroGlassChanger\\AeroGlassChanger.csproj
+		SccProjectName7 = Providers/AeroGlassChanger
+		SccLocalPath7 = Providers\\AeroGlassChanger
+		SccProjectUniqueName8 = Providers\\NASAAPOD\\NASAAPOD.csproj
 		SccProjectTopLevelParentUniqueName8 = Pulse.sln
-		SccProjectName8 = Providers/AeroGlassChanger
-		SccLocalPath8 = Providers\\AeroGlassChanger
-		SccProjectUniqueName9 = Providers\\NASAAPOD\\NASAAPOD.csproj
+		SccProjectName8 = Providers/NASAAPOD
+		SccLocalPath8 = Providers\\NASAAPOD
+		SccProjectUniqueName9 = Providers\\NationalGeographicWallpapers\\NationalGeographicWallpapers.csproj
 		SccProjectTopLevelParentUniqueName9 = Pulse.sln
-		SccProjectName9 = Providers/NASAAPOD
-		SccLocalPath9 = Providers\\NASAAPOD
-		SccProjectUniqueName10 = Providers\\NationalGeographicWallpapers\\NationalGeographicWallpapers.csproj
-		SccProjectTopLevelParentUniqueName10 = Pulse.sln
-		SccProjectName10 = Providers/NationalGeographicWallpapers
-		SccLocalPath10 = Providers\\NationalGeographicWallpapers
-		SccProjectUniqueName11 = PulseForm\\PulseForm.csproj
-		SccProjectName11 = PulseForm
-		SccLocalPath11 = PulseForm
-		SccProjectUniqueName12 = Providers\\MediaRSS\\MediaRSSProvider.csproj
+		SccProjectName9 = Providers/NationalGeographicWallpapers
+		SccLocalPath9 = Providers\\NationalGeographicWallpapers
+		SccProjectUniqueName10 = PulseForm\\PulseForm.csproj
+		SccProjectName10 = PulseForm
+		SccLocalPath10 = PulseForm
+		SccProjectUniqueName11 = Providers\\MediaRSS\\MediaRSSProvider.csproj
+		SccProjectTopLevelParentUniqueName11 = Pulse.sln
+		SccProjectName11 = Providers/MediaRSS
+		SccLocalPath11 = Providers\\MediaRSS
+		SccProjectUniqueName12 = Providers\\Piler\\Piler.csproj
 		SccProjectTopLevelParentUniqueName12 = Pulse.sln
-		SccProjectName12 = Providers/MediaRSS
-		SccLocalPath12 = Providers\\MediaRSS
+		SccProjectName12 = Providers/Piler
+		SccLocalPath12 = Providers\\Piler
+		SccProjectUniqueName13 = Providers\\WinAPI\\WinAPI.csproj
+		SccProjectTopLevelParentUniqueName13 = Pulse.sln
+		SccProjectName13 = Providers/WinAPI
+		SccLocalPath13 = Providers\\WinAPI
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,16 +117,6 @@ Global
 		{53B10354-56C0-4440-BBB2-F1F0C330E120}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{53B10354-56C0-4440-BBB2-F1F0C330E120}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{53B10354-56C0-4440-BBB2-F1F0C330E120}.Release|x86.ActiveCfg = Release|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{9014327D-43C7-4C75-AE6D-AFDC48670035}.Release|x86.ActiveCfg = Release|Any CPU
 		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{921F5326-5B28-462D-8220-3D3507438C27}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -217,6 +221,26 @@ Global
 		{90B7DC3D-877E-4316-BE1F-9FA611E94D53}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{90B7DC3D-877E-4316-BE1F-9FA611E94D53}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{90B7DC3D-877E-4316-BE1F-9FA611E94D53}.Release|x86.ActiveCfg = Release|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5}.Release|x86.ActiveCfg = Release|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -224,9 +248,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C42469DC-7D87-4BDF-84B8-3FF5316BBB72} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
 		{A5762A8E-6988-4832-9606-DB53FE1635FC} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
-		{921F5326-5B28-462D-8220-3D3507438C27} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{1E7B8D85-3542-446F-BAA5-87F67FE0183F} = {4956BC1F-65B2-490D-8023-BEAC6D5F8E8D}
 		{B8F8BC9E-7C0C-46E8-A975-DAB86AD853A4} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
-		{9014327D-43C7-4C75-AE6D-AFDC48670035} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
+		{921F5326-5B28-462D-8220-3D3507438C27} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{624D0297-58E5-4EA7-9FDC-8FA03E82770C} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{F55894BE-FD6B-4C97-8C7E-520BB45D1094} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
 		{9FCC0B58-0972-47BF-90CF-4BCEA840C49E} = {C42469DC-7D87-4BDF-84B8-3FF5316BBB72}
@@ -234,5 +258,7 @@ Global
 		{1AF886CC-3BD0-4E02-AF67-5F7D6724B41E} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 		{98DA7B97-746F-4148-9DDC-8F1BFDEACD86} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
 		{DE533383-3E9D-494B-855F-89A00E31AEEB} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
+		{750EF3AC-2191-42D1-9FB7-6301622F51B5} = {A5762A8E-6988-4832-9606-DB53FE1635FC}
+		{B60087E5-76FE-462F-BDC2-BF25BB01F7E6} = {1E7B8D85-3542-446F-BAA5-87F67FE0183F}
 	EndGlobalSection
 EndGlobal

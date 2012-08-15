@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace MediaRSSProvider
 {
-    public partial class MediaRSSImageProviderPreferences : Pulse.Base.ProviderConfigurationBase
+    public partial class MediaRSSImageProviderPreferences : UserControl, Pulse.Base.IProviderConfigurationEditor
     {
         MediaRSSImageSearchSettings giss;
 
@@ -25,7 +25,7 @@ namespace MediaRSSProvider
             comboBox1.DataSource = colors;
         }
 
-        public override void LoadConfiguration(string config)
+        public void LoadConfiguration(string config)
         {
             //fresh config
             if (string.IsNullOrEmpty(config))
@@ -43,7 +43,7 @@ namespace MediaRSSProvider
             txtWidth.Text = giss.ImageWidth.ToString();
         }
 
-        public override string SaveConfiguration()
+        public string SaveConfiguration()
         {
             //I should find out if we can do two-way binding on these properties to make this cleaner...
             giss.Color = comboBox1.SelectedValue != null ? comboBox1.SelectedValue.ToString() : "";
@@ -53,6 +53,15 @@ namespace MediaRSSProvider
             var s = giss.Save();
 
             return s;
+        }
+
+        public bool IsOK { get; set; }
+        
+        public void HostMe(object parent)
+        {
+            Control c = parent as Control;
+
+            c.Controls.Add(this);
         }
     }
 }

@@ -12,19 +12,19 @@ namespace PulseForm
 {
     public partial class ProviderSettingsWindow : Form
     {
-        private ProviderConfigurationBase _uc;
+        private IProviderConfigurationEditor _uc;
 
         public ProviderSettingsWindow()
         {
             InitializeComponent();
         }
 
-        public void LoadSettings(ProviderConfigurationBase uc, string providerName)
+        public void LoadSettings(IProviderConfigurationEditor uc, string providerName)
         {
             _uc = uc;
 
             this.Text = "Provider Settings for " + providerName;
-            scHost.Panel1.Controls.Add(uc);
+            _uc.HostMe(scHost.Panel1);
         }
 
         private void btnOK_Click(object sender, EventArgs e)

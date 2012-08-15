@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Pulse.Base;
+using Pulse.Base.WinAPI;
 
 namespace AeroGlassChanger
 {
@@ -15,14 +16,20 @@ namespace AeroGlassChanger
     [ProviderPlatform(PlatformID.Win32NT, 0, 0)]
     public class AeroGlassChangerProvider : Pulse.Base.IOutputProvider
     {
-        public void ProcessPicture(Pulse.Base.Picture p)
+        public void ProcessPicture(Pulse.Base.Picture p, string config)
         {
             ManualResetEvent mre = new ManualResetEvent(false);
 
             //get color to start with
             Color currentAero = GetCurrentAeroColor();
-            //get final color
-            Color endAeroColor = CalcAverageColor((Bitmap)Bitmap.FromFile(p.LocalPath));
+            Color endAeroColor;
+
+            //load file
+            using (Bitmap bmp = (Bitmap)Bitmap.FromFile(p.LocalPath))
+            {
+                //get final color
+                endAeroColor = CalcAverageColor(bmp);
+            }
 
             //build transition
             Color[] transitionColors = CalcColorTransition(currentAero, endAeroColor, 7);
@@ -34,12 +41,15 @@ namespace AeroGlassChanger
 
             t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
             {
+                //double check (I've seen cases where timer fires even though currentStep is past 7
+                if (currentStep >= 7) { mre.Set(); t.Stop(); }
+
                 //set to next color
                 SetDwmColor(transitionColors[currentStep]);
 
                 //increment steps and check if we should stop the timer
                 currentStep++;
-                if (currentStep == 7) { mre.Set(); t.Stop(); }
+                if (currentStep >= 7) { mre.Set(); t.Stop(); }
             };
 
             t.Start();
@@ -95,25 +105,25 @@ namespace AeroGlassChanger
 
         public static void SetDwmColor(System.Drawing.Color newColor)
         {
-            if (DwmIsCompositionEnabled())
+            if (WinAPI.DwmIsCompositionEnabled())
             {
-                DWM_COLORIZATION_PARAMS color;
+                WinAPI.DWM_COLORIZATION_PARAMS color;
                 //get the current color
-                DwmGetColorizationParameters(out color);
+                WinAPI.DwmGetColorizationParameters(out color);
                 //set new color to transition too
                 color.ColorizationColor = (uint)System.Drawing.Color.FromArgb(255, newColor.R, newColor.G, newColor.B).ToArgb();
                 //transition
-                DwmSetColorizationParameters(ref color, 0);
+                WinAPI.DwmSetColorizationParameters(ref color, 0);
             }
         }
 
         public static Color GetCurrentAeroColor()
         {
-            if (DwmIsCompositionEnabled())
+            if (WinAPI.DwmIsCompositionEnabled())
             {
-                DWM_COLORIZATION_PARAMS color;
+                WinAPI.DWM_COLORIZATION_PARAMS color;
                 //get the current color
-                DwmGetColorizationParameters(out color);
+                WinAPI.DwmGetColorizationParameters(out color);
 
                 Color c = Color.FromArgb((int)color.ColorizationColor);
 
@@ -123,45 +133,17 @@ namespace AeroGlassChanger
             return Color.Empty;
         }
 
-        #region WinAPI
+        public void Activate(object args) { }
 
-        public struct DWM_COLORIZATION_PARAMS
+        public void Deactivate(object args) { }
+
+        public void Initialize() { }
+
+        public void ProcessPictures(PictureList pl, string config)
         {
-            public UInt32 ColorizationColor;
-            public UInt32 ColorizationAfterglow;
-            public UInt32 ColorizationColorBalance;
-            public UInt32 ColorizationAfterglowBalance;
-            public UInt32 ColorizationBlurBalance;
-            public UInt32 ColorizationGlassReflectionIntensity;
-            public UInt32 ColorizationOpaqueBlend;
+            if (pl.Pictures.Any()) ProcessPicture(pl.Pictures.First(), config);
         }
 
-
-        [DllImport("dwmapi.dll", EntryPoint = "#127", PreserveSig = false)]
-        public static extern void DwmGetColorizationParameters(out DWM_COLORIZATION_PARAMS parameters);
-
-        [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern bool DwmIsCompositionEnabled();
-
-        [DllImport("dwmapi.dll", EntryPoint = "#131", PreserveSig = false)]
-        public static extern void DwmSetColorizationParameters(ref DWM_COLORIZATION_PARAMS parameters, long uUnknown);
-
-        #endregion
-
-
-        public void Activate(object args)
-        {
-            
-        }
-
-        public void Deactivate(object args)
-        {
-            
-        }
-
-        public void Initialize()
-        {
-            
-        }
+        public OutputProviderMode Mode { get { return OutputProviderMode.Single; } }
     }
 }

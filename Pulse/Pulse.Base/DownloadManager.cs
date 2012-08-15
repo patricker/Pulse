@@ -5,21 +5,73 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Threading;
+using Pulse.Base;
 
 namespace Pulse.Base
 {
     public class DownloadManager
     {
-        public delegate void PictureDownloadedHandler(Picture filePath);
-        public event PictureDownloadedHandler PictureDownloaded;
+        public static DownloadManager Current
+        {
+            get { return _current; }
+        }
 
-        public delegate void PictureDownloadingHandler();
-        public event PictureDownloadingHandler PictureDownloading;
+        private static DownloadManager _current = new DownloadManager();
 
-        public delegate void PictureDownloadingCompleteHandler();
-        public event PictureDownloadingCompleteHandler PictureDownloadingComplete;
+        private System.Timers.Timer _queuePollingTimer = new System.Timers.Timer(1000);
+        private int _maxConcurrentDownloads = 5;
 
         private readonly Random rnd = new Random();
+
+        public List<PictureDownload> DownloadQueue { get; set; }
+        
+        public string SaveFolder { get; private set; }
+
+        public DownloadManager() : this(Settings.CurrentSettings.CachePath) { 
+           
+        }
+
+        public DownloadManager(string saveFolder)
+        {
+            this.SaveFolder = saveFolder;
+            DownloadQueue = new List<PictureDownload>();
+
+            //validate that the output directory exists
+            if (!Directory.Exists(SaveFolder))
+                Directory.CreateDirectory(SaveFolder);
+
+            //setup the timer
+            _queuePollingTimer.Elapsed += new System.Timers.ElapsedEventHandler(_queuePollingTimer_Elapsed);
+            _queuePollingTimer.Enabled = true;
+        }
+
+        private void _queuePollingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            _queuePollingTimer.Stop();
+            try
+            {
+                //check for any open spots in the queue
+                var count = (from c in DownloadQueue
+                             where c.Status == PictureDownload.DownloadStatus.Downloading
+                             select c).Count();
+
+                //start up the difference
+                var toStart = (from c in DownloadQueue
+                               where c.Status == PictureDownload.DownloadStatus.Stopped
+                               orderby c.Priority ascending
+                               select c).Take(_maxConcurrentDownloads - count);
+
+                foreach (PictureDownload pd in toStart)
+                {
+                    pd.StartDownload();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write(string.Format("Error starting queued downloads. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+            }
+            finally { _queuePollingTimer.Start(); }
+        }
 
         /// <summary>
         /// Retrieves a random picture from the picture list
@@ -27,15 +79,11 @@ namespace Pulse.Base
         /// <param name="pl">Picture list from which to retrieve pictures</param>
         /// <param name="saveFolder">Location where to save the picture</param>
         /// <param name="currentPicture">(optional) the current picture, to avoid repeates.  Pass null if not needed or this is the first picture.</param>
-        public Picture GetPicture(PictureList pl, string saveFolder, Picture currentPicture)
+        public PictureDownload GetPicture(PictureList pl, Picture currentPicture, bool queueForDownload)
         {
             Picture pic = null;
 
-            if (pl == null || pl.Pictures.Count == 0) return pic;
-
-            //validate that the output directory exists
-            if (!Directory.Exists(saveFolder))
-                Directory.CreateDirectory(saveFolder);
+            if (pl == null || pl.Pictures.Count == 0) return null;
 
             //pick the next picture at random
             // only "non-random" bit is that we make sure that the next random picture isn't the same as our current one
@@ -47,26 +95,23 @@ namespace Pulse.Base
 
             pic = pl.Pictures[index];
             //download current picture first
-            GetPicture(pic, saveFolder, true, false);
+            PictureDownload pd = GetPicture(pic, queueForDownload);
 
-            return pic;
+            return pd;
         }
-        
-        public void GetPicture(Picture pic, string saveFolder, bool hookEvent, bool async)
+
+        public PictureDownload GetPicture(Picture pic, bool queueForDownload)
         {
-            //check if the requested image exists, if it does then fire event and return
+            //check if the requested image exists, if it does then return
             //if image already has a local path then use it (just what we need for local provider where images are not stored in cache).
-            var picturePath = string.IsNullOrEmpty(pic.LocalPath) ? pic.CalculateLocalPath(saveFolder) : pic.LocalPath;
+            var picturePath = string.IsNullOrEmpty(pic.LocalPath) ? pic.CalculateLocalPath(SaveFolder) : pic.LocalPath;
             pic.LocalPath = picturePath;
 
 
             if (pic.IsGood)
             {
                 //if the wallpaper image already exists, and passes our 0 size check then fire the event
-                if (PictureDownloaded != null && hookEvent)
-                    PictureDownloaded(pic);
-
-                return;
+                return new PictureDownload(pic);
             }
 
             var fi = new FileInfo(picturePath);
@@ -75,62 +120,28 @@ namespace Pulse.Base
             try { fi.Delete(); }
             catch (Exception ex)
             {
-                Log.Logger.Write(string.Format("Error deleting 0 byte file '{0}' while preparint to redownload it. Exception details: {1}", fi.FullName, ex.ToString()), Log.LoggerLevels.Errors);
+                Log.Logger.Write(string.Format("Error deleting 0 byte file '{0}' while prepareing to redownload it. Exception details: {1}", fi.FullName, ex.ToString()), Log.LoggerLevels.Errors);
             }
 
-            //if this will become our background image them hook into the event
-            // for async instead of using WebClient async method lets just use seperate thread so we can use the same method for both
-            if (async)
-            {
-                ThreadStart ts = () =>
-                {
-                    DownloadFile(pic, picturePath, hookEvent);
-                };
+            PictureDownload pd = new PictureDownload(pic);
 
-                Thread t = new Thread(ts);
-                t.Start();
-            }
-            else
+            if (queueForDownload)
             {
-                DownloadFile(pic, picturePath, hookEvent);
+                //add file to Queue
+                DownloadQueue.Add(pd);
             }
-                
+
+            return pd;
         }
 
-        public void PreFetchFiles(PictureList pl, string saveFolder)
+        public void PreFetchFiles(PictureList pl)
         {
             if (pl == null || pl.Pictures.Count == 0) return;
 
-            //validate that the output directory exists
-            if (!Directory.Exists(saveFolder))
-                Directory.CreateDirectory(saveFolder);
-
             foreach (Picture pic in pl.Pictures)
             {
-                GetPicture(pic, saveFolder, false, true);
+                GetPicture(pic, true);
             }
-        }
-
-        private void DownloadFile(Picture pic, string picturePath, bool hookEvent)
-        {
-            try
-            {
-                WebClient wcLocal = new WebClient();
-
-                wcLocal.DownloadFile(new Uri(pic.Url), picturePath);
-                if (PictureDownloaded != null && hookEvent)
-                    PictureDownloaded(pic);
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Write(string.Format("Error downloading new picture. Url: '{0}', Save Path: '{1}'. Exception details: {2}", pic.Url, picturePath, ex.ToString()), Log.LoggerLevels.Errors);
-            }
-        }
-
-        private void ClientDownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            if (PictureDownloaded != null)
-                PictureDownloaded((Picture)e.UserState);
         }
     }
 }

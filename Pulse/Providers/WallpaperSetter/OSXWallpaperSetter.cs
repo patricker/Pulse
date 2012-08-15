@@ -12,7 +12,7 @@ namespace WallpaperSetter
     [ProviderPlatform(PlatformID.Unix, 0, 0)]
     public class OSXWallpaperSetter : IOutputProvider
     {
-        public void ProcessPicture(Picture p)
+        public void ProcessPicture(Picture p, string config)
         {
 
             string applScript =
@@ -27,5 +27,12 @@ end tell";
         public void Activate(object args) { }
         public void Deactivate(object args) { }
         public void Initialize() { }
+
+        public void ProcessPictures(PictureList pl, string config)
+        {
+            if (pl.Pictures.Any()) ProcessPicture(pl.Pictures.First(), config);
+        }
+
+        public OutputProviderMode Mode { get { return OutputProviderMode.Single; } }
     }
 }

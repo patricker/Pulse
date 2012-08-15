@@ -18,7 +18,7 @@ namespace GoogleImages
         //iszh:{imageHeight}
         public int ImageHeight { get; set; }
 
-        //color also goes under "tbs" as well.  Seel GoogleImageColors
+        //color also goes under "tbs" as well.  See GoogleImageColors
         // for examples of colors and string format
         public string Color { get; set; }
 

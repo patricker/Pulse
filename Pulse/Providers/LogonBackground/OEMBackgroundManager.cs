@@ -9,6 +9,7 @@ using Pulse.Base;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using Pulse.Base.WinAPI;
 
 namespace LogonBackground
 {
@@ -49,7 +50,7 @@ namespace LogonBackground
             //make sure that file system redirection is disabled, otherwise the image shows up somewhere.
             // thanks to (http://stackoverflow.com/questions/6617530/could-not-find-a-part-of-the-path-c-windows-system32-oobe-info-background) for this
             IntPtr ptr = new IntPtr();
-            bool isWow64FsRedirectionDisabled = Wow64DisableWow64FsRedirection(ref ptr);
+            bool isWow64FsRedirectionDisabled = WinAPI.Wow64DisableWow64FsRedirection(ref ptr);
 
             if (!Directory.Exists(_oobeInfo))
                 Directory.CreateDirectory(_oobeInfo);
@@ -63,7 +64,7 @@ namespace LogonBackground
             //make sure that file system redirection is disabled, otherwise the image shows up somewhere else.
             // thanks to (http://stackoverflow.com/questions/6617530/could-not-find-a-part-of-the-path-c-windows-system32-oobe-info-background) for this
             IntPtr ptr = new IntPtr();
-            bool isWow64FsRedirectionDisabled = Wow64DisableWow64FsRedirection(ref ptr);
+            bool isWow64FsRedirectionDisabled = WinAPI.Wow64DisableWow64FsRedirection(ref ptr);
 
             var fiOriginal = new FileInfo(p.LocalPath);
             
@@ -147,9 +148,5 @@ namespace LogonBackground
                 }
             }
         }
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool Wow64DisableWow64FsRedirection(ref IntPtr ptr);
-
     }
 }

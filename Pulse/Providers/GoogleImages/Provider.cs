@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Pulse.Base;
+using Pulse.Base.Providers;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 namespace GoogleImages
 {
     [ProviderConfigurationUserControl(typeof(GoogleImageProviderPreferences))]
+    [ProviderConfigurationClass(typeof(GoogleImageSearchSettings))]
     [System.ComponentModel.Description("Google Images")]
     public class Provider : IInputProvider
     {

@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace Pulse.Base
 {
     public abstract class XmlSerializable<T>
-        where T : class
+        where T : class, new()
     {
         public virtual void Save(string path)
         {
@@ -50,6 +50,32 @@ namespace Pulse.Base
         {
             var s = new XmlSerializer(typeof(T));
             s.Serialize(w, this);
+        }
+
+        public static string Save(T obj)
+        {
+            StringBuilder sb = new StringBuilder();
+            using (StringWriter sw = new StringWriter(sb))
+            {
+                Save(obj, sw);
+            }
+
+            return sb.ToString();
+        }
+
+        public static void Save(T obj, Stream stream)
+        {
+            using (var w = new StreamWriter(stream))
+            {
+                Save(obj, w);
+                w.Close();
+            }
+        }
+
+        private static void Save(T obj, TextWriter w)
+        {
+            var s = new XmlSerializer(typeof(T));
+            s.Serialize(w, obj);
         }
 
         public static T LoadFromFile(string path)
