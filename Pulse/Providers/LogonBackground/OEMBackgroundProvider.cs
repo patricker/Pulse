@@ -42,12 +42,17 @@ namespace LogonBackground
             proc.WaitForExit();  
         }
 
-        public void ProcessPicture(Picture p)
+        public void ProcessPicture(Picture p, string config)
         {
             OEMBackgroundManager oembm = new OEMBackgroundManager();
             oembm.SetNewPicture(p);
         }
 
+        public void ProcessPictures(PictureList pl, string config)
+        {
+            if (pl.Pictures.Any()) ProcessPicture(pl.Pictures.First(), config);
+        }
 
+        public OutputProviderMode Mode { get { return OutputProviderMode.Single; } }
     }
 }

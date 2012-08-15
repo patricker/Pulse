@@ -19,10 +19,7 @@ namespace wallbase
         public string Username { get; set; }
         [XmlIgnore()]
         public string Password { get; set; }
-
-        [XmlIgnore()]
-        public CookieContainer Cookies { get; set; }
-
+        
         [XmlElement("Password")]
         public string xmlPassword {
             get { return Pulse.Base.GeneralHelper.Protect(Password); }
@@ -59,6 +56,9 @@ namespace wallbase
 
         //collection ID for collection searches
         public string CollectionID { get; set; }
+
+        //favorites ID for favorite showing
+        public string FavoriteID { get; set; }
 
         //Image sizing information
         public string SO { get; set; }
@@ -132,6 +132,10 @@ namespace wallbase
                 {
                     areaURL += string.Format("{0}/{1}/0", CollectionID, Convert.ToInt32(NSFW).ToString());
                 }
+                else if (SA == "user/favorites")
+                {
+                    areaURL += string.Format("{0}/{1}/0/666", FavoriteID, "{0}");
+                }
             }
             else
             {
@@ -151,7 +155,7 @@ namespace wallbase
         public int GetPageSize()
         {
             //override page size, since user collections dont' seem to be changeable from 32
-            if (SA == "user/collection") return 32;
+            if (SA == "user/collection" || SA == "user/favorites") return 32;
             //if not user collection then max size
             return 60;
         }
@@ -181,7 +185,7 @@ namespace wallbase
                 sa.Add(new SearchArea() { Name = "Top List", Value = "toplist" });
                 sa.Add(new SearchArea() { Name = "Random", Value = "random" });
                 sa.Add(new SearchArea() { Name = "Collection", Value = "user/collection" });
-
+                sa.Add(new SearchArea() { Name = "Favorite", Value = "user/favorites" });
                 return sa;
             }
         }

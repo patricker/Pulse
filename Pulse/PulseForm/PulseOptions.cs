@@ -21,10 +21,17 @@ namespace PulseForm
             get { return _OutputProviderInfos; }
         }
 
+        public List<ActiveProviderInfo> InputProviderInfos
+        {
+            get { return _InputProviderInfos; }
+        } 
+
         public event EventHandler UpdateSettings;
         private readonly List<string> langCodes = new List<string>();
-        private string _tempProviderConfig = string.Empty;
+
         List<ActiveProviderInfo> _OutputProviderInfos = new List<ActiveProviderInfo>();
+        List<ActiveProviderInfo> _InputProviderInfos = new List<ActiveProviderInfo>();
+
 
         public frmPulseOptions()
         {
@@ -41,7 +48,7 @@ namespace PulseForm
             if (!string.IsNullOrEmpty(Settings.CurrentSettings.Search))
                 SearchBox.Text = Settings.CurrentSettings.Search;
 
-            cbDownloadAutomatically.Checked = Settings.CurrentSettings.DownloadAutomatically;
+            cbDownloadAutomatically.Checked = Settings.CurrentSettings.ChangeOnTimer;
             cbAutoChangeonStartup.Checked = Settings.CurrentSettings.DownloadOnAppStartup;
             udInterval.Value = Settings.CurrentSettings.RefreshInterval;
             
@@ -66,21 +73,50 @@ namespace PulseForm
 
             cbDeleteOldFiles.Checked = Settings.CurrentSettings.ClearOldPics;
             nudTempAge.Value = Settings.CurrentSettings.ClearInterval;
-
-
+            
             //input providers
-            var inputProviders = ProviderManager.Instance.GetProvidersByType<IInputProvider>();
-            if (inputProviders.Count > 0)
+            foreach (var op in ProviderManager.Instance.GetProvidersByType<IInputProvider>())
             {
-                foreach (var p in inputProviders)
+                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(op.Key))
                 {
-                    cbProviders.Items.Add(p.Key);
-                }
-                cbProviders.SelectedItem = Settings.CurrentSettings.Provider;
+                    var ep = Settings.CurrentSettings.ProviderSettings[op.Key];
 
-                //handle settings button enable/disable and loading string from config if it exists
-                HandleProviderSettingsEnableAndLoad();
+                    _InputProviderInfos.Add(new ActiveProviderInfo()
+                    {
+                        Active = ep.Active,
+                        AsyncOK = ep.AsyncOK,
+                        ExecutionOrder = ep.ExecutionOrder,
+                        ProviderConfig = ep.ProviderConfig,
+                        ProviderName = ep.ProviderName
+                    });
+                }
+                else
+                {
+                    _InputProviderInfos.Add(new ActiveProviderInfo()
+                    {
+                        Active = false,
+                        AsyncOK = false,
+                        ExecutionOrder = 0,
+                        ProviderConfig = string.Empty,
+                        ProviderName = op.Key
+                    });
+                }
             }
+
+            //load into combo box
+            cbProviders.DataSource = InputProviderInfos;
+
+            if (InputProviderInfos.Count > 0)
+            {
+                cbProviders.SelectedItem = InputProviderInfos.Where(x => x.Active).FirstOrDefault();
+            }
+
+            //handle settings button enable/disable and loading string from config if it exists
+            HandleProviderSettingsEnableAndLoad();
+
+            //hook changed event handler
+            cbProviders.SelectedIndexChanged += new System.EventHandler(ProviderSelectionChanged);
+
 
             //output providers
             foreach (var op in ProviderManager.Instance.GetProvidersByType<IOutputProvider>())
@@ -156,7 +192,7 @@ namespace PulseForm
             // on some sites searching with no query is fine
             
             Settings.CurrentSettings.Search = SearchBox.Text;
-            Settings.CurrentSettings.DownloadAutomatically = cbDownloadAutomatically.Checked;
+            Settings.CurrentSettings.ChangeOnTimer = cbDownloadAutomatically.Checked;
             Settings.CurrentSettings.DownloadOnAppStartup = cbDownloadAutomatically.Checked;
             Settings.CurrentSettings.ClearOldPics = cbDeleteOldFiles.Checked;
             Settings.CurrentSettings.ClearInterval = Convert.ToInt32(nudTempAge.Value);
@@ -183,25 +219,59 @@ namespace PulseForm
                 frmPulseHost.Runner.CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.CurrentSettings.Provider);
             }
 
-            //save provider config if it exists
-            if (!string.IsNullOrEmpty(_tempProviderConfig))
+            //save Input providers
+            foreach (ActiveProviderInfo api in InputProviderInfos)
             {
-                if (!Settings.CurrentSettings.ProviderSettings.ContainsKey(Settings.CurrentSettings.Provider))
+                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(api.ProviderName))
                 {
-                    Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider] = new ActiveProviderInfo()
+                    //check if the existing item is different then the previous
+                    if (Settings.CurrentSettings.ProviderSettings[api.ProviderName].GetComparisonHashCode() != api.GetComparisonHashCode())
                     {
-                        Active = true,
-                        AsyncOK = false,
-                        ExecutionOrder = 0,
-                        ProviderConfig = _tempProviderConfig,
-                        ProviderName = Settings.CurrentSettings.Provider
-                    };
+                        //since they are different check if we deactivated or just changed a setting
+                        if (api.Active)
+                        {
+                            Settings.CurrentSettings.ProviderSettings[api.ProviderName] = api;
+                        }
+                        else
+                        {
+                            //validate that active state has changed, if it has then deactivate
+                            if (Settings.CurrentSettings.ProviderSettings[api.ProviderName].Active != api.Active)
+                            {
+                                Settings.CurrentSettings.ProviderSettings[api.ProviderName].Instance.Deactivate(null);
+                            }
+
+                            Settings.CurrentSettings.ProviderSettings.Remove(api.ProviderName);
+                        }
+                    }
                 }
-                else
+                else if (api.Active)
                 {
-                    Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider].ProviderConfig = _tempProviderConfig;
+                    Settings.CurrentSettings.ProviderSettings.Add(api.ProviderName, api);
+
+                    //activate new provider
+                    api.Instance.Activate(null);
                 }
             }
+
+            ////save provider config if it exists
+            //if (!string.IsNullOrEmpty(_tempProviderConfig))
+            //{
+            //    if (!Settings.CurrentSettings.ProviderSettings.ContainsKey(Settings.CurrentSettings.Provider))
+            //    {
+            //        Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider] = new ActiveProviderInfo()
+            //        {
+            //            Active = true,
+            //            AsyncOK = false,
+            //            ExecutionOrder = 0,
+            //            ProviderConfig = _tempProviderConfig,
+            //            ProviderName = Settings.CurrentSettings.Provider
+            //        };
+            //    }
+            //    else
+            //    {
+            //        Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider].ProviderConfig = _tempProviderConfig;
+            //    }
+            //}
 
             //save output providers
             foreach (ActiveProviderInfo api in OutputProviderInfos)
@@ -275,15 +345,24 @@ namespace PulseForm
 
         private void HandleProviderSettingsEnableAndLoad()
         {
-            //enable or disable settings button depending on settings availability
-            ProviderSettings.Enabled = (cbProviders.SelectedItem != null) && ProviderManager.Instance.HasConfigurationWindow(cbProviders.SelectedItem.ToString()) != null;
+            object si = cbProviders.SelectedItem;
+            bool result=false;
 
-            //load provider config from settings if it exists
-            if (cbProviders.SelectedItem != null && Settings.CurrentSettings.ProviderSettings.ContainsKey(cbProviders.SelectedItem.ToString()))
+            if (si != null)
             {
-                _tempProviderConfig = Settings.CurrentSettings.ProviderSettings[cbProviders.SelectedItem.ToString()].ProviderConfig;
-            }
-            else { _tempProviderConfig = string.Empty; }
+                ActiveProviderInfo api = si as ActiveProviderInfo;
+
+                //disable all other API's
+                foreach (ActiveProviderInfo a in InputProviderInfos) a.Active = false;
+
+                //set this API to active
+                api.Active = true;
+
+                result = ProviderManager.Instance.HasConfigurationWindow(api.ProviderName) != null;
+            }            
+
+            //enable or disable settings button depending on settings availability
+            ProviderSettings.Enabled = result;
         }
 
         private void ClearNowButtonClick(object sender, EventArgs e)
@@ -305,18 +384,27 @@ namespace PulseForm
 
         private void ProviderSettings_Click(object sender, EventArgs e)
         {
+            ActiveProviderInfo api = cbProviders.SelectedItem as ActiveProviderInfo;
+
             //get the usercontrol instance from Provider Manager
-            var initSettings = ProviderManager.Instance.InitializeConfigurationWindow(cbProviders.SelectedItem.ToString());
+            var initSettings = ProviderManager.Instance.InitializeConfigurationWindow(api.ProviderName);
             if (initSettings == null) return;
 
+            HostConfigurationWindow(initSettings, api);
+        }
+
+        private void HostConfigurationWindow(IProviderConfigurationEditor initSettings, ActiveProviderInfo api)
+        {
             //dialog window which will house the user control
             ProviderSettingsWindow psw = new ProviderSettingsWindow();
 
             //load the usercontrol into the window
-            psw.LoadSettings(initSettings, cbProviders.SelectedItem.ToString());
+            psw.LoadSettings(initSettings, api.ProviderName);
+
+            //get current config string
 
             //load the configuration info into the user control
-            initSettings.LoadConfiguration(_tempProviderConfig);
+            initSettings.LoadConfiguration(api.ProviderConfig);
 
             //show the dialog box
             psw.ShowDialog();
@@ -324,7 +412,7 @@ namespace PulseForm
             //if user clicked OK then call save to keep a copy of settings in memory
             if (initSettings.IsOK)
             {
-                _tempProviderConfig = initSettings.SaveConfiguration();
+                api.ProviderConfig = initSettings.SaveConfiguration();
                 //activate apply option
                 ApplyButton.Enabled = true;
             }
@@ -333,6 +421,28 @@ namespace PulseForm
         private void dgvOutputProviders_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             ApplyButton.Enabled = true;
+        }
+
+        private void dgvOutputProviders_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex == 0)
+            {
+                var obj = dgvOutputProviders.CurrentRow.DataBoundItem;
+
+                if (obj == null) return;
+
+                ActiveProviderInfo api = obj as ActiveProviderInfo;
+
+                Type t = ProviderManager.Instance.HasConfigurationWindow(api.ProviderName);
+
+                //check for null
+                if (t != null)
+                {
+                    IProviderConfigurationEditor cw = ProviderManager.InitializeConfigurationWindow(t);
+
+                    HostConfigurationWindow(cw, api);
+                }
+            }
         }
     }
 }

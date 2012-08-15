@@ -15,7 +15,7 @@ namespace Pulse.Base
         public PictureManager PictureManager = new PictureManager();
         public IInputProvider CurrentProvider = null;
 
-        private DownloadManager DownloadManager = new DownloadManager();
+        private DownloadManager DownloadManager = DownloadManager.Current;
 
         private System.Timers.Timer wallpaperChangerTimer;
         private System.Timers.Timer clearOldWallpapersTimer;
@@ -98,7 +98,7 @@ namespace Pulse.Base
                 DownloadNextPicture();
 
                 //restart the timer if appropriate
-                if (Settings.CurrentSettings.DownloadAutomatically)
+                if (Settings.CurrentSettings.ChangeOnTimer)
                 {
                     wallpaperChangerTimer.Start();
                 }
@@ -144,12 +144,10 @@ namespace Pulse.Base
 
             PictureList pl = PictureManager.GetPictureList(ps);
 
-            Picture nextPicture = DownloadManager.GetPicture(pl, Settings.CurrentSettings.CachePath, CurrentPicture);
-
-            ProcessDownloadedPicture(nextPicture);
+            ProcessDownloadedPicture(pl);
 
             //if prefetch is enabled, validate that all pictures have been downloaded
-            if (Settings.CurrentSettings.PreFetch) DownloadManager.PreFetchFiles(pl, Settings.CurrentSettings.CachePath);
+            if (Settings.CurrentSettings.PreFetch) DownloadManager.PreFetchFiles(pl);
         }
 
         protected void SetTimers()
@@ -162,7 +160,7 @@ namespace Pulse.Base
                     Settings.CurrentSettings.RefreshInterval
                         ).TotalMilliseconds;
 
-            if (Settings.CurrentSettings.DownloadAutomatically)
+            if (Settings.CurrentSettings.ChangeOnTimer)
                 wallpaperChangerTimer.Start();
         }
 
@@ -216,12 +214,17 @@ namespace Pulse.Base
             }
         }
 
-        private void ProcessDownloadedPicture(Picture pic)
+        private void ProcessDownloadedPicture(PictureList pl)
         {
-            if (pic != null)
+            if (pl != null && pl.Pictures.Any())
             {
                 ////enable image banning
                 //banImageToolStripMenuItem.Enabled = true;
+
+                //get the picture downloading wrapper, but don't queue it up for download yet.  We need to hook into it first.
+                PictureDownload pic = DownloadManager.GetPicture(pl, CurrentPicture, false);
+                //set for max priority
+                pic.Priority = 1;
 
                 //call all activated output providers in order
                 foreach (var op in Settings.CurrentSettings.ProviderSettings.Values.Where(x => x.Active).OrderBy(x => x.ExecutionOrder))
@@ -230,13 +233,27 @@ namespace Pulse.Base
                     //wrap each in a try/catch block so we avoid killing pulse on error
                     try
                     {
-                        ((IOutputProvider)op.Instance).ProcessPicture(pic);
+                        IOutputProvider ip = ((IOutputProvider)op.Instance);
+                        string config = op.ProviderConfig;
+
+                        if (ip.Mode == OutputProviderMode.Single)
+                        {
+                            pic.PictureDownloaded += new PictureDownload.PictureDownloadEvent(
+                                    delegate(PictureDownload t) {
+                                        ip.ProcessPicture(pic.Picture, config);
+                                    });
+                        }
+                        else if (ip.Mode == OutputProviderMode.Multiple)
+                            ip.ProcessPictures(pl, config);
                     }
                     catch (Exception ex)
                     {
                         Log.Logger.Write(string.Format("Error processing output plugin '{0}'.  Error: {1}", op.ProviderName, ex.ToString()), Log.LoggerLevels.Errors);
                     }
                 }
+
+                //queue picture up for download
+                DownloadManager.DownloadQueue.Add(pic);
             }
         }
     }

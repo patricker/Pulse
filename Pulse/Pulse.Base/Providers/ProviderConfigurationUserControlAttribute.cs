@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Pulse.Base
+namespace Pulse.Base.Providers
 {
-    [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple = false)]
-    public class ProviderConfigurationUserControlAttribute : Attribute
+    public class ProviderConfigurationUserControlAttribute : ProviderConfigurationAttribute
     {
-        public Type UserControlType;
-
-        public ProviderConfigurationUserControlAttribute(Type userControlType)
+        public ProviderConfigurationUserControlAttribute(Type userControlType) : base(userControlType)
         {
-            this.UserControlType = userControlType;
         }
     }
 }

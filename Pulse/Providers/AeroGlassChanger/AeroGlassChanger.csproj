@@ -52,6 +52,10 @@
       <Project>{53B10354-56C0-4440-BBB2-F1F0C330E120}</Project>
       <Name>Pulse.Base</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WinAPI\WinAPI.csproj">
+      <Project>{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}</Project>
+      <Name>WinAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

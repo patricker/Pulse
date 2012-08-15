@@ -54,6 +54,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DownloadMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DownloadMonitor.Designer.cs">
+      <DependentUpon>DownloadMonitor.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProviderSettingsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="PulseOptions.Designer.cs">
       <DependentUpon>PulseOptions.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="DownloadMonitor.resx">
+      <DependentUpon>DownloadMonitor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProviderSettingsWindow.resx">
       <DependentUpon>ProviderSettingsWindow.cs</DependentUpon>
     </EmbeddedResource>

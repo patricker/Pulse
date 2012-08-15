@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace wallbase
 {
-    public partial class WallbaseProviderPrefs : Pulse.Base.ProviderConfigurationBase
+    public partial class WallbaseProviderPrefs : UserControl, Pulse.Base.IProviderConfigurationEditor
     {
 
         WallbaseImageSearchSettings wiss = null;
@@ -18,7 +18,7 @@ namespace wallbase
             InitializeComponent();
         }
 
-        public override void LoadConfiguration(string config)
+        public void LoadConfiguration(string config)
         {
             try
             {   if(!string.IsNullOrEmpty(config))
@@ -50,6 +50,7 @@ namespace wallbase
             txtHeight.Text = wiss.ImageHeight.ToString();
 
             txtCollectionID.Text = wiss.CollectionID;
+            txtFavoritesID.Text = wiss.FavoriteID;
 
             if (wiss.Color != System.Drawing.Color.Empty)
             {
@@ -58,7 +59,7 @@ namespace wallbase
             }
         }
 
-        public override string SaveConfiguration()
+        public string SaveConfiguration()
         {
             wiss.Username = txtUserID.Text;
             wiss.Password = txtPassword.Text;
@@ -81,6 +82,7 @@ namespace wallbase
 
             
             wiss.CollectionID = txtCollectionID.Text;
+            wiss.FavoriteID = txtFavoritesID.Text;
 
             return wiss.Save();
         }
@@ -107,6 +109,15 @@ namespace wallbase
             cbImageSizeType.DataSource = WallbaseImageSearchSettings.SizingOption.GetDirectionList();
             cbOrderBy.DataSource = WallbaseImageSearchSettings.OrderBy.GetOrderByList();
             cbOrderByDirection.DataSource = WallbaseImageSearchSettings.OrderByDirection.GetDirectionList();
-        }   
+        }
+
+        public bool IsOK { get; set; }
+
+        public void HostMe(object parent)
+        {
+            Control c = parent as Control;
+
+            c.Controls.Add(this);
+        }
     }
 }

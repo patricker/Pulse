@@ -38,10 +38,15 @@ namespace Pulse.Base
             return Path.Combine(baseFolder, Id + Path.GetExtension(Url));
         }
 
+        /// <summary>
+        /// Does the file appear to be present and in good shape (size > 0kb)
+        /// </summary>
         public bool IsGood
         {
             get
             {
+                if (string.IsNullOrEmpty(LocalPath)) return false;
+
                 FileInfo fi = new FileInfo(LocalPath);
                 return (fi.Exists && fi.Length > 0);
             }

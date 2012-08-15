@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.Collections;
 
 namespace Pulse.Base
 {
@@ -149,6 +151,50 @@ namespace Pulse.Base
                 return (char)(n + 0x30);
             }
             return (char)((n - 10) + 0x61);
+        }
+
+        public class CookieAwareWebClient : WebClient
+        {
+            public CookieContainer Cookies { get; set; }
+
+            public CookieAwareWebClient() {
+                Cookies = new CookieContainer();
+            }
+
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                var request = base.GetWebRequest(address);
+                var httpRequest = request as HttpWebRequest;
+                if (httpRequest != null)
+                {
+                    httpRequest.ProtocolVersion = HttpVersion.Version10;
+                    httpRequest.CookieContainer = Cookies;
+
+                    //Don't run this code block on MONO as the underlying name is not the same as it is in Microsoft .NET
+                    if (!GeneralHelper.IsClientLinux)
+                    {
+                        lock (Cookies)
+                        {
+                            var obj = Cookies.GetType().InvokeMember("m_domainTable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance, null, Cookies, new object[] { });
+
+                            if (obj != null)
+                            {
+                                var table = (Hashtable)obj;
+                                var keys = new ArrayList(table.Keys);
+                                foreach (var key in keys)
+                                {
+                                    if (!string.IsNullOrEmpty(key.ToString()))
+                                    {
+                                        var newKey = (key as string).Substring(1);
+                                        table[newKey] = table[key];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return request;
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Pulse.Base
         public string Search { get; set; }
         public List<string> BannedImages { get; set; }
         
-        public bool DownloadAutomatically { get; set; }
+        public bool ChangeOnTimer { get; set; }
         public bool DownloadOnAppStartup { get; set; }
 
         public int RefreshInterval { get; set; }
@@ -65,7 +65,7 @@ namespace Pulse.Base
         {
             Provider = "Wallbase";
             Language = CultureInfo.CurrentUICulture.Name;
-            DownloadAutomatically = true;
+            ChangeOnTimer = true;
             RefreshInterval = 20;
             IntervalUnit = IntervalUnits.Minutes;
 
