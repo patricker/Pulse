@@ -167,31 +167,31 @@ namespace Pulse.Base
                 var httpRequest = request as HttpWebRequest;
                 if (httpRequest != null)
                 {
-                    httpRequest.ProtocolVersion = HttpVersion.Version10;
+                    //httpRequest.ProtocolVersion = HttpVersion.Version10;
                     httpRequest.CookieContainer = Cookies;
 
-                    //Don't run this code block on MONO as the underlying name is not the same as it is in Microsoft .NET
-                    if (!GeneralHelper.IsClientLinux)
-                    {
-                        lock (Cookies)
-                        {
-                            var obj = Cookies.GetType().InvokeMember("m_domainTable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance, null, Cookies, new object[] { });
+                //    //Don't run this code block on MONO as the underlying name is not the same as it is in Microsoft .NET
+                //    if (!GeneralHelper.IsClientLinux)
+                //    {
+                //        lock (Cookies)
+                //        {
+                //            var obj = Cookies.GetType().InvokeMember("m_domainTable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance, null, Cookies, new object[] { });
 
-                            if (obj != null)
-                            {
-                                var table = (Hashtable)obj;
-                                var keys = new ArrayList(table.Keys);
-                                foreach (var key in keys)
-                                {
-                                    if (!string.IsNullOrEmpty(key.ToString()))
-                                    {
-                                        var newKey = (key as string).Substring(1);
-                                        table[newKey] = table[key];
-                                    }
-                                }
-                            }
-                        }
-                    }
+                //            if (obj != null)
+                //            {
+                //                var table = (Hashtable)obj;
+                //                var keys = new ArrayList(table.Keys);
+                //                foreach (var key in keys)
+                //                {
+                //                    if (!string.IsNullOrEmpty(key.ToString()))
+                //                    {
+                //                        var newKey = (key as string).Substring(1);
+                //                        table[newKey] = table[key];
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
                 }
                 return request;
             }

@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace GoogleImages
 {
-    [ProviderConfigurationUserControl(typeof(GoogleImageProviderPreferences))]
+    //[ProviderConfigurationUserControl(typeof(GoogleImageProviderPreferences))]
     [ProviderConfigurationClass(typeof(GoogleImageSearchSettings))]
     [System.ComponentModel.Description("Google Images")]
     public class Provider : IInputProvider

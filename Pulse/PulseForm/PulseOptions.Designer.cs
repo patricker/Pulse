@@ -44,6 +44,7 @@
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.cbRunOnWindowsStartup = new System.Windows.Forms.CheckBox();
             this.udInterval = new System.Windows.Forms.NumericUpDown();
             this.cbDownloadAutomatically = new System.Windows.Forms.CheckBox();
             this.cbPrefetch = new System.Windows.Forms.CheckBox();
@@ -52,7 +53,6 @@
             this.cbUpdateFrequencyUnit = new System.Windows.Forms.ComboBox();
             this.tpOutputs = new System.Windows.Forms.TabPage();
             this.dgvOutputProviders = new System.Windows.Forms.DataGridView();
-            this.oppSettings = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tpAbout = new System.Windows.Forms.TabPage();
             this.BuildTag = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -60,6 +60,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.oppSettings = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -73,6 +74,7 @@
             this.tpOutputs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOutputProviders)).BeginInit();
             this.tpAbout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -89,7 +91,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(345, 300);
+            this.tabControl1.Size = new System.Drawing.Size(345, 364);
             this.tabControl1.TabIndex = 0;
             // 
             // tpGeneral
@@ -102,7 +104,7 @@
             this.tpGeneral.Margin = new System.Windows.Forms.Padding(2);
             this.tpGeneral.Name = "tpGeneral";
             this.tpGeneral.Padding = new System.Windows.Forms.Padding(2);
-            this.tpGeneral.Size = new System.Drawing.Size(337, 274);
+            this.tpGeneral.Size = new System.Drawing.Size(337, 338);
             this.tpGeneral.TabIndex = 0;
             this.tpGeneral.Text = "General";
             this.tpGeneral.UseVisualStyleBackColor = true;
@@ -111,7 +113,7 @@
             // 
             this.groupBox3.Controls.Add(this.panel4);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(7, 177);
+            this.groupBox3.Location = new System.Drawing.Point(7, 250);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -246,13 +248,14 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(321, 112);
+            this.groupBox1.Size = new System.Drawing.Size(321, 152);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Behavior";
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.cbRunOnWindowsStartup);
             this.panel2.Controls.Add(this.udInterval);
             this.panel2.Controls.Add(this.cbDownloadAutomatically);
             this.panel2.Controls.Add(this.cbPrefetch);
@@ -264,8 +267,20 @@
             this.panel2.Location = new System.Drawing.Point(2, 24);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(317, 86);
+            this.panel2.Size = new System.Drawing.Size(317, 126);
             this.panel2.TabIndex = 11;
+            // 
+            // cbRunOnWindowsStartup
+            // 
+            this.cbRunOnWindowsStartup.AutoSize = true;
+            this.cbRunOnWindowsStartup.Location = new System.Drawing.Point(2, 107);
+            this.cbRunOnWindowsStartup.Margin = new System.Windows.Forms.Padding(2);
+            this.cbRunOnWindowsStartup.Name = "cbRunOnWindowsStartup";
+            this.cbRunOnWindowsStartup.Size = new System.Drawing.Size(145, 17);
+            this.cbRunOnWindowsStartup.TabIndex = 12;
+            this.cbRunOnWindowsStartup.Text = "Run on Windows Startup";
+            this.cbRunOnWindowsStartup.UseVisualStyleBackColor = true;
+            this.cbRunOnWindowsStartup.CheckedChanged += new System.EventHandler(this.cbRunOnWindowsStartup_CheckedChanged);
             // 
             // udInterval
             // 
@@ -356,7 +371,7 @@
             this.tpOutputs.Margin = new System.Windows.Forms.Padding(2);
             this.tpOutputs.Name = "tpOutputs";
             this.tpOutputs.Padding = new System.Windows.Forms.Padding(2);
-            this.tpOutputs.Size = new System.Drawing.Size(337, 273);
+            this.tpOutputs.Size = new System.Drawing.Size(337, 338);
             this.tpOutputs.TabIndex = 1;
             this.tpOutputs.Text = "Outputs";
             this.tpOutputs.UseVisualStyleBackColor = true;
@@ -376,16 +391,10 @@
             this.dgvOutputProviders.Name = "dgvOutputProviders";
             this.dgvOutputProviders.RowHeadersVisible = false;
             this.dgvOutputProviders.RowTemplate.Height = 28;
-            this.dgvOutputProviders.Size = new System.Drawing.Size(333, 270);
+            this.dgvOutputProviders.Size = new System.Drawing.Size(333, 334);
             this.dgvOutputProviders.TabIndex = 0;
             this.dgvOutputProviders.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellClick);
             this.dgvOutputProviders.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellValueChanged);
-            // 
-            // oppSettings
-            // 
-            this.oppSettings.HeaderText = "Settings";
-            this.oppSettings.Name = "oppSettings";
-            this.oppSettings.Width = 51;
             // 
             // tpAbout
             // 
@@ -393,7 +402,7 @@
             this.tpAbout.Location = new System.Drawing.Point(4, 22);
             this.tpAbout.Margin = new System.Windows.Forms.Padding(2);
             this.tpAbout.Name = "tpAbout";
-            this.tpAbout.Size = new System.Drawing.Size(337, 273);
+            this.tpAbout.Size = new System.Drawing.Size(337, 338);
             this.tpAbout.TabIndex = 2;
             this.tpAbout.Text = "About";
             this.tpAbout.UseVisualStyleBackColor = true;
@@ -459,8 +468,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2MinSize = 45;
-            this.splitContainer1.Size = new System.Drawing.Size(345, 348);
-            this.splitContainer1.SplitterDistance = 300;
+            this.splitContainer1.Size = new System.Drawing.Size(345, 412);
+            this.splitContainer1.SplitterDistance = 364;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -476,11 +485,18 @@
             this.panel1.Size = new System.Drawing.Size(345, 29);
             this.panel1.TabIndex = 4;
             // 
+            // oppSettings
+            // 
+            this.oppSettings.HeaderText = "Settings";
+            this.oppSettings.Name = "oppSettings";
+            this.oppSettings.Text = "Change";
+            this.oppSettings.Width = 51;
+            // 
             // frmPulseOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(345, 348);
+            this.ClientSize = new System.Drawing.Size(345, 412);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -506,6 +522,7 @@
             this.tpAbout.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -544,6 +561,7 @@
         private System.Windows.Forms.NumericUpDown udInterval;
         private System.Windows.Forms.Label BuildTag;
         private System.Windows.Forms.DataGridView dgvOutputProviders;
+        private System.Windows.Forms.CheckBox cbRunOnWindowsStartup;
         private System.Windows.Forms.DataGridViewButtonColumn oppSettings;
     }
 }

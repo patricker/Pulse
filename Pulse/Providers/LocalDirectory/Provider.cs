@@ -3,10 +3,12 @@ using System.Linq;
 using System.Text;
 using Pulse.Base;
 using System.IO;
+using Pulse.Base.Providers;
 
 namespace LocalDirectory
 {
     [System.ComponentModel.Description("Local Directory")]
+    [ProviderConfigurationClass(typeof(LocalDirectorySettings))]
     public class Provider : IInputProvider
     {
         public PictureList GetPictures(PictureSearch ps)

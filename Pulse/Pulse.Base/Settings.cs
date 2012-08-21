@@ -57,6 +57,8 @@ namespace Pulse.Base
         public int ClearInterval { get; set; }
         public bool ClearOldPics { get; set; }
 
+        public bool RunOnWindowsStartup { get; set; }
+
         //provider settings
         public SerializableDictionary<string, ActiveProviderInfo> ProviderSettings { get; set; }
 
@@ -76,6 +78,7 @@ namespace Pulse.Base
             CachePath = System.IO.Path.Combine(AppPath, "Cache");
             ProviderSettings = new SerializableDictionary<string, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
+            RunOnWindowsStartup = false;
 
             //set wallpaper changer as a default provider for output
             ProviderSettings.Add("Desktop Wallpaper", new ActiveProviderInfo()

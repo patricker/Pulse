@@ -33,19 +33,37 @@ namespace Pulse.Base
             }
         }
 
+        public static Rectangle TotalScreenResolution
+        {
+            get
+            {
+                List<Rectangle> rects = ScreenResolutions;
+
+                Rectangle rect = new Rectangle(0,0,0,0);
+
+                foreach (Rectangle r in rects)
+                {
+                    rect = Rectangle.Union(rect, r);
+                }
+
+                return rect;
+            }
+        }
+
         public static void ShrinkImage(string imgPath, string outPath, int destWidth, int destHeight, int quality)
         {
-            Image img = ShrinkImage(imgPath, destWidth, destHeight);
+            using (Image img = ShrinkImage(imgPath, destWidth, destHeight))
+            {
+                //-----write out Thumbnail to the output stream------        
+                //get jpeg image coded info so we can use it when saving
+                ImageCodecInfo ici = ImageCodecInfo.GetImageEncoders().Where(c => c.MimeType == "image/jpeg").First();
 
-            //-----write out Thumbnail to the output stream------        
-            //get jpeg image coded info so we can use it when saving
-            ImageCodecInfo ici = ImageCodecInfo.GetImageEncoders().Where(c => c.MimeType == "image/jpeg").First();
+                EncoderParameters epParameters = new EncoderParameters(1);
+                epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
 
-            EncoderParameters epParameters = new EncoderParameters(1);
-            epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-
-            //save image to file
-            img.Save(outPath, ici, epParameters);
+                //save image to file
+                img.Save(outPath, ici, epParameters);
+            }
         }
         
         //Patricker - This code came from a stackoverflow answer I posted a while back.  I converted it to C# from VB.Net and from
@@ -62,68 +80,72 @@ namespace Pulse.Base
         public static Image ShrinkImage(string imgPath, int destWidth, int destHeight)
         {
             //load image from file path
-            Image img = Bitmap.FromFile(imgPath);
-            double origRatio = (Math.Min(img.Width, img.Height) / Math.Max(img.Width, img.Height));
-
-            //---Calculate thumbnail sizes---
-            double destRatio = 0;
-
-            //if both width and height are 0 then use defaults (Screen resolution)
-            if (destWidth == 0 & destHeight == 0)
+            using (FileStream fs = File.OpenRead(imgPath))
             {
-                var scResolution = PrimaryScreenResolution;
-                destWidth = scResolution.First;
-                destHeight = scResolution.Second;
+                using (Image img = Bitmap.FromStream(fs))
+                {
+                    double origRatio = (Math.Min(img.Width, img.Height) / Math.Max(img.Width, img.Height));
 
+                    //---Calculate thumbnail sizes---
+                    double destRatio = 0;
+
+                    //if both width and height are 0 then use defaults (Screen resolution)
+                    if (destWidth == 0 & destHeight == 0)
+                    {
+                        var scResolution = PrimaryScreenResolution;
+                        destWidth = scResolution.First;
+                        destHeight = scResolution.Second;
+
+                    }
+                    else if (destWidth > 0 & destHeight > 0)
+                    {
+                        //do nothing, we have both sizes already
+                    }
+                    else if (destWidth > 0)
+                    {
+                        destHeight = (int)Math.Floor((double)img.Height * (destWidth / img.Width));
+                    }
+                    else if (destHeight > 0)
+                    {
+                        destWidth = (int)Math.Floor((double)img.Width * (destHeight / img.Height));
+                    }
+
+                    destRatio = (Math.Min(destWidth, destHeight) / Math.Max(destWidth, destHeight));
+
+                    //calculate source image sizes (rectangle) to get pixel data from        
+                    int sourceWidth = img.Width;
+                    int sourceHeight = img.Height;
+
+                    int sourceX = 0;
+                    int sourceY = 0;
+
+                    int cmpx = img.Width / destWidth;
+                    int cmpy = img.Height / destHeight;
+
+                    //selection is based on the smallest dimension
+                    if (cmpx > cmpy)
+                    {
+                        sourceWidth = img.Width / cmpx * cmpy;
+                        sourceX = ((img.Width - (img.Width / cmpx * cmpy)) / 2);
+                    }
+                    else if (cmpy > cmpx)
+                    {
+                        sourceHeight = img.Height / cmpy * cmpx;
+                        sourceY = ((img.Height - (img.Height / cmpy * cmpx)) / 2);
+                    }
+
+                    //---create the new image---
+                    Bitmap bmpThumb = new Bitmap(destWidth, destHeight);
+                    var g = Graphics.FromImage(bmpThumb);
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                    g.DrawImage(img, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
+
+                    return bmpThumb;
+                }
             }
-            else if (destWidth > 0 & destHeight > 0)
-            {
-                //do nothing, we have both sizes already
-            }
-            else if (destWidth > 0)
-            {
-                destHeight = (int)Math.Floor((double)img.Height * (destWidth / img.Width));
-            }
-            else if (destHeight > 0)
-            {
-                destWidth = (int)Math.Floor((double)img.Width * (destHeight / img.Height));
-            }
-
-            destRatio = (Math.Min(destWidth, destHeight) / Math.Max(destWidth, destHeight));
-
-            //calculate source image sizes (rectangle) to get pixel data from        
-            int sourceWidth = img.Width;
-            int sourceHeight = img.Height;
-
-            int sourceX = 0;
-            int sourceY = 0;
-
-            int cmpx = img.Width / destWidth;
-            int cmpy = img.Height / destHeight;
-
-            //selection is based on the smallest dimension
-            if (cmpx > cmpy)
-            {
-                sourceWidth = img.Width / cmpx * cmpy;
-                sourceX = ((img.Width - (img.Width / cmpx * cmpy)) / 2);
-            }
-            else if (cmpy > cmpx)
-            {
-                sourceHeight = img.Height / cmpy * cmpx;
-                sourceY = ((img.Height - (img.Height / cmpy * cmpx)) / 2);
-            }
-
-            //---create the new image---
-            Bitmap bmpThumb = new Bitmap(destWidth, destHeight);
-            var g = Graphics.FromImage(bmpThumb);
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            g.DrawImage(img, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
-
-
-            return bmpThumb;
         }
         #endregion
 

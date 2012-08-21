@@ -79,29 +79,33 @@ namespace LogonBackground
                 }
 
                 //check if image resolution is a valid aspect ratio, if not try and fix it
-                Image img = Image.FromFile(p.LocalPath);
-
-                var strRatio = Math.Round((double)img.Width / (double)img.Height, 3).ToString();
-                var aspectRatio = Convert.ToDouble(strRatio.Length <= 4 ? strRatio : strRatio.Substring(0, 4));
-
-                //aspect ratio list came from link: http://social.technet.microsoft.com/Forums/en-US/w7itproui/thread/b52689fb-c733-4229-8a10-4aa32d527832/
-                // this list may not be complete
-                List<double> validRatios = new List<double>();
-                validRatios.Add(1.25);
-                validRatios.Add(1.33);
-                validRatios.Add(1.60);
-                validRatios.Add(1.67);
-                validRatios.Add(1.77);                              
-
-                //if not a valid aspect ratio, adjust image
-                if (!validRatios.Contains(aspectRatio))
+                using (FileStream fs = File.OpenRead(p.LocalPath))
                 {
-                    PictureManager.ShrinkImage(p.LocalPath, outPutFile, 0, 0, 90);
-                }
-                else
-                {
-                    //save image to output file
-                    img.Save(outPutFile);
+                    using (Image img = Image.FromStream(fs))
+                    {
+                        var strRatio = Math.Round((double)img.Width / (double)img.Height, 3).ToString();
+                        var aspectRatio = Convert.ToDouble(strRatio.Length <= 4 ? strRatio : strRatio.Substring(0, 4));
+
+                        //aspect ratio list came from link: http://social.technet.microsoft.com/Forums/en-US/w7itproui/thread/b52689fb-c733-4229-8a10-4aa32d527832/
+                        // this list may not be complete
+                        List<double> validRatios = new List<double>();
+                        validRatios.Add(1.25);
+                        validRatios.Add(1.33);
+                        validRatios.Add(1.60);
+                        validRatios.Add(1.67);
+                        validRatios.Add(1.77);
+
+                        //if not a valid aspect ratio, adjust image
+                        if (!validRatios.Contains(aspectRatio))
+                        {
+                            PictureManager.ShrinkImage(p.LocalPath, outPutFile, 0, 0, 90);
+                        }
+                        else
+                        {
+                            //save image to output file
+                            img.Save(outPutFile);
+                        }
+                    }
                 }
                 
                 //File.Copy(p.LocalPath, outPutFile, true);
@@ -126,25 +130,26 @@ namespace LogonBackground
             epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
 
             //original image ms
-            MemoryStream ms = new MemoryStream(File.ReadAllBytes(file));
-
-            //we use htis to keep track of the current size of the image, default to int.max to make sure we always run
-            var fSize = int.MaxValue;
-
-            using (Image newImage = Image.FromStream(ms))
+            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(file)))
             {
-                //check if the image we generated is larger then 245kb, if it is reduce quality by 10 and try again
-                while (fSize >= 245)
+                //we use htis to keep track of the current size of the image, default to int.max to make sure we always run
+                var fSize = int.MaxValue;
+
+                using (Image newImage = Image.FromStream(ms))
                 {
-                    // Save the new file at tshe selected path with the specified encoder parameters, and reuse the same file name
-                    newImage.Save(destFile, iciJpegCodec, epParameters);
+                    //check if the image we generated is larger then 245kb, if it is reduce quality by 10 and try again
+                    while (fSize >= 245)
+                    {
+                        // Save the new file at tshe selected path with the specified encoder parameters, and reuse the same file name
+                        newImage.Save(destFile, iciJpegCodec, epParameters);
 
-                    //get output size in kb
-                    fSize = (int)(new FileInfo(destFile).Length / 1024);
+                        //get output size in kb
+                        fSize = (int)(new FileInfo(destFile).Length / 1024);
 
-                    //reduce quality by 10, this will only affect the output if while loop continues
-                    quality -= 10;
-                    epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+                        //reduce quality by 10, this will only affect the output if while loop continues
+                        quality -= 10;
+                        epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+                    }
                 }
             }
         }

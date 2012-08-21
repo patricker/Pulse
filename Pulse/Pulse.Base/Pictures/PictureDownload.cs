@@ -39,6 +39,8 @@ namespace Pulse.Base
             if (string.IsNullOrEmpty(p.LocalPath)) throw new ArgumentNullException("The Local Path of the picture must be defined before downloading it");
 
             this.Picture = p;
+            //set default priority
+            this.Priority = 999999999;
 
             //set default status of Stopped
             Status = DownloadStatus.Stopped;

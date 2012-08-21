@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Pulse.Base;
 using Pulse.Base.WinAPI;
+using System.IO;
 
 namespace AeroGlassChanger
 {
@@ -25,10 +26,13 @@ namespace AeroGlassChanger
             Color endAeroColor;
 
             //load file
-            using (Bitmap bmp = (Bitmap)Bitmap.FromFile(p.LocalPath))
+            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(p.LocalPath)))
             {
-                //get final color
-                endAeroColor = CalcAverageColor(bmp);
+                using (Bitmap bmp = (Bitmap)Bitmap.FromStream(ms))
+                {
+                    //get final color
+                    endAeroColor = CalcAverageColor(bmp);
+                }
             }
 
             //build transition

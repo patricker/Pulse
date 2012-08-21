@@ -16,6 +16,11 @@ namespace wallbase
         public WallbaseProviderPrefs()
         {
             InitializeComponent();
+
+            cbArea.DataSource = WallbaseImageSearchSettings.SearchArea.GetSearchAreas();
+            cbImageSizeType.DataSource = WallbaseImageSearchSettings.SizingOption.GetDirectionList();
+            cbOrderBy.DataSource = WallbaseImageSearchSettings.OrderBy.GetOrderByList();
+            cbOrderByDirection.DataSource = WallbaseImageSearchSettings.OrderByDirection.GetDirectionList();
         }
 
         public void LoadConfiguration(string config)
@@ -105,10 +110,7 @@ namespace wallbase
 
         private void WallbaseProviderPrefs_Load(object sender, EventArgs e)
         {
-            cbArea.DataSource = WallbaseImageSearchSettings.SearchArea.GetSearchAreas();
-            cbImageSizeType.DataSource = WallbaseImageSearchSettings.SizingOption.GetDirectionList();
-            cbOrderBy.DataSource = WallbaseImageSearchSettings.OrderBy.GetOrderByList();
-            cbOrderByDirection.DataSource = WallbaseImageSearchSettings.OrderByDirection.GetDirectionList();
+
         }
 
         public bool IsOK { get; set; }
