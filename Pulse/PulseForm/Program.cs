@@ -14,6 +14,9 @@ namespace PulseForm
         [STAThread]
         static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPulseHost));
             
             frmPulseHost fph = new frmPulseHost();

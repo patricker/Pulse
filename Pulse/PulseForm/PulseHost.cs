@@ -55,6 +55,7 @@ namespace PulseForm
         void po_UpdateSettings(object sender, EventArgs e)
         {
             Runner.UpdateFromConfiguration();
+            Runner.SkipToNextPicture();
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

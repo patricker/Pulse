@@ -61,10 +61,10 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtCollectionID = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.cdPicker = new System.Windows.Forms.ColorDialog();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.txtFavoritesID = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.cdPicker = new System.Windows.Forms.ColorDialog();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -99,7 +99,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 18);
+            this.label2.Location = new System.Drawing.Point(5, 21);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(39, 13);
@@ -108,7 +108,7 @@
             // 
             // txtUserID
             // 
-            this.txtUserID.Location = new System.Drawing.Point(43, 18);
+            this.txtUserID.Location = new System.Drawing.Point(43, 21);
             this.txtUserID.Margin = new System.Windows.Forms.Padding(2);
             this.txtUserID.Name = "txtUserID";
             this.txtUserID.Size = new System.Drawing.Size(68, 20);
@@ -117,7 +117,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(114, 18);
+            this.label3.Location = new System.Drawing.Point(114, 21);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(36, 13);
@@ -126,7 +126,7 @@
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(153, 18);
+            this.txtPassword.Location = new System.Drawing.Point(153, 21);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(2);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(68, 20);
@@ -439,11 +439,6 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "Collection ID: ";
             // 
-            // cdPicker
-            // 
-            this.cdPicker.AnyColor = true;
-            this.cdPicker.FullOpen = true;
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.txtFavoritesID);
@@ -473,6 +468,11 @@
             this.label10.Size = new System.Drawing.Size(70, 13);
             this.label10.TabIndex = 2;
             this.label10.Text = "Favorites ID: ";
+            // 
+            // cdPicker
+            // 
+            this.cdPicker.AnyColor = true;
+            this.cdPicker.FullOpen = true;
             // 
             // WallbaseProviderPrefs
             // 

@@ -11,6 +11,7 @@ using System.IO;
 using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using Microsoft.Win32;
 
 namespace PulseForm
 {
@@ -51,9 +52,12 @@ namespace PulseForm
             cbDownloadAutomatically.Checked = Settings.CurrentSettings.ChangeOnTimer;
             cbAutoChangeonStartup.Checked = Settings.CurrentSettings.DownloadOnAppStartup;
             udInterval.Value = Settings.CurrentSettings.RefreshInterval;
-            
+            cbUpdateFrequencyUnit.SelectedItem = Settings.CurrentSettings.IntervalUnit;
+
             cbPrefetch.Checked = Settings.CurrentSettings.PreFetch;
 
+            cbRunOnWindowsStartup.Checked = Settings.CurrentSettings.RunOnWindowsStartup;
+            //frequency
 
             //LanguageComboBox.Items.Add(new ComboBoxItem() { Content = CultureInfo.GetCultureInfo("en-US").NativeName });
             //langCodes.Add("en-US");
@@ -202,9 +206,23 @@ namespace PulseForm
 
 
             Settings.CurrentSettings.RefreshInterval = (int)udInterval.Value;
+            Settings.CurrentSettings.IntervalUnit = (Settings.IntervalUnits)cbUpdateFrequencyUnit.SelectedValue;
 
-            //if (LanguageComboBox.SelectedIndex >= 0)
-            //    Settings.CurrentSettings.Language = langCodes[LanguageComboBox.SelectedIndex];
+            //detect change in Run on Windows startup
+            if (Settings.CurrentSettings.RunOnWindowsStartup != cbRunOnWindowsStartup.Checked)
+            {
+                Settings.CurrentSettings.RunOnWindowsStartup = cbRunOnWindowsStartup.Checked;
+                //update registry key
+                RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                if (Settings.CurrentSettings.RunOnWindowsStartup)
+                {
+                    rkApp.SetValue("Pulse", Application.ExecutablePath.ToString());
+                }
+                else
+                {
+                    rkApp.DeleteValue("Pulse", false);
+                }
+            }
 
             //Input provider settings (only if provider changed)
             if (!string.IsNullOrEmpty(cbProviders.Text) && Settings.CurrentSettings.Provider != cbProviders.Text)
@@ -252,26 +270,6 @@ namespace PulseForm
                     api.Instance.Activate(null);
                 }
             }
-
-            ////save provider config if it exists
-            //if (!string.IsNullOrEmpty(_tempProviderConfig))
-            //{
-            //    if (!Settings.CurrentSettings.ProviderSettings.ContainsKey(Settings.CurrentSettings.Provider))
-            //    {
-            //        Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider] = new ActiveProviderInfo()
-            //        {
-            //            Active = true,
-            //            AsyncOK = false,
-            //            ExecutionOrder = 0,
-            //            ProviderConfig = _tempProviderConfig,
-            //            ProviderName = Settings.CurrentSettings.Provider
-            //        };
-            //    }
-            //    else
-            //    {
-            //        Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider].ProviderConfig = _tempProviderConfig;
-            //    }
-            //}
 
             //save output providers
             foreach (ActiveProviderInfo api in OutputProviderInfos)
@@ -442,7 +440,16 @@ namespace PulseForm
 
                     HostConfigurationWindow(cw, api);
                 }
+                else
+                {
+                    MessageBox.Show(string.Format("Sorry! No settings available for {0}.", api.ProviderName));
+                }
             }
+        }
+
+        private void cbRunOnWindowsStartup_CheckedChanged(object sender, EventArgs e)
+        {
+            ApplyButton.Enabled = true;
         }
     }
 }

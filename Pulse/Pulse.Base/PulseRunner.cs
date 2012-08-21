@@ -142,8 +142,13 @@ namespace Pulse.Base
                 ProviderSearchSettings = Settings.CurrentSettings.ProviderSettings.ContainsKey(Settings.CurrentSettings.Provider) ? Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider].ProviderConfig : string.Empty
             };
 
+            //Clear the download Queue
+            DownloadManager.DownloadQueue.Clear();
+
+            //get new pictures
             PictureList pl = PictureManager.GetPictureList(ps);
 
+            //process downloaded picture list
             ProcessDownloadedPicture(pl);
 
             //if prefetch is enabled, validate that all pictures have been downloaded
