@@ -100,7 +100,9 @@ namespace Pulse.Base
 
         public static T LoadFromXML(string sb)
         {
-            XmlTextReader xtr = new XmlTextReader(new StringReader(sb.ToString()));
+            if (string.IsNullOrEmpty(sb)) return null;
+
+            XmlTextReader xtr = new XmlTextReader(new StringReader(sb));
 
             return Load(xtr);
         }
