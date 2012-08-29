@@ -161,6 +161,11 @@ namespace Pulse.Base
                 Cookies = new CookieContainer();
             }
 
+            public CookieAwareWebClient(CookieContainer cookies)
+            {
+                Cookies = cookies;
+            }
+
             protected override WebRequest GetWebRequest(Uri address)
             {
                 var request = base.GetWebRequest(address);

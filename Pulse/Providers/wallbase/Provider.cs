@@ -20,7 +20,7 @@ namespace wallbase
     public class Provider : IInputProvider
     {
         private int resultCount;
-        private HttpUtility.CookieAwareWebClient _client = null;
+        private CookieContainer _cookies = new CookieContainer();
 
         public void Initialize()
         {
@@ -58,7 +58,13 @@ namespace wallbase
 
                 string pageURL = areaURL.Contains("{0}") ? string.Format(areaURL, strPageNum) : areaURL;
                 //string content = HttpPost(pageURL, postParams);
-                string content = _client.UploadString(pageURL, postParams);
+                string content = string.Empty;
+
+                using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
+                {
+                    content = _client.UploadString(pageURL, postParams);
+                }
+
                 if (string.IsNullOrEmpty(content))
                     break;
 
@@ -189,21 +195,21 @@ namespace wallbase
 
         private string GetDirectPictureUrl(string pageUrl)
         {
-            HttpUtility.CookieAwareWebClient cawc = new HttpUtility.CookieAwareWebClient();
-
-            cawc.Cookies = _client.Cookies;
-
-            var content = cawc.DownloadString(pageUrl);
-            if (string.IsNullOrEmpty(content)) return string.Empty;
-
-            var regex = new Regex(@"<img src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
-            var m = regex.Match(content);
-            if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
+            using (HttpUtility.CookieAwareWebClient cawc = new HttpUtility.CookieAwareWebClient(_cookies))
             {
-                return m.Groups["img"].Value;
-            }
 
-            return string.Empty;
+                var content = cawc.DownloadString(pageUrl);
+                if (string.IsNullOrEmpty(content)) return string.Empty;
+
+                var regex = new Regex(@"<img src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
+                var m = regex.Match(content);
+                if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
+                {
+                    return m.Groups["img"].Value;
+                }
+
+                return string.Empty;
+            }
         }
 
         private static string StripTags(string source)
@@ -213,24 +219,24 @@ namespace wallbase
 
         private void Authenticate(string username, string password)
         {
-            if (_client != null) _client.Dispose();
-            _client = new HttpUtility.CookieAwareWebClient();
-
-            //if we have a username/password and we aren't already authenticated then authenticate
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
             {
+                //if we have a username/password and we aren't already authenticated then authenticate
+                if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                {
 
-                var loginData = new NameValueCollection();
-                loginData.Add("usrname", username);
-                loginData.Add("pass", password);
-                loginData.Add("nopass_email", "Type in your e-mail and press enter");
-                loginData.Add("nopass", "0");
+                    var loginData = new NameValueCollection();
+                    loginData.Add("usrname", username);
+                    loginData.Add("pass", password);
+                    loginData.Add("nopass_email", "Type in your e-mail and press enter");
+                    loginData.Add("nopass", "0");
 
-                // Hack: Authenticate the user twice!
-                _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
-                var result = _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
+                    // Hack: Authenticate the user twice!
+                    _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
+                    var result = _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
 
-                string response = System.Text.Encoding.UTF8.GetString(result);
+                    string response = System.Text.Encoding.UTF8.GetString(result);
+                }
             }
         }
     }
