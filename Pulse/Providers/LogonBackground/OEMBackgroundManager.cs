@@ -24,7 +24,6 @@ namespace LogonBackground
                 .OpenSubKey("CurrentVersion").OpenSubKey("Authentication").OpenSubKey("LogonUI").OpenSubKey("Background", true))
             {
                 key.SetValue("OEMBackground", 1, RegistryValueKind.DWord);
-                key.Close();
             }
         }
 
@@ -34,7 +33,6 @@ namespace LogonBackground
                 .OpenSubKey("CurrentVersion").OpenSubKey("Authentication").OpenSubKey("LogonUI").OpenSubKey("Background", true))
             {
                 key.DeleteValue("OEMBackground", false);
-                key.Close();
             }
         }
 

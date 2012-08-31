@@ -156,6 +156,7 @@ namespace Pulse.Base
         public class CookieAwareWebClient : WebClient
         {
             public CookieContainer Cookies { get; set; }
+            public string Referrer { get; set; }
 
             public CookieAwareWebClient() {
                 Cookies = new CookieContainer();
@@ -174,6 +175,10 @@ namespace Pulse.Base
                 {
                     //httpRequest.ProtocolVersion = HttpVersion.Version10;
                     httpRequest.CookieContainer = Cookies;
+                    
+                    //if we have a custom referrer, and we aren't involved in a redirect, then use our custom referrer
+                    if (!string.IsNullOrEmpty(Referrer) && string.IsNullOrEmpty(httpRequest.Referer))
+                        httpRequest.Referer = Referrer;
 
                 //    //Don't run this code block on MONO as the underlying name is not the same as it is in Microsoft .NET
                 //    if (!GeneralHelper.IsClientLinux)

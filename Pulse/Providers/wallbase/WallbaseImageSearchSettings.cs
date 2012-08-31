@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Security.Cryptography;
 using System.Net;
 using Pulse.Base;
+using System.Collections.Specialized;
 
 namespace wallbase
 {
@@ -160,13 +161,34 @@ namespace wallbase
             return 60;
         }
 
-        public string GetPostParams(string search)
-        {
-            string postParams = string.Empty;
+        //public string GetPostParams(string search)
+        //{
+        //    string postParams = string.Empty;
             
-            if(SA=="search") {
-            postParams = string.Format("query={0}&board={7}&nsfw={6}&res_opt={2}&res={3}&aspect=0&orderby={4}&orderby_opt={5}&thpp={1}&section=wallpapers",
-                search, GetPageSize().ToString(), SO, BuildResolutionString(), OB, OBD, BuildPurityString(), BuildCategoryString());
+        //    if(SA=="search") {
+        //    postParams = string.Format("query={0}&board={7}&nsfw={6}&res_opt={2}&res={3}&aspect=0&orderby={4}&orderby_opt={5}&thpp={1}&section=wallpapers",
+        //        search, GetPageSize().ToString(), SO, BuildResolutionString(), OB, OBD, BuildPurityString(), BuildCategoryString());
+        //    }
+
+        //    return postParams;
+        //}
+
+        public NameValueCollection GetPostParams(string search)
+        {
+            NameValueCollection postParams = new NameValueCollection();
+
+            if (SA == "search")
+            {
+                postParams.Add("query",search);
+                postParams.Add("board", BuildCategoryString());
+                postParams.Add("nsfw",BuildPurityString());
+                postParams.Add("res_opt",SO);
+                postParams.Add("res",BuildResolutionString());
+                postParams.Add("aspect","0.000");
+                postParams.Add("orderby",OB);
+                postParams.Add("orderby_opt",OBD);
+                postParams.Add("thpp",GetPageSize().ToString());
+                postParams.Add("section","wallpapers");
             }
 
             return postParams;

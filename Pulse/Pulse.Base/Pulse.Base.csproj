@@ -52,6 +52,7 @@
     </Compile>
     <Compile Include="Log.cs" />
     <Compile Include="Pair.cs" />
+    <Compile Include="Pictures\DownloadQueue.cs" />
     <Compile Include="Pictures\PictureDownload.cs" />
     <Compile Include="Providers\ProviderPlatformAttribute.cs" />
     <Compile Include="Providers\ActiveProviderInfo.cs" />

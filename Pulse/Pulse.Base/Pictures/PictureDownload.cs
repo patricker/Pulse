@@ -7,9 +7,9 @@ using System.IO;
 
 namespace Pulse.Base
 {
-    public class PictureDownload
+    public class PictureDownload : IDisposable
     {
-        public delegate void PictureDownloadEvent(PictureDownload pic);
+        public delegate void PictureDownloadEvent(PictureDownload sender);
 
         public event PictureDownloadEvent PictureDownloaded;
         public event PictureDownloadEvent PictureDownloading;
@@ -21,9 +21,11 @@ namespace Pulse.Base
         public DownloadStatus Status { get; private set; }
         public Exception LastError { get; private set; }
         public int Priority { get; set; }
+        public int FailureCount { get; private set; }
 
-        private WebClient _client = new WebClient();
-        private int _failureCount = 0;        
+        private HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient();
+        private int _failureCount = 0;
+        private string _tempDownloadPath = string.Empty;
 
         public enum DownloadStatus
         {
@@ -52,23 +54,36 @@ namespace Pulse.Base
 
         public void StartDownload()
         {
-            _client.DownloadFileAsync(new Uri(Picture.Url), Picture.LocalPath, Picture);
+            //check if we have a referrer URL and assign it
+            if (Picture.Properties.ContainsKey(Picture.StandardProperties.Referrer))
+                _client.Referrer = Picture.Properties[Picture.StandardProperties.Referrer];
 
             if (!this.Picture.IsGood)
             {
+                //generate a temp path to save the file to
+                _tempDownloadPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                //download the file async
+                _client.DownloadFileAsync(new Uri(Picture.Url), _tempDownloadPath, Picture);
+
+                //set status to downloading
                 Status = DownloadStatus.Downloading;
                 //call picture downloading event
                 if (PictureDownloading != null) PictureDownloading(this);
             }
             else
             {
+                //if picture is already in good shape then don't worry about it
                 MarkAsComplete();
             }
         }
 
         public void CancelDownload()
         {
-            _client.CancelAsync();
+            //if the client is busy then cancel, else just set cancelled
+            if (_client.IsBusy)
+                _client.CancelAsync();
+            else
+                Status = DownloadStatus.Cancelled;
         }
 
         void _client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -85,7 +100,8 @@ namespace Pulse.Base
                 Status = DownloadStatus.Cancelled;
                 DownloadProgress = 0;
                 //try to delete the partially downloaded file
-                try { File.Delete(Picture.LocalPath); } catch(Exception){}
+                try { File.Delete(_tempDownloadPath); }
+                catch (Exception) { }
 
                 //call aborted event
                 if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
@@ -97,17 +113,38 @@ namespace Pulse.Base
             if(e.Error != null) {
                 LastError = e.Error;
 
-                if(this._failureCount < 3) {
-                    _failureCount++;
-                    StartDownload();
-                }else { 
-                    Status = DownloadStatus.Error;
-                    //call download aborted
-                    if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
-                }
+                HandleErrorRetry();
+                //stop processing on error (retry is handled in above function)
+                return;
             }
 
-            MarkAsComplete();
+            //move the temporary file to it's final destination
+            try
+            {
+                //copy temp file to final destination
+                File.Copy(_tempDownloadPath, Picture.LocalPath, true);
+
+                //mark the file as complete
+                MarkAsComplete();
+            }
+            catch {
+                HandleErrorRetry();
+            }
+
+            try
+            {
+                //delete temp file (this fails sometimes so I put it in a try/catch)
+                File.Delete(_tempDownloadPath);
+            }
+            catch { }
+        }
+
+        private void HandleErrorRetry()
+        {
+            _failureCount++;
+            Status = DownloadStatus.Error;
+            //call download aborted
+            if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
         }
 
         private void MarkAsComplete()
@@ -117,6 +154,11 @@ namespace Pulse.Base
 
             //call download complete
             if (PictureDownloaded != null) PictureDownloaded(this);
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }

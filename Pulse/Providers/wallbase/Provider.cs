@@ -48,7 +48,7 @@ namespace wallbase
             var wallResults = new List<Picture>();
 
             string areaURL = wiss.BuildURL();
-            string postParams = wiss.GetPostParams(search);
+            //string postParams = wiss.GetPostParams(search);
 
 
             do
@@ -62,7 +62,9 @@ namespace wallbase
 
                 using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
-                    content = _client.UploadString(pageURL, postParams);
+                    //content = _client.UploadString(pageURL, postParams);
+                    byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams(search));
+                    content = System.Text.Encoding.Default.GetString(reqResult);
                 }
 
                 if (string.IsNullOrEmpty(content))
@@ -126,6 +128,10 @@ namespace wallbase
 
                                 try
                                 {
+                                    //save original URL as referrer
+                                    p.Properties.Add(Picture.StandardProperties.Referrer, p.Url);
+
+                                    //get actual image URL
                                     p.Url = GetDirectPictureUrl(p.Url);
                                     p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
 
@@ -185,7 +191,7 @@ namespace wallbase
                 var pic = new Picture();
 
                 pic.Url = picsMatches[i].Groups["link"].Value;
-                pic.Properties["thumb"] = picsMatches[i].Groups["img"].Value;
+                pic.Properties.Add(Picture.StandardProperties.Thumbnail, picsMatches[i].Groups["img"].Value);
 
                 result.Add(pic);
             }

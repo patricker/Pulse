@@ -51,5 +51,11 @@ namespace Pulse.Base
                 return (fi.Exists && fi.Length > 0);
             }
         }
+
+        public static class StandardProperties
+        {
+            public static readonly string Thumbnail = "thumb";
+            public static readonly string Referrer = "referrer";
+        }
     }
 }

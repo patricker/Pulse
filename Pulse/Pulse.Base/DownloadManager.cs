@@ -6,10 +6,11 @@ using System.Net;
 using System.IO;
 using System.Threading;
 using Pulse.Base;
+using Pulse.Base.Pictures;
 
 namespace Pulse.Base
 {
-    public class DownloadManager
+    public class DownloadManager : IDisposable
     {
         public static DownloadManager Current
         {
@@ -18,14 +19,34 @@ namespace Pulse.Base
 
         private static DownloadManager _current = new DownloadManager();
 
+        /// <summary>
+        /// location where images are saved to
+        /// </summary>
+        public string SaveFolder { get; private set; }
+
+        //Events for Download Manager UI
+        public event PictureDownload.PictureDownloadEvent PictureAddedToQueue;
+        public event PictureDownload.PictureDownloadEvent PictureRemovedFromQueue;
+
+        public event PictureDownload.PictureDownloadEvent PictureDownloaded;
+        public event PictureDownload.PictureDownloadEvent PictureDownloading;
+        public event PictureDownload.PictureDownloadEvent PictureDownloadingAborted;
+        public event PictureDownload.PictureDownloadEvent PictureDownloadProgressChanged;
+
+
+        //how often to check for new images in the queue/open slots in the queue
         private System.Timers.Timer _queuePollingTimer = new System.Timers.Timer(1000);
+        
+        //number of concurrent image downloads to perform
         private int _maxConcurrentDownloads = 5;
 
+        private int _failureRetries = 3;
+
+        //used for random image selection
         private readonly Random rnd = new Random();
 
-        public List<PictureDownload> DownloadQueue { get; set; }
-        
-        public string SaveFolder { get; private set; }
+        //download queue for all queued images
+        private DownloadQueue _downloadQueue = new DownloadQueue();
 
         public DownloadManager() : this(Settings.CurrentSettings.CachePath) { 
            
@@ -34,7 +55,6 @@ namespace Pulse.Base
         public DownloadManager(string saveFolder)
         {
             this.SaveFolder = saveFolder;
-            DownloadQueue = new List<PictureDownload>();
 
             //validate that the output directory exists
             if (!Directory.Exists(SaveFolder))
@@ -45,21 +65,85 @@ namespace Pulse.Base
             _queuePollingTimer.Enabled = true;
         }
 
+        public void QueuePicture(PictureDownload p)
+        {
+            if (_downloadQueue.Contains(p.Picture.Url)) return;
+
+            //add to the queue
+            _downloadQueue.Add(p);
+
+            //hook events
+            p.PictureDownloaded += p_PictureDownloaded;
+            p.PictureDownloading += p_PictureDownloading;
+            p.PictureDownloadingAborted += p_PictureDownloadingAborted;
+            p.PictureDownloadProgressChanged += p_PictureDownloadProgressChanged;
+
+            //call picture added event
+            if (PictureAddedToQueue != null) PictureAddedToQueue(p);
+        }
+
+        public void RemovePictureFromQueue(PictureDownload p)
+        {
+            if (!_downloadQueue.Contains(p)) return;
+            
+            //call cancel, just in case
+            p.CancelDownload();
+
+            _downloadQueue.Remove(p);
+
+            //call removed event
+            if (PictureRemovedFromQueue != null) PictureRemovedFromQueue(p);
+        }
+
+        public void ClearQueue()
+        {
+            foreach (PictureDownload pd in _downloadQueue.ToList())
+            {
+                RemovePictureFromQueue(pd);
+            }
+        }
+
+        #region PictureEventBubbler
+        void p_PictureDownloadProgressChanged(PictureDownload sender)
+        {
+            if (PictureDownloadProgressChanged != null) PictureDownloadProgressChanged(sender);
+        }
+
+        void p_PictureDownloadingAborted(PictureDownload sender)
+        {
+            if (PictureDownloadingAborted != null) PictureDownloadingAborted(sender);
+        }
+
+        void p_PictureDownloading(PictureDownload sender)
+        {
+            if (PictureDownloading != null) PictureDownloading(sender);
+        }
+
+        void p_PictureDownloaded(PictureDownload sender)
+        {
+            if (PictureDownloaded != null) PictureDownloaded(sender);
+        }
+        #endregion
+        
         private void _queuePollingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _queuePollingTimer.Stop();
             try
             {
+                var queueSnapshot = _downloadQueue.ToList();
+
                 //check for any open spots in the queue
-                var count = (from c in DownloadQueue
+                var count = (from c in queueSnapshot
                              where c.Status == PictureDownload.DownloadStatus.Downloading
                              select c).Count();
 
                 //start up the difference
-                var toStart = (from c in DownloadQueue
-                               where c.Status == PictureDownload.DownloadStatus.Stopped
+                //Include download retries here by checking for status of error and retry count < limit
+                var toStart = (from c in queueSnapshot
+                               where c.Status == PictureDownload.DownloadStatus.Stopped ||
+                               c.Status == PictureDownload.DownloadStatus.Error && c.FailureCount < _failureRetries
                                orderby c.Priority ascending
-                               select c).Take(_maxConcurrentDownloads - count);
+                               select c).Take(_maxConcurrentDownloads - count);                
 
                 foreach (PictureDownload pd in toStart)
                 {
@@ -128,7 +212,7 @@ namespace Pulse.Base
             if (queueForDownload)
             {
                 //add file to Queue
-                DownloadQueue.Add(pd);
+                QueuePicture(pd);
             }
 
             return pd;
@@ -142,6 +226,11 @@ namespace Pulse.Base
             {
                 GetPicture(pic, true);
             }
+        }
+
+        public void Dispose()
+        {
+            _queuePollingTimer.Dispose();
         }
     }
 }

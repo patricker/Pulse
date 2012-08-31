@@ -7,6 +7,7 @@ using Pulse.Base.Providers;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.ComponentModel;
+using System.Net;
 
 namespace GoogleImages
 {
@@ -15,9 +16,10 @@ namespace GoogleImages
     [System.ComponentModel.Description("Google Images")]
     public class Provider : IInputProvider
     {
-        private Regex imagesRegex2 = new Regex(@"(imgurl=)(?<imgurl>http[^&>]*)([>&]{1})");
+        private Regex imagesRegex2 = new Regex(@"imgurl=(?<imgurlgrp>http.*?)&amp;.*?imgrefurl=(?<imgrefgrp>http.*?)&amp;.*?src=[""'](?<thumbURL>.*?)[""'].*?>");//"(imgurl=)(?<imgurl>http.*?)[^&>]*([>&]{1})");
         private string baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}{1}&start={2}";
-        
+        private CookieContainer _cookies = new CookieContainer();
+
         public Provider()
         {
         }
@@ -43,8 +45,6 @@ namespace GoogleImages
 
             //if search is empty, return now since we can't search without it
             if (string.IsNullOrEmpty(ps.SearchString)) return result;
-
-            System.Net.WebClient client = new System.Net.WebClient();                        
 
             var pageIndex = 0;
             var imgFoundCount =0;
@@ -75,7 +75,11 @@ namespace GoogleImages
                 //build URL from query, dimensions and page index
                 var url = string.Format(baseURL, ps.SearchString, tbs, (pageIndex * 20).ToString());
 
-                var response = client.DownloadString(url);
+                var response = string.Empty;
+                using (HttpUtility.CookieAwareWebClient client = new HttpUtility.CookieAwareWebClient(_cookies))
+                {
+                    response = client.DownloadString(url);
+                }
 
                 var images = imagesRegex2.Matches(response);
 
@@ -85,12 +89,20 @@ namespace GoogleImages
                 //convert images found into picture entries
                 foreach (Match item in images)
                 {
-                    var purl = item.Groups[3].Value;
+                    var purl = item.Groups["imgurlgrp"].Value;
+                    var referrer = item.Groups["imgrefgrp"].Value;
+                    var thumbnail = item.Groups["thumbURL"].Value;
                     //get id and trim if necessary (ran into a few cases of rediculously long filenames)
                     var id = System.IO.Path.GetFileNameWithoutExtension(purl);
                     if (id.Length > 50) id = id.Substring(0, 50);
+                    //because google images come from so many sites it's not uncommon to have duplicate file names. (we fix this)
+                    id = string.Format("{0}_{1}", id, purl.GetHashCode().ToString());
 
-                    result.Pictures.Add(new Picture() { Url = purl, Id = id });
+                    Picture p = new Picture() { Url = purl, Id = id };
+                    p.Properties.Add(Picture.StandardProperties.Thumbnail, thumbnail);
+                    p.Properties.Add(Picture.StandardProperties.Referrer, referrer);
+
+                    result.Pictures.Add(p);
                 }
 
                 //if we have an image ban list check for them

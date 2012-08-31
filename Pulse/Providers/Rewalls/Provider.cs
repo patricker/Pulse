@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
 using System.Xml.Linq;
 using Pulse.Base;
 
@@ -62,7 +61,7 @@ namespace Rewalls
                 var folder = el.Element("folder").Value;
                 var maxResString = el.Element("res").Value;
                 var maxRes = new Size(Convert.ToInt32(maxResString.Split('x')[0]), Convert.ToInt32(maxResString.Split('x')[1]));
-                var curRes = new Size((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
+                var curRes = new Size(Pulse.Base.PictureManager.PrimaryScreenResolution.First, Pulse.Base.PictureManager.PrimaryScreenResolution.Second);
 
                 if (skipLowRes && (maxRes.Height < curRes.Height || maxRes.Width < curRes.Width))
                     continue;
