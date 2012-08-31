@@ -47,12 +47,15 @@
   <ItemGroup>
     <Compile Include="PilerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj">
       <Project>{53B10354-56C0-4440-BBB2-F1F0C330E120}</Project>
       <Name>Pulse.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinAPI\WinAPI.csproj">
+      <Project>{b60087e5-76fe-462f-bdc2-bf25bb01f7e6}</Project>
+      <Name>WinAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

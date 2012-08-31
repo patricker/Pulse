@@ -42,7 +42,6 @@ namespace Pulse.Base
             using (var w = new StreamWriter(stream))
             {
                 Save(w);
-                w.Close();
             }
         }
 
@@ -68,7 +67,6 @@ namespace Pulse.Base
             using (var w = new StreamWriter(stream))
             {
                 Save(obj, w);
-                w.Close();
             }
         }
 

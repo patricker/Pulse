@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Pulse.Base
 {
-    public class PulseRunner
+    public class PulseRunner : IDisposable
     {
         public Picture CurrentPicture { get; set; }
 
@@ -34,14 +34,17 @@ namespace Pulse.Base
 
             Log.Logger.Write(string.Format("Clear old pics flag set to '{0}'", Settings.CurrentSettings.ClearOldPics.ToString()), Log.LoggerLevels.Verbose);
 
-            if (Settings.CurrentSettings.ClearOldPics && Directory.Exists(Settings.CurrentSettings.CachePath))
+            if (Settings.CurrentSettings.ClearOldPics)
             {
                 ClearOldWallpapers();
             }           
 
             wallpaperChangerTimer = new System.Timers.Timer();
+            clearOldWallpapersTimer = new System.Timers.Timer();
+
             SetTimers();
             wallpaperChangerTimer.Elapsed += WallpaperChangerTimerTick;
+            clearOldWallpapersTimer.Elapsed += clearOldWallpapersTimer_Elapsed;
 
             //load provider from settings
             if (ProviderManager.Instance.Providers.ContainsKey(Settings.CurrentSettings.Provider))
@@ -72,6 +75,10 @@ namespace Pulse.Base
 
         public void ClearOldWallpapers()
         {
+            //if our cache folder does not exist then don't do it
+            if (!Directory.Exists(Settings.CurrentSettings.CachePath))
+                return;
+
             var oFiles = Directory.GetFiles(Settings.CurrentSettings.CachePath).Where(x => DateTime.Now.Subtract(File.GetCreationTime(x)).TotalDays >= Settings.CurrentSettings.ClearInterval);
 
             Log.Logger.Write(string.Format("Deleting {0} expired pics", Settings.CurrentSettings.ClearOldPics.ToString()), Log.LoggerLevels.Information);
@@ -143,7 +150,7 @@ namespace Pulse.Base
             };
 
             //Clear the download Queue
-            DownloadManager.DownloadQueue.Clear();
+            DownloadManager.ClearQueue();
 
             //get new pictures
             PictureList pl = PictureManager.GetPictureList(ps);
@@ -158,12 +165,18 @@ namespace Pulse.Base
         protected void SetTimers()
         {
             wallpaperChangerTimer.Stop();
+            clearOldWallpapersTimer.Stop();
 
             wallpaperChangerTimer.Interval =
                 GetTimerTickTime(
                     Settings.CurrentSettings.IntervalUnit,
                     Settings.CurrentSettings.RefreshInterval
                         ).TotalMilliseconds;
+
+            clearOldWallpapersTimer.Interval = TimeSpan.FromDays(Settings.CurrentSettings.ClearInterval).TotalMilliseconds;
+
+            if(Settings.CurrentSettings.ClearOldPics)
+                clearOldWallpapersTimer.Start();
 
             if (Settings.CurrentSettings.ChangeOnTimer)
                 wallpaperChangerTimer.Start();
@@ -219,6 +232,11 @@ namespace Pulse.Base
             }
         }
 
+        private void clearOldWallpapersTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            ClearOldWallpapers();
+        }
+
         private void ProcessDownloadedPicture(PictureList pl)
         {
             if (pl != null && pl.Pictures.Any())
@@ -258,8 +276,14 @@ namespace Pulse.Base
                 }
 
                 //queue picture up for download
-                DownloadManager.DownloadQueue.Add(pic);
+                DownloadManager.QueuePicture(pic);
             }
+        }
+
+        public void Dispose()
+        {
+            wallpaperChangerTimer.Dispose();
+            clearOldWallpapersTimer.Dispose();
         }
     }
 }
