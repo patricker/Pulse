@@ -38,7 +38,7 @@ namespace Rewalls
 
         public PictureList GetPictures(PictureSearch ps)
         {
-            string search = ps.SearchString; bool skipLowRes = true; bool getMaxRes = true; List<string> filterKeywords = null;
+            string search = ""; bool skipLowRes = true; bool getMaxRes = true; List<string> filterKeywords = null;
             var result = new PictureList() { FetchDate = DateTime.Now };
 
             var query = HttpUtility.UrlEncode(search, Encoding.GetEncoding(1251));

@@ -16,6 +16,8 @@ namespace wallbase
     {
         private const string Url = "http://wallbase.cc/{0}/";
 
+        public string Query { get; set; }
+
         //authentication info
         public string Username { get; set; }
         [XmlIgnore()]
@@ -72,6 +74,8 @@ namespace wallbase
 
         public WallbaseImageSearchSettings()
         {
+            Query = "nature";
+
             SA = "search";
 
             WG = true;
@@ -173,13 +177,13 @@ namespace wallbase
         //    return postParams;
         //}
 
-        public NameValueCollection GetPostParams(string search)
+        public NameValueCollection GetPostParams()
         {
             NameValueCollection postParams = new NameValueCollection();
 
             if (SA == "search")
             {
-                postParams.Add("query",search);
+                postParams.Add("query",Query);
                 postParams.Add("board", BuildCategoryString());
                 postParams.Add("nsfw",BuildPurityString());
                 postParams.Add("res_opt",SO);

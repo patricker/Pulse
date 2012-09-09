@@ -32,7 +32,7 @@ namespace PulseForm
 
         List<ActiveProviderInfo> _OutputProviderInfos = new List<ActiveProviderInfo>();
         List<ActiveProviderInfo> _InputProviderInfos = new List<ActiveProviderInfo>();
-
+        List<Guid> _ProvidersToRemove = new List<Guid>();
 
         public frmPulseOptions()
         {
@@ -44,10 +44,8 @@ namespace PulseForm
         private void frmPulseOptions_Load(object sender, EventArgs e)
         {
             var fileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
-            BuildTag.Text = Assembly.GetExecutingAssembly().GetName().Version + ".beta." + fileInfo.LastWriteTimeUtc.ToString("yyMMdd-HHmm");
+            BuildTag.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-            if (!string.IsNullOrEmpty(Settings.CurrentSettings.Search))
-                SearchBox.Text = Settings.CurrentSettings.Search;
 
             cbDownloadAutomatically.Checked = Settings.CurrentSettings.ChangeOnTimer;
             cbAutoChangeonStartup.Checked = Settings.CurrentSettings.DownloadOnAppStartup;
@@ -79,55 +77,41 @@ namespace PulseForm
             nudTempAge.Value = Settings.CurrentSettings.ClearInterval;
             
             //input providers
-            foreach (var op in ProviderManager.Instance.GetProvidersByType<IInputProvider>())
-            {
-                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(op.Key))
-                {
-                    var ep = Settings.CurrentSettings.ProviderSettings[op.Key];
+            var inputProviders = ProviderManager.Instance.GetProvidersByType<IInputProvider>();
 
-                    _InputProviderInfos.Add(new ActiveProviderInfo()
-                    {
-                        Active = ep.Active,
-                        AsyncOK = ep.AsyncOK,
-                        ExecutionOrder = ep.ExecutionOrder,
-                        ProviderConfig = ep.ProviderConfig,
-                        ProviderName = ep.ProviderName
-                    });
-                }
-                else
-                {
-                    _InputProviderInfos.Add(new ActiveProviderInfo()
-                    {
-                        Active = false,
-                        AsyncOK = false,
-                        ExecutionOrder = 0,
-                        ProviderConfig = string.Empty,
-                        ProviderName = op.Key
-                    });
-                }
-            }
+            _InputProviderInfos.AddRange(
+                from c in Settings.CurrentSettings.ProviderSettings
+                let api = c.Value
+                let provName = api.ProviderName
+                where inputProviders.ContainsKey(provName)
+                select new ActiveProviderInfo(provName, api.ProviderInstanceID) { 
+                        Active = api.Active,
+                        AsyncOK = api.AsyncOK,
+                        ExecutionOrder = api.ExecutionOrder,
+                        ProviderConfig = api.ProviderConfig
+                    }
+                );
+
+            BindingSource bsInput = new BindingSource();
+            bsInput.DataSource = InputProviderInfos;
+
+            lbActiveInputProviders.DataSource = bsInput;
 
             //load into combo box
-            cbProviders.DataSource = InputProviderInfos;
-
-            if (InputProviderInfos.Count > 0)
-            {
-                cbProviders.SelectedItem = InputProviderInfos.Where(x => x.Active).FirstOrDefault();
-            }
-
-            //handle settings button enable/disable and loading string from config if it exists
-            HandleProviderSettingsEnableAndLoad();
-
-            //hook changed event handler
-            cbProviders.SelectedIndexChanged += new System.EventHandler(ProviderSelectionChanged);
-
+            BindingSource bs = new BindingSource();
+            bs.DataSource = (from c in inputProviders select c.Key).ToList();
+            cbProviders.DataSource = bs;
 
             //output providers
             foreach (var op in ProviderManager.Instance.GetProvidersByType<IOutputProvider>())
             {
-                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(op.Key))
+                var apiList = from c in Settings.CurrentSettings.ProviderSettings
+                              where c.Value.ProviderName == op.Key
+                              select c;
+
+                if (apiList.Count() > 0)
                 {
-                    var ep = Settings.CurrentSettings.ProviderSettings[op.Key];
+                    var ep = apiList.First().Value;
 
                     _OutputProviderInfos.Add(new ActiveProviderInfo()
                     {
@@ -135,19 +119,13 @@ namespace PulseForm
                         AsyncOK = ep.AsyncOK,
                         ExecutionOrder = ep.ExecutionOrder,
                         ProviderConfig = ep.ProviderConfig,
-                        ProviderName = ep.ProviderName
+                        ProviderName = ep.ProviderName,
+                        ProviderInstanceID = ep.ProviderInstanceID
                     });
                 }
                 else
                 {
-                    _OutputProviderInfos.Add(new ActiveProviderInfo()
-                    {
-                        Active = false,
-                        AsyncOK = false,
-                        ExecutionOrder = 0,
-                        ProviderConfig = string.Empty,
-                        ProviderName = op.Key
-                    });
+                    _OutputProviderInfos.Add(new ActiveProviderInfo(op.Key));
                 }
             }
 
@@ -169,11 +147,8 @@ namespace PulseForm
 
         private void OkButtonClick(object sender, EventArgs e)
         {
-            if (ApplyButton.Enabled)
-            {
-                ApplySettings();
-                ApplyButton.Enabled = false;
-            }
+            ApplySettings();
+
             this.Close();
         }
 
@@ -182,20 +157,8 @@ namespace PulseForm
             this.Close();
         }
 
-        private void ApplyButtonClick(object sender, EventArgs e)
-        {
-            ApplySettings();
-            ApplyButton.Enabled = false;
-        }
-
         private void ApplySettings()
-        {
-            //if (Settings.CurrentSettings.Search != SearchBox.Text)
-            //    App.Translator.Result = string.Empty;
-            //check if the search box text == options search box text (keyword(s)), if so use empty string
-            // on some sites searching with no query is fine
-            
-            Settings.CurrentSettings.Search = SearchBox.Text;
+        {            
             Settings.CurrentSettings.ChangeOnTimer = cbDownloadAutomatically.Checked;
             Settings.CurrentSettings.DownloadOnAppStartup = cbDownloadAutomatically.Checked;
             Settings.CurrentSettings.ClearOldPics = cbDeleteOldFiles.Checked;
@@ -223,82 +186,49 @@ namespace PulseForm
                     rkApp.DeleteValue("Pulse", false);
                 }
             }
-
-            //Input provider settings (only if provider changed)
-            if (!string.IsNullOrEmpty(cbProviders.Text) && Settings.CurrentSettings.Provider != cbProviders.Text)
-            {
-                //deactivate the old provider
-                Settings.CurrentSettings.ProviderSettings.Remove(Settings.CurrentSettings.Provider);
-
-                //set new provider
-                Settings.CurrentSettings.Provider = cbProviders.Text;
-
-                //initialize the new provider
-                frmPulseHost.Runner.CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.CurrentSettings.Provider);
-            }
-
-            //save Input providers
+            
+            //save inputs
             foreach (ActiveProviderInfo api in InputProviderInfos)
             {
-                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(api.ProviderName))
+                Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID] = api;
+            }
+            //remove removed inputs
+            foreach (Guid g in _ProvidersToRemove)
+            {
+                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(g))
                 {
-                    //check if the existing item is different then the previous
-                    if (Settings.CurrentSettings.ProviderSettings[api.ProviderName].GetComparisonHashCode() != api.GetComparisonHashCode())
-                    {
-                        //since they are different check if we deactivated or just changed a setting
-                        if (api.Active)
-                        {
-                            Settings.CurrentSettings.ProviderSettings[api.ProviderName] = api;
-                        }
-                        else
-                        {
-                            //validate that active state has changed, if it has then deactivate
-                            if (Settings.CurrentSettings.ProviderSettings[api.ProviderName].Active != api.Active)
-                            {
-                                Settings.CurrentSettings.ProviderSettings[api.ProviderName].Instance.Deactivate(null);
-                            }
-
-                            Settings.CurrentSettings.ProviderSettings.Remove(api.ProviderName);
-                        }
-                    }
-                }
-                else if (api.Active)
-                {
-                    Settings.CurrentSettings.ProviderSettings.Add(api.ProviderName, api);
-
-                    //activate new provider
-                    api.Instance.Activate(null);
+                    Settings.CurrentSettings.ProviderSettings.Remove(g);
                 }
             }
 
             //save output providers
             foreach (ActiveProviderInfo api in OutputProviderInfos)
             {
-                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(api.ProviderName))
+                if (Settings.CurrentSettings.ProviderSettings.ContainsKey(api.ProviderInstanceID))
                 {
                     //check if the existing item is different then the previous
-                    if (Settings.CurrentSettings.ProviderSettings[api.ProviderName].GetComparisonHashCode() != api.GetComparisonHashCode())
+                    if (Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID].GetComparisonHashCode() != api.GetComparisonHashCode())
                     {
                         //since they are different check if we deactivated or just changed a setting
                         if (api.Active)
                         {
-                            Settings.CurrentSettings.ProviderSettings[api.ProviderName] = api;
+                            Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID] = api;
                         }
                         else
                         {
                             //validate that active state has changed, if it has then deactivate
-                            if (Settings.CurrentSettings.ProviderSettings[api.ProviderName].Active != api.Active)
+                            if (Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID].Active != api.Active)
                             {
-                                Settings.CurrentSettings.ProviderSettings[api.ProviderName].Instance.Deactivate(null);
+                                Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID].Instance.Deactivate(null);
                             }
 
-                            Settings.CurrentSettings.ProviderSettings.Remove(api.ProviderName);
+                            Settings.CurrentSettings.ProviderSettings.Remove(api.ProviderInstanceID);
                         }
                     }
                 }
                 else if (api.Active)
                 {
-                    Settings.CurrentSettings.ProviderSettings.Add(api.ProviderName, api);
+                    Settings.CurrentSettings.ProviderSettings.Add(api.ProviderInstanceID, api);
 
                     //activate new provider
                     api.Instance.Activate(null);
@@ -319,11 +249,6 @@ namespace PulseForm
             ApplyButton.Enabled = true;
         }
 
-        private void SearchBoxTextChanged(object sender, EventArgs e)
-        {
-            ApplyButton.Enabled = true;
-        }
-
         private void CheckBoxClick(object sender, EventArgs e)
         {
             ApplyButton.Enabled = true;
@@ -333,31 +258,42 @@ namespace PulseForm
         {
             ApplyButton.Enabled = true;
         }
-
-        private void ProviderSelectionChanged(object sender, EventArgs e)
+        
+        private void lbActiveInputProviders_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ComboBoxSelectionChanged(sender, e);
-
             HandleProviderSettingsEnableAndLoad();
+        }
+
+        private void btnRemoveInputProvider_Click(object sender, EventArgs e)
+        {
+            ApplyButton.Enabled = true;
+
+            ActiveProviderInfo api = lbActiveInputProviders.SelectedItem as ActiveProviderInfo;
+            InputProviderInfos.Remove(api);
+
+            _ProvidersToRemove.Add(api.ProviderInstanceID);
+
+            BindingSource bsInput = new BindingSource();
+            bsInput.DataSource = InputProviderInfos;
+
+            lbActiveInputProviders.DataSource = bsInput;
+            lbActiveInputProviders.SelectedItem = api;
         }
 
         private void HandleProviderSettingsEnableAndLoad()
         {
-            object si = cbProviders.SelectedItem;
+            object si = lbActiveInputProviders.SelectedItem;
             bool result=false;
+
+            btnPreview.Enabled = si != null;
+            btnRemoveInputProvider.Enabled = si != null;
 
             if (si != null)
             {
                 ActiveProviderInfo api = si as ActiveProviderInfo;
-
-                //disable all other API's
-                foreach (ActiveProviderInfo a in InputProviderInfos) a.Active = false;
-
-                //set this API to active
-                api.Active = true;
-
                 result = ProviderManager.Instance.HasConfigurationWindow(api.ProviderName) != null;
-            }            
+                                
+            }      
 
             //enable or disable settings button depending on settings availability
             ProviderSettings.Enabled = result;
@@ -382,13 +318,46 @@ namespace PulseForm
 
         private void ProviderSettings_Click(object sender, EventArgs e)
         {
-            ActiveProviderInfo api = cbProviders.SelectedItem as ActiveProviderInfo;
+            
+            ActiveProviderInfo api = lbActiveInputProviders.SelectedItem as ActiveProviderInfo;
 
             //get the usercontrol instance from Provider Manager
             var initSettings = ProviderManager.Instance.InitializeConfigurationWindow(api.ProviderName);
             if (initSettings == null) return;
 
             HostConfigurationWindow(initSettings, api);
+        }
+
+        private void btnPreview_Click(object sender, EventArgs e)
+        {
+            ActiveProviderInfo api = lbActiveInputProviders.SelectedItem as ActiveProviderInfo;
+
+            InputProviderPreview ipp = new InputProviderPreview();
+            ipp.Provider = api;
+
+            ipp.ShowDialog();
+        }
+
+
+        private void btnAddInput_Click(object sender, EventArgs e)
+        {
+            ApplyButton.Enabled = true;
+            string name = cbProviders.SelectedItem.ToString();
+
+            ActiveProviderInfo api = new ActiveProviderInfo(name) { Active = true };
+            InputProviderInfos.Add(api);
+
+            BindingSource bsInput = new BindingSource();
+            bsInput.DataSource = InputProviderInfos;
+
+            lbActiveInputProviders.DataSource = bsInput;
+            lbActiveInputProviders.SelectedItem = api;
+        }
+
+
+        private void cbProviders_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnAddInput.Enabled = cbProviders.SelectedItem != null;
         }
 
         private void HostConfigurationWindow(IProviderConfigurationEditor initSettings, ActiveProviderInfo api)
@@ -451,5 +420,6 @@ namespace PulseForm
         {
             ApplyButton.Enabled = true;
         }
+
     }
 }

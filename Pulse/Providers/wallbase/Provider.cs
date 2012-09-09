@@ -32,9 +32,7 @@ namespace wallbase
 
         public PictureList GetPictures(PictureSearch ps)
         {
-            string search=ps.SearchString;
-
-            WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.ProviderSearchSettings) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
+            WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
                                     
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
@@ -42,7 +40,7 @@ namespace wallbase
             int pageIndex = 0;
             var imgFoundCount = 0;
 
-            //authenticate
+            //authenticate to wallbase
             Authenticate(wiss.Username, wiss.Password);
             
             var wallResults = new List<Picture>();
@@ -63,7 +61,7 @@ namespace wallbase
                 using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
                     //content = _client.UploadString(pageURL, postParams);
-                    byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams(search));
+                    byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
                     content = System.Text.Encoding.Default.GetString(reqResult);
                 }
 
@@ -88,13 +86,13 @@ namespace wallbase
                 pageIndex++;
             } while (imgFoundCount > 0 && wallResults.Count < maxPictureCount);
 
-            PictureList result = FetchPictures(wallResults);
-            
+            PictureList result = FetchPictures(wallResults, ps.PreviewOnly);
+            result.Pictures = result.Pictures.Take(maxPictureCount).ToList();
 
             return result;
         }
 
-        private PictureList FetchPictures(List<Picture> wallResults) 
+        private PictureList FetchPictures(List<Picture> wallResults, bool previewOnly) 
         {
             var result = new PictureList() { FetchDate = DateTime.Now };
 
@@ -131,14 +129,13 @@ namespace wallbase
                                     //save original URL as referrer
                                     p.Properties.Add(Picture.StandardProperties.Referrer, p.Url);
 
-                                    //get actual image URL
-                                    p.Url = GetDirectPictureUrl(p.Url);
+                                    //get actual image URL if this is not a preview
+                                    if(!previewOnly)
+                                        p.Url = GetDirectPictureUrl(p.Url);
                                     p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
 
                                     if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
                                     {
-                                        Log.Logger.Write(string.Format("Skipping banned image in wallbase.cc provider, '{0}'.", p.Url), Log.LoggerLevels.Verbose);
-
                                         result.Pictures.Add(p);
                                     }
                                 }
@@ -182,9 +179,8 @@ namespace wallbase
         private List<Picture> ParsePictures(string content)
         {
             var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*)\" id=\".*\" .*>.*<img.*src=\"(?<img>.*)\".*style=\".*</a>");
-            //var resRegex = new Regex("<span class=\"res\">.*</span>");
             var picsMatches = picsRegex.Matches(content);
-            //var resMatches = resRegex.Matches(content);
+
             var result = new List<Picture>();
             for (var i = 0; i < picsMatches.Count; i++)
             {
@@ -217,20 +213,14 @@ namespace wallbase
                 return string.Empty;
             }
         }
-
-        private static string StripTags(string source)
-        {
-            return Regex.Replace(source, "<.*?>", string.Empty);
-        }
-
+        
         private void Authenticate(string username, string password)
         {
-            using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
+            //if we have a username/password and we aren't already authenticated then authenticate
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
-                //if we have a username/password and we aren't already authenticated then authenticate
-                if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
-
                     var loginData = new NameValueCollection();
                     loginData.Add("usrname", username);
                     loginData.Add("pass", password);
@@ -241,7 +231,8 @@ namespace wallbase
                     _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
                     var result = _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
 
-                    string response = System.Text.Encoding.UTF8.GetString(result);
+                    //we do not need the response, all we need are the cookies
+                    //string response = System.Text.Encoding.UTF8.GetString(result);
                 }
             }
         }

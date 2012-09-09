@@ -38,13 +38,13 @@ namespace GoogleImages
             var result = new PictureList() { FetchDate = DateTime.Now };
 
             //load provider search settings
-            GoogleImageSearchSettings giss = GoogleImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
+            GoogleImageSearchSettings giss = GoogleImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
 
             //to help not have so many null checks, if no search settings provided then use default ones
             if (giss == null) giss=new GoogleImageSearchSettings();
 
             //if search is empty, return now since we can't search without it
-            if (string.IsNullOrEmpty(ps.SearchString)) return result;
+            if (string.IsNullOrEmpty(giss.Query)) return result;
 
             var pageIndex = 0;
             var imgFoundCount =0;
@@ -73,7 +73,7 @@ namespace GoogleImages
             do
             {
                 //build URL from query, dimensions and page index
-                var url = string.Format(baseURL, ps.SearchString, tbs, (pageIndex * 20).ToString());
+                var url = string.Format(baseURL, giss.Query, tbs, (pageIndex * 20).ToString());
 
                 var response = string.Empty;
                 using (HttpUtility.CookieAwareWebClient client = new HttpUtility.CookieAwareWebClient(_cookies))
@@ -117,6 +117,8 @@ namespace GoogleImages
                 pageIndex++;
                 // Max Picture count is defined in search settings passed in, check for it here too
             } while (imgFoundCount > 0 && result.Pictures.Count < maxPictureCount);
+
+            result.Pictures = result.Pictures.Take(maxPictureCount).ToList();
 
             return result;
         }

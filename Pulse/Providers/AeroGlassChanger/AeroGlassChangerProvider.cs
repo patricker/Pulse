@@ -46,7 +46,7 @@ namespace AeroGlassChanger
             t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
             {
                 //double check (I've seen cases where timer fires even though currentStep is past 7
-                if (currentStep >= 7) { mre.Set(); t.Stop(); }
+                if (currentStep >= 7) { mre.Set(); t.Stop(); return; }
 
                 //set to next color
                 SetDwmColor(transitionColors[currentStep]);
