@@ -31,7 +31,7 @@ namespace PulseForm
             Runner = new PulseRunner();
             Runner.Initialize();
 
-            if (Runner.CurrentProvider == null)
+            if (Runner.CurrentInputProviders.Count == 0)
             {
                 MessageBox.Show("A provider is not currently selected.  Please choose a wallpaper provider from the options menu.");
             }

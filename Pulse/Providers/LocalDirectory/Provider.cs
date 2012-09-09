@@ -15,7 +15,7 @@ namespace LocalDirectory
         {
             PictureList pl = new PictureList() { FetchDate = DateTime.Now };
 
-            LocalDirectorySettings lds = string.IsNullOrEmpty(ps.ProviderSearchSettings) ? new LocalDirectorySettings() : LocalDirectorySettings.LoadFromXML(ps.ProviderSearchSettings);
+            LocalDirectorySettings lds = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ? new LocalDirectorySettings() : LocalDirectorySettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
 
             //get all files in directory and filter for image extensions (jpg/jpeg/png/bmp?)
             List<string> files = new List<string>();

@@ -12,6 +12,8 @@ namespace GoogleImages
     
     public class GoogleImageSearchSettings : Pulse.Base.XmlSerializable<GoogleImageSearchSettings>
     {
+        public string Query { get; set; }
+
         //most of these settings are in the tbs section
 
         //for exact searches with &tbs=isz:ex

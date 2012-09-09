@@ -13,7 +13,7 @@ namespace Pulse.Base
         public Picture CurrentPicture { get; set; }
 
         public PictureManager PictureManager = new PictureManager();
-        public IInputProvider CurrentProvider = null;
+        public Dictionary<Guid, ActiveProviderInfo> CurrentInputProviders = new Dictionary<Guid, ActiveProviderInfo>();
 
         private DownloadManager DownloadManager = DownloadManager.Current;
 
@@ -42,18 +42,13 @@ namespace Pulse.Base
             wallpaperChangerTimer = new System.Timers.Timer();
             clearOldWallpapersTimer = new System.Timers.Timer();
 
-            SetTimers();
             wallpaperChangerTimer.Elapsed += WallpaperChangerTimerTick;
             clearOldWallpapersTimer.Elapsed += clearOldWallpapersTimer_Elapsed;
 
-            //load provider from settings
-            if (ProviderManager.Instance.Providers.ContainsKey(Settings.CurrentSettings.Provider))
-            {
-                CurrentProvider = (IInputProvider)ProviderManager.Instance.InitializeProvider(Settings.CurrentSettings.Provider);
-            }
+            UpdateFromConfiguration();
 
             //if we have a provider and we are setup for automatic picture download/change on startup then do so
-            if(CurrentProvider != null)
+            if(CurrentInputProviders.Count > 0)
             {
                 Log.Logger.Write(string.Format("Autodownload wallpaper on startup is: '{0}'", Settings.CurrentSettings.DownloadOnAppStartup.ToString()),
                     Log.LoggerLevels.Information);
@@ -70,7 +65,11 @@ namespace Pulse.Base
 
         public void UpdateFromConfiguration()
         {
+            //setup the timers for changing wallpapers and clearing old files
             SetTimers();
+
+            //setup list of valid & active input providers
+            SetInputProviders();
         }
 
         public void ClearOldWallpapers()
@@ -139,14 +138,16 @@ namespace Pulse.Base
 
         protected void DownloadNextPicture()
         {
+            if (CurrentInputProviders.Count == 0) return;
+
+            var api = CurrentInputProviders.OrderBy(x => Guid.NewGuid()).First().Value;
+            
             var ps = new PictureSearch()
             {
-                SearchString = Settings.CurrentSettings.Search,
                 SaveFolder = Settings.CurrentSettings.CachePath,
                 MaxPictureCount = Settings.CurrentSettings.MaxPictureDownloadCount,
-                SearchProvider = CurrentProvider,
-                BannedURLs = Settings.CurrentSettings.BannedImages,
-                ProviderSearchSettings = Settings.CurrentSettings.ProviderSettings.ContainsKey(Settings.CurrentSettings.Provider) ? Settings.CurrentSettings.ProviderSettings[Settings.CurrentSettings.Provider].ProviderConfig : string.Empty
+                SearchProvider = api,
+                BannedURLs = Settings.CurrentSettings.BannedImages
             };
 
             //Clear the download Queue
@@ -180,6 +181,39 @@ namespace Pulse.Base
 
             if (Settings.CurrentSettings.ChangeOnTimer)
                 wallpaperChangerTimer.Start();
+        }
+
+        protected void SetInputProviders()
+        {
+            //load providers from settings
+            var validInputs = ProviderManager.Instance.GetProvidersByType<IInputProvider>();
+            var toKeep = new List<Guid>();
+
+            foreach (var op in Settings.CurrentSettings.ProviderSettings)
+            {
+                //if the provider is already contained in input providers up top then skip
+                if (!CurrentInputProviders.ContainsKey(op.Key) 
+                        && validInputs.ContainsKey(op.Value.ProviderName)    
+                        && op.Value.Active) { 
+                    CurrentInputProviders.Add(op.Key, op.Value);
+                    
+                    //activate provider
+                    op.Value.Instance.Activate(null);
+                }
+
+                toKeep.Add(op.Key);
+            }
+
+            //deactivate and remove any providers that aren't being kept
+            var toRemove = (from c in CurrentInputProviders
+                            where !toKeep.Contains(c.Key)
+                            select c);
+
+            foreach (var c in toRemove)
+            {
+                c.Value.Instance.Deactivate(null);
+                CurrentInputProviders.Remove(c.Key);
+            }
         }
 
         protected TimeSpan GetTimerTickTime(Settings.IntervalUnits unit, int amount)

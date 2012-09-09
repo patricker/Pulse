@@ -84,7 +84,7 @@ namespace Pulse.Base
             {
                 using (Image img = Bitmap.FromStream(fs))
                 {
-                    double origRatio = (Math.Min(img.Width, img.Height) / Math.Max(img.Width, img.Height));
+                    double origRatio = (double)Math.Min(img.Width, img.Height) / (double)Math.Max(img.Width, img.Height);
 
                     //---Calculate thumbnail sizes---
                     double destRatio = 0;
@@ -107,10 +107,10 @@ namespace Pulse.Base
                     }
                     else if (destHeight > 0)
                     {
-                        destWidth = (int)Math.Floor((double)img.Width * (destHeight / img.Height));
+                        destWidth = (int)Math.Floor((double)img.Width * ((double)destHeight / (double)img.Height));
                     }
 
-                    destRatio = (Math.Min(destWidth, destHeight) / Math.Max(destWidth, destHeight));
+                    destRatio = (double)Math.Min(destWidth, destHeight) / (double)Math.Max(destWidth, destHeight);
 
                     //calculate source image sizes (rectangle) to get pixel data from        
                     int sourceWidth = img.Width;
@@ -119,19 +119,19 @@ namespace Pulse.Base
                     int sourceX = 0;
                     int sourceY = 0;
 
-                    int cmpx = img.Width / destWidth;
-                    int cmpy = img.Height / destHeight;
+                    double cmpx = (double)img.Width / (double)destWidth;
+                    double cmpy = (double)img.Height / (double)destHeight;
 
                     //selection is based on the smallest dimension
                     if (cmpx > cmpy)
                     {
-                        sourceWidth = img.Width / cmpx * cmpy;
-                        sourceX = ((img.Width - (img.Width / cmpx * cmpy)) / 2);
+                        sourceWidth = (int)((double)img.Width / cmpx * cmpy);
+                        sourceX = (int)(((double)img.Width - ((double)img.Width / cmpx * cmpy)) / 2);
                     }
                     else if (cmpy > cmpx)
                     {
-                        sourceHeight = img.Height / cmpy * cmpx;
-                        sourceY = ((img.Height - (img.Height / cmpy * cmpx)) / 2);
+                        sourceHeight = (int)((double)img.Height / cmpy * cmpx);
+                        sourceY = (int)(((double)img.Height - ((double)img.Height / cmpy * cmpx)) / 2);
                     }
 
                     //---create the new image---
@@ -156,7 +156,7 @@ namespace Pulse.Base
             if (ps == null || ps.SearchProvider == null) return Pictures;
 
             var loadedFromFile = false;
-            var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.GetSearchHash().ToString() + "_" + ps.SearchProvider.GetType().ToString() + ".xml");
+            var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.GetSearchHash().ToString() + "_" + ps.SearchProvider.Instance.GetType().ToString() + ".xml");
 
             Pictures = LoadCachedSearch(ps, fPath);
             loadedFromFile = Pictures != null;
@@ -164,7 +164,7 @@ namespace Pulse.Base
             //if we have no pictures to work with try and get them
             if (Pictures == null || Pictures.Pictures.Count == 0)
             {
-                Pictures = ps.SearchProvider.GetPictures(ps);
+                Pictures = ((IInputProvider)ps.SearchProvider.Instance).GetPictures(ps);
                 Pictures.SearchSettingsHash = ps.GetSearchHash();
                 loadedFromFile = false;
             }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.IO;
+using System.Drawing;
+using System.Net;
 
 namespace Pulse.Base
 {
@@ -28,6 +30,8 @@ namespace Pulse.Base
         /// </summary>
         public SerializableDictionary<string, string> Properties { get; set; }
 
+        private Image _cachedThumb = null;
+
         public Picture()
         {
             Properties = new SerializableDictionary<string, string>();
@@ -50,6 +54,29 @@ namespace Pulse.Base
                 FileInfo fi = new FileInfo(LocalPath);
                 return (fi.Exists && fi.Length > 0);
             }
+        }
+
+        public Image GetThumbnail()
+        {
+            if (_cachedThumb == null)
+            {
+                if (Properties.ContainsKey(StandardProperties.Thumbnail))
+                {
+                    _cachedThumb = Image.FromStream(
+                            new WebClient().OpenRead(
+                                Properties[Picture.StandardProperties.Thumbnail]));
+                }
+                else
+                {
+                    Uri uriUrl = new Uri(Url);
+                    if (uriUrl.Scheme == "file")
+                    {
+                        _cachedThumb = PictureManager.ShrinkImage(Url, 0, 150);
+                    }
+                }
+            }
+
+            return _cachedThumb;
         }
 
         public static class StandardProperties

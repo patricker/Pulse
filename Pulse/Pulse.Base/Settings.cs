@@ -37,9 +37,6 @@ namespace Pulse.Base
 
         private static Settings _current = null;
 
-        public string Provider { get; set; }
-
-        public string Search { get; set; }
         public List<string> BannedImages { get; set; }
         
         public bool ChangeOnTimer { get; set; }
@@ -60,12 +57,10 @@ namespace Pulse.Base
         public bool RunOnWindowsStartup { get; set; }
 
         //provider settings
-        public SerializableDictionary<string, ActiveProviderInfo> ProviderSettings { get; set; }
-
+        public SerializableDictionary<Guid, ActiveProviderInfo> ProviderSettings { get; set; }
 
         public Settings()
         {
-            Provider = "Wallbase";
             Language = CultureInfo.CurrentUICulture.Name;
             ChangeOnTimer = true;
             RefreshInterval = 20;
@@ -76,21 +71,31 @@ namespace Pulse.Base
             PreFetch = false;
             MaxPictureDownloadCount = 100;
             CachePath = System.IO.Path.Combine(AppPath, "Cache");
-            ProviderSettings = new SerializableDictionary<string, ActiveProviderInfo>();
+            ProviderSettings = new SerializableDictionary<Guid, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
             RunOnWindowsStartup = false;
 
             //set wallpaper changer as a default provider for output
-            ProviderSettings.Add("Desktop Wallpaper", new ActiveProviderInfo()
+            var wID = Guid.NewGuid();
+            ProviderSettings.Add(wID, new ActiveProviderInfo("Desktop Wallpaper", wID)
             {
                 Active = true,
-                AsyncOK = false,
-                ExecutionOrder = 1,
-                ProviderConfig = string.Empty,
-                ProviderName = "Desktop Wallpaper"
+                ExecutionOrder = 1
             });
 
-            Search = "Nature";
+            //set wallbase as default for inputs
+            var wallID = Guid.NewGuid();
+            ProviderSettings.Add(Guid.NewGuid(), new ActiveProviderInfo("Wallbase", wallID)
+            {
+                Active = true,
+                ExecutionOrder = 1
+            });
+        }
+
+        public string GetProviderSettings(Guid prov) {
+            if (!ProviderSettings.ContainsKey(prov)) return string.Empty;
+
+            return ProviderSettings[prov].ProviderConfig;
         }
     }
 }

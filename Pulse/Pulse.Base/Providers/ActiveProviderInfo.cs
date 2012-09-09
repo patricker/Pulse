@@ -8,6 +8,9 @@ namespace Pulse.Base
 {
     public class ActiveProviderInfo : XmlSerializable<ActiveProviderInfo>
     {
+        [Browsable(false)]
+        public Guid ProviderInstanceID { get; set; }
+
         public bool Active { get; set; }
 
         [DisplayName("Name")]
@@ -37,6 +40,22 @@ namespace Pulse.Base
         }
 
         private IProvider _instance;
+
+        public ActiveProviderInfo()
+        {
+            ProviderInstanceID = Guid.NewGuid();
+        }
+
+        public ActiveProviderInfo(string name, Guid id)
+            : this(name)
+        {
+            ProviderInstanceID = id;
+        }
+
+        public ActiveProviderInfo(string name) : this()
+        {
+            ProviderName = name;
+        }
 
         public int GetComparisonHashCode()
         {
