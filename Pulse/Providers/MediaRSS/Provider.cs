@@ -24,7 +24,7 @@ namespace MediaRSSProvider
         {
         }
 
-        public void Initialize()
+        public void Initialize(object args)
         {
             //nothing to do here
         }

@@ -37,6 +37,8 @@ namespace wallbase
             txtUserID.Text = wiss.Username;
             txtPassword.Text = wiss.Password;
 
+            txtSearch.Text = wiss.Query;
+
             cbArea.SelectedValue = wiss.SA;
 
             cbWG.Checked = wiss.WG;
@@ -68,6 +70,8 @@ namespace wallbase
         {
             wiss.Username = txtUserID.Text;
             wiss.Password = txtPassword.Text;
+
+            wiss.Query = txtSearch.Text;
 
             wiss.WG = cbWG.Checked;
             wiss.W = cbW.Checked;
@@ -110,7 +114,7 @@ namespace wallbase
 
         private void WallbaseProviderPrefs_Load(object sender, EventArgs e)
         {
-
+            
         }
 
         public bool IsOK { get; set; }
@@ -120,6 +124,27 @@ namespace wallbase
             Control c = parent as Control;
 
             c.Controls.Add(this);
+        }
+
+        private void cbArea_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tabControl1.TabPages.Remove(tpSearch);
+            tabControl1.TabPages.Remove(tpCollections);
+            tabControl1.TabPages.Remove(tpFavorites);
+
+            if (cbArea.SelectedValue == null) return;
+
+            string val = cbArea.SelectedValue.ToString();
+
+            if (val == "search")
+                tabControl1.TabPages.Add(tpSearch);
+            else if (val == "user/favorites")
+                tabControl1.TabPages.Add(tpFavorites);
+            else if (val == "user/collection")
+                tabControl1.TabPages.Add(tpCollections);
+
+            if(tabControl1.TabPages.Count > 1)
+                tabControl1.SelectedTab = tabControl1.TabPages[1];
         }
     }
 }

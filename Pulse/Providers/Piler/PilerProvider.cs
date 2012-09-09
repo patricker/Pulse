@@ -85,7 +85,7 @@ namespace Piler
         {
         }
 
-        public void Initialize()
+        public void Initialize(object args)
         {
         }
     }

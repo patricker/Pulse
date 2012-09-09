@@ -57,7 +57,7 @@ namespace NASAAPOD
             
         }
 
-        public void Initialize()
+        public void Initialize(object args)
         {
             
         }

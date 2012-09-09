@@ -207,7 +207,7 @@ namespace Pulse.Base
             //deactivate and remove any providers that aren't being kept
             var toRemove = (from c in CurrentInputProviders
                             where !toKeep.Contains(c.Key)
-                            select c);
+                            select c).ToList();
 
             foreach (var c in toRemove)
             {
