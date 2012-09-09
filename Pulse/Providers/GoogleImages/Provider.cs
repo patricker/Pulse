@@ -24,7 +24,7 @@ namespace GoogleImages
         {
         }
 
-        public void Initialize()
+        public void Initialize(object args)
         {
             //nothing to do here
         }
@@ -69,6 +69,9 @@ namespace GoogleImages
 
             //if we have a filter string then add it and trim off trailing commas
             if (!string.IsNullOrEmpty(tbs)) tbs = ("&tbs=" + tbs).Trim(new char[]{','});
+
+            //do safe search setup (off/strict/moderate) this is part of the session and tracked via cookies
+            SetSafeSearchSetting(giss.GoogleSafeSearchOption);
 
             do
             {
@@ -121,6 +124,36 @@ namespace GoogleImages
             result.Pictures = result.Pictures.Take(maxPictureCount).ToList();
 
             return result;
+        }
+
+        private void SetSafeSearchSetting(GoogleImageSearchSettings.GoogleSafeSearchOptions gsso)
+        {
+            using (HttpUtility.CookieAwareWebClient client = new HttpUtility.CookieAwareWebClient(_cookies))
+            {
+                //First we need to access the preferences page so we can get the special ID
+                var response = client.DownloadString("http://images.google.com/preferences?hl=en");
+                //parse out signature
+                var specialID = Regex.Match(response, "<input type=\"hidden\" name=\"sig\" value=\"(?<sig>.*?)\">").Groups["sig"].Value;
+
+                //options are "on", "images", "off"
+                var safeUIOption = "";
+                switch(gsso) {
+                    case GoogleImageSearchSettings.GoogleSafeSearchOptions.Moderate:
+                        safeUIOption = "images";
+                        break;
+                    case GoogleImageSearchSettings.GoogleSafeSearchOptions.Off:
+                        safeUIOption = "off";
+                        break;
+                    case GoogleImageSearchSettings.GoogleSafeSearchOptions.Strict:
+                        safeUIOption = "on";
+                        break;
+                }
+                //set prefs
+                string url = string.Format("http://images.google.com/setprefs?sig={0}&hl=en&lr=lang_en&uulo=1&muul=4_20&luul=&safeui={1}&suggon=1&newwindow=0&q=",
+                                specialID.Replace("=", "%3D"), safeUIOption);
+
+                var finalResponse = client.DownloadString(url);
+            }
         }
     }
 }

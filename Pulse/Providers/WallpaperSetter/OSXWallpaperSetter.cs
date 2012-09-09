@@ -26,7 +26,7 @@ end tell";
 
         public void Activate(object args) { }
         public void Deactivate(object args) { }
-        public void Initialize() { }
+        public void Initialize(object args) { }
 
         public void ProcessPictures(PictureList pl, string config)
         {

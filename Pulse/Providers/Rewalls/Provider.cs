@@ -25,7 +25,7 @@ namespace Rewalls
             new Size(1280,960), new Size(1280,800), new Size(1280,768), new Size(1152,864), new Size(1024,768), new Size(1024, 600),
             new Size(800,600), new Size(640,960), new Size(320,480)};
 
-        public void Initialize()
+        public void Initialize(object args)
         {
             webClient = new WebClient();
             webClient.Headers["User-Agent"] =

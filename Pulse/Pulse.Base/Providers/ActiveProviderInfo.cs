@@ -33,7 +33,7 @@ namespace Pulse.Base
         [System.Xml.Serialization.XmlIgnore()]
         public IProvider Instance { 
             get {
-                if (_instance == null) _instance = ProviderManager.Instance.InitializeProvider(ProviderName);
+                if (_instance == null) _instance = ProviderManager.Instance.InitializeProvider(ProviderName, ProviderConfig);
 
                 return _instance;
             } 

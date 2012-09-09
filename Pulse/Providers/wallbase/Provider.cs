@@ -22,7 +22,7 @@ namespace wallbase
         private int resultCount;
         private CookieContainer _cookies = new CookieContainer();
 
-        public void Initialize()
+        public void Initialize(object args)
         {
             System.Net.ServicePointManager.Expect100Continue = false;
         }

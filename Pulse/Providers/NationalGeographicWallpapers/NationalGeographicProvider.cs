@@ -85,7 +85,7 @@ namespace NationalGeographicWallpapers
             
         }
 
-        public void Initialize()
+        public void Initialize(object args)
         {
             
         }

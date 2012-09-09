@@ -22,6 +22,6 @@ namespace Pulse.Base
         /// <summary>
         /// This method is called everytime the applicaiton starts or immediately after activation
         /// </summary>
-        void Initialize();
+        void Initialize(object args);
     }
 }

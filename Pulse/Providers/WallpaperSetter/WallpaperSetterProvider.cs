@@ -102,7 +102,7 @@ namespace WallpaperSetter
             return wallpaper;
         }
 
-        public void Initialize() { }
+        public void Initialize(object args) { }
         public void Activate(object args) { }
         public void Deactivate(object args) { }
 

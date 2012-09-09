@@ -24,6 +24,9 @@ namespace GoogleImages
         [DisplayName("Image Height")]
         public int ImageHeight { get; set; }
 
+        [DisplayName("Safe Search")]
+        public GoogleSafeSearchOptions GoogleSafeSearchOption { get; set; }
+
         //color also goes under "tbs" as well.  See GoogleImageColors
         // for examples of colors and string format
         [TypeConverter(typeof(GoogleImageColors.GoogleColorConverter))]
@@ -32,6 +35,7 @@ namespace GoogleImages
         public GoogleImageSearchSettings(){
            ImageWidth = PictureManager.PrimaryScreenResolution.First;
            ImageHeight = PictureManager.PrimaryScreenResolution.Second;
+           GoogleSafeSearchOption = GoogleSafeSearchOptions.Moderate;
         }
 
         public class GoogleImageColors
@@ -121,6 +125,13 @@ namespace GoogleImages
                     return new StandardValuesCollection(GetColors().Select(x=> x.Value).ToList());
                 }
             }
+        }
+
+        public enum GoogleSafeSearchOptions
+        {
+            Off,
+            Moderate,
+            Strict
         }
     }
 }

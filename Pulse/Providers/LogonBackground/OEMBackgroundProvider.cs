@@ -12,7 +12,7 @@ namespace LogonBackground
     [ProviderPlatform(PlatformID.Win32NT, 0, 0)]
     public class OEMBackgroundProvider : IOutputProvider
     {
-        public void Initialize()
+        public void Initialize(object args)
         {
 
         }

@@ -128,33 +128,33 @@ namespace Pulse.Base
             return (from Pulse.Base.ProviderPlatformAttribute c in attrPlatform select c).ToList();
         }
 
-        public IProvider InitializeProvider(string name)
+        public IProvider InitializeProvider(string name, object initArgs)
         {
-            return InitializeProvider(name, null);
+            return InitializeProvider(name, initArgs, null);
         }
 
-        public IProvider InitializeProvider(string name, params object[] activationArgs)
+        public IProvider InitializeProvider(string name, object initArgs, params object[] activationArgs)
         {
             var ipType = Providers[name];
 
             if (ipType == null) return null;
 
-            return InitializeProvider(ipType, activationArgs);
+            return InitializeProvider(ipType, initArgs, activationArgs);
         }
 
-        public static IProvider InitializeProvider(Type ipType)
+        public static IProvider InitializeProvider(Type ipType, object initArgs)
         {
-            return InitializeProvider(ipType, null);
+            return InitializeProvider(ipType, initArgs, null);
         }
 
-        public static IProvider InitializeProvider(Type ipType, params object[] activationArgs)
+        public static IProvider InitializeProvider(Type ipType, object initArgs, params object[] activationArgs)
         {
             if (ipType == null) return null;
 
             var aProv = Activator.CreateInstance(ipType) as IProvider;
             if (activationArgs != null) aProv.Activate(activationArgs);
 
-            aProv.Initialize();
+            aProv.Initialize(initArgs);
 
             return aProv;
         }
