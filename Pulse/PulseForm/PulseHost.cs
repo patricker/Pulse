@@ -72,14 +72,17 @@ namespace PulseForm
 
         private void banImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Runner.CurrentPicture != null)
+            if (Runner.CurrentBatch != null && Runner.CurrentBatch.CurrentPictures.Any())
             {
-                if (MessageBox.Show(string.Format("Ban '{0}'?", Runner.CurrentPicture.Url), "Image Ban", MessageBoxButtons.YesNo) != System.Windows.Forms.DialogResult.Yes)
+                foreach (Picture p in Runner.CurrentBatch.CurrentPictures)
                 {
-                    return;
-                }
+                    if (MessageBox.Show(string.Format("Ban '{0}'?", p.Url), "Image Ban", MessageBoxButtons.YesNo) != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        return;
+                    }
 
-                Runner.BanPicture();
+                    Runner.BanPicture(p.Url, p.LocalPath);
+                }
             }
         }
 

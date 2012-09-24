@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.ComponentModel;
 using System.Xml;
-using System.ServiceModel.Syndication;
 using System.Xml.Linq;
 
 namespace MediaRSSProvider
@@ -16,6 +15,7 @@ namespace MediaRSSProvider
     [ProviderConfigurationUserControl(typeof(MediaRSSImageProviderPreferences))]
     [ProviderConfigurationClass(typeof(MediaRSSImageSearchSettings))]
     [System.ComponentModel.Description("MediaRSS Feed")]
+    [ProviderIcon(typeof(Properties.Resources),"rss")]
     public class Provider : IInputProvider
     {
         private string baseURL = "http://backend.deviantart.com/rss.xml?q=boost%3Apopular+in%3Acustomization%2Fwallpaper+1680x1050&type=deviation";

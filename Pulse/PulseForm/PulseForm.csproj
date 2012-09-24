@@ -98,6 +98,9 @@
     <Compile Include="InputProviderPreview.Designer.cs">
       <DependentUpon>InputProviderPreview.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProviderComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ProviderSettingsWindow.cs">
       <SubType>Form</SubType>
     </Compile>

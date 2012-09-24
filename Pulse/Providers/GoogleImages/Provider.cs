@@ -14,6 +14,7 @@ namespace GoogleImages
     //[ProviderConfigurationUserControl(typeof(GoogleImageProviderPreferences))]
     [ProviderConfigurationClass(typeof(GoogleImageSearchSettings))]
     [System.ComponentModel.Description("Google Images")]
+    [ProviderIcon(typeof(Properties.Resources),"googleImages")]
     public class Provider : IInputProvider
     {
         private Regex imagesRegex2 = new Regex(@"imgurl=(?<imgurlgrp>http.*?)&amp;.*?imgrefurl=(?<imgrefgrp>http.*?)&amp;.*?src=[""'](?<thumbURL>.*?)[""'].*?>");//"(imgurl=)(?<imgurl>http.*?)[^&>]*([>&]{1})");

@@ -28,8 +28,14 @@ namespace PulseForm
             if (GeneralHelper.IsClientLinux)
             {
                 fph.WindowState = FormWindowState.Normal;
+                fph.niPulse.Visible = false;
             }
-            else { fph.niPulse.Visible = true; }
+            else {
+                fph.WindowState = FormWindowState.Minimized;
+                fph.Visible = false;
+
+                fph.niPulse.Visible = true; 
+            }
 
             Application.Run(fph);
 

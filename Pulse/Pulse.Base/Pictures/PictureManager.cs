@@ -153,13 +153,22 @@ namespace Pulse.Base
         {
             PictureList Pictures = null;
 
-            if (ps == null || ps.SearchProvider == null) return Pictures;
+            if (ps == null || ps.SearchProvider == null || ps.SearchProvider.Instance == null) return Pictures;
 
+            Pictures = ps.SearchProvider.SearchResults;
             var loadedFromFile = false;
             var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.GetSearchHash().ToString() + "_" + ps.SearchProvider.Instance.GetType().ToString() + ".xml");
 
-            Pictures = LoadCachedSearch(ps, fPath);
-            loadedFromFile = Pictures != null;
+            if (Pictures == null)
+            {
+
+                Pictures = LoadCachedSearch(ps, fPath);
+                loadedFromFile = Pictures != null;
+            }
+            else
+            {
+                loadedFromFile = false;
+            }
             
             //if we have no pictures to work with try and get them
             if (Pictures == null || Pictures.Pictures.Count == 0)

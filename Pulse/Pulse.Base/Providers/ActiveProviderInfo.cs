@@ -39,10 +39,29 @@ namespace Pulse.Base
             } 
         }
 
+        [System.Xml.Serialization.XmlIgnore()]
+        public PictureList SearchResults
+        {
+            get {
+                if (_searchResults != null)
+                {
+                    if (_searchResults.SearchSettingsHash != GetComparisonHashCode())
+                        _searchResults = null;
+                }
+
+                return _searchResults;
+            }
+            set { _searchResults = value; }
+        }
+
+        private PictureList _searchResults = null;
+
         private IProvider _instance;
 
         public ActiveProviderInfo()
         {
+            ProviderConfig = string.Empty;
+
             ProviderInstanceID = Guid.NewGuid();
         }
 
@@ -59,7 +78,7 @@ namespace Pulse.Base
 
         public int GetComparisonHashCode()
         {
-            return Save().GetHashCode();
+            return ProviderConfig.GetHashCode();
         }
     }
 }

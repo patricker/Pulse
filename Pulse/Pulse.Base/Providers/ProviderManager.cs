@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -126,6 +127,20 @@ namespace Pulse.Base
             var attrPlatform = ipType.GetCustomAttributes(typeof(Pulse.Base.ProviderPlatformAttribute), true);
 
             return (from Pulse.Base.ProviderPlatformAttribute c in attrPlatform select c).ToList();
+        }
+
+        public Image GetProviderIcon(string provName)
+        {
+            return GetProviderIcon(Providers[provName]);
+        }
+
+        public static Image GetProviderIcon(Type ipType)
+        {
+            var attrImage = ipType.GetCustomAttributes(typeof(Pulse.Base.Providers.ProviderIconAttribute), true);
+
+            if (attrImage.Length == 0) return null;
+
+            return ((Pulse.Base.Providers.ProviderIconAttribute)attrImage[0]).ProviderIcon;
         }
 
         public IProvider InitializeProvider(string name, object initArgs)

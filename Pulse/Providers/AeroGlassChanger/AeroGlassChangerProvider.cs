@@ -17,8 +17,12 @@ namespace AeroGlassChanger
     [ProviderPlatform(PlatformID.Win32NT, 0, 0)]
     public class AeroGlassChangerProvider : Pulse.Base.IOutputProvider
     {
-        public void ProcessPicture(Pulse.Base.Picture p, string config)
+        public void ProcessPicture(Pulse.Base.PictureBatch pb, string config)
         {
+            List<Picture> lp = pb.GetPictures(1);
+            if (!lp.Any()) return;
+            Picture p = lp.First();
+
             ManualResetEvent mre = new ManualResetEvent(false);
 
             //get color to start with
@@ -142,12 +146,5 @@ namespace AeroGlassChanger
         public void Deactivate(object args) { }
 
         public void Initialize(object args) { }
-
-        public void ProcessPictures(PictureList pl, string config)
-        {
-            if (pl.Pictures.Any()) ProcessPicture(pl.Pictures.First(), config);
-        }
-
-        public OutputProviderMode Mode { get { return OutputProviderMode.Single; } }
     }
 }

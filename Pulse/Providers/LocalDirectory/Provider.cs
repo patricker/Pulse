@@ -9,6 +9,7 @@ namespace LocalDirectory
 {
     [System.ComponentModel.Description("Local Directory")]
     [ProviderConfigurationClass(typeof(LocalDirectorySettings))]
+    [ProviderIcon(typeof(Properties.Resources),"folder")]
     public class Provider : IInputProvider
     {
         public PictureList GetPictures(PictureSearch ps)
