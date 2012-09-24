@@ -5,10 +5,12 @@ using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
 using Pulse.Base;
+using Pulse.Base.Providers;
 
 namespace NASAAPOD
 {
     [System.ComponentModel.Description("NASA Astronomy Picture of the Day")]
+    [ProviderIcon(typeof(Properties.Resources),"nasa")]
     public class NASAAPODProviderza:Pulse.Base.IInputProvider
     {
         private static string _url = "http://apod.nasa.gov/apod/archivepix.html";

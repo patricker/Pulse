@@ -12,8 +12,11 @@ namespace WallpaperSetter
     [ProviderPlatform(PlatformID.Unix, 0, 0)]
     public class OSXWallpaperSetter : IOutputProvider
     {
-        public void ProcessPicture(Picture p, string config)
+        public void ProcessPicture(PictureBatch pb, string config)
         {
+            List<Picture> lp = pb.GetPictures(1);
+            if (!lp.Any()) return;
+            Picture p = lp.First();
 
             string applScript =
 @"set theUnixPath to POSIX file ""{0}"" as text 
@@ -27,12 +30,5 @@ end tell";
         public void Activate(object args) { }
         public void Deactivate(object args) { }
         public void Initialize(object args) { }
-
-        public void ProcessPictures(PictureList pl, string config)
-        {
-            if (pl.Pictures.Any()) ProcessPicture(pl.Pictures.First(), config);
-        }
-
-        public OutputProviderMode Mode { get { return OutputProviderMode.Single; } }
     }
 }

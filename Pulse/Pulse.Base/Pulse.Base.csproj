@@ -52,8 +52,15 @@
     </Compile>
     <Compile Include="Log.cs" />
     <Compile Include="Pair.cs" />
+    <Compile Include="PictureBatch.cs" />
     <Compile Include="Pictures\DownloadQueue.cs" />
     <Compile Include="Pictures\PictureDownload.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\ProviderIconAttribute.cs" />
     <Compile Include="Providers\ProviderPlatformAttribute.cs" />
     <Compile Include="Providers\ActiveProviderInfo.cs" />
     <Compile Include="GeneralHelper.cs" />
@@ -79,13 +86,27 @@
     <Compile Include="PulseRunner.cs" />
     <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Status.cs" />
     <Compile Include="Translator.cs" />
     <Compile Include="XmlSerializable.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Providers\ProviderConfigurationPropertyGrid.resx">
       <DependentUpon>ProviderConfigurationPropertyGrid.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_downloading.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon_small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -5,12 +5,15 @@ using System.Text;
 using System.Timers;
 using System.IO;
 using System.Threading;
+using System.Resources;
 
 namespace Pulse.Base
 {
     public class PulseRunner : IDisposable
     {
-        public Picture CurrentPicture { get; set; }
+        public event Pulse.Base.Status.StatusChanged StatusChanged;
+        
+        public PictureBatch CurrentBatch { get; set; }
 
         public PictureManager PictureManager = new PictureManager();
         public Dictionary<Guid, ActiveProviderInfo> CurrentInputProviders = new Dictionary<Guid, ActiveProviderInfo>();
@@ -72,6 +75,12 @@ namespace Pulse.Base
             SetInputProviders();
         }
 
+        public void SetNewStatus(Status status)
+        {
+            if (StatusChanged != null)
+                StatusChanged(status);
+        }
+
         public void ClearOldWallpapers()
         {
             //if our cache folder does not exist then don't do it
@@ -115,17 +124,17 @@ namespace Pulse.Base
             t.Start();
         }
 
-        public void BanPicture()
+        public void BanPicture(string pictureURL, string localPath)
         {
             //add the url to the ban list
-            Settings.CurrentSettings.BannedImages.Add(CurrentPicture.Url);
+            Settings.CurrentSettings.BannedImages.Add(pictureURL);
             //save the settings file
             Settings.CurrentSettings.Save(Settings.AppPath + "\\settings.conf");
 
             try
             {
                 //delete the file from the local disk
-                File.Delete(CurrentPicture.LocalPath);
+                File.Delete(localPath);
             }
             catch (Exception ex)
             {
@@ -139,28 +148,38 @@ namespace Pulse.Base
         protected void DownloadNextPicture()
         {
             if (CurrentInputProviders.Count == 0) return;
+            //create the new picture batch
+            PictureBatch pb = new PictureBatch() {PreviousBatch = CurrentBatch};
+            this.CurrentBatch = pb;
 
-            var api = CurrentInputProviders.OrderBy(x => Guid.NewGuid()).First().Value;
-            
-            var ps = new PictureSearch()
+            foreach (KeyValuePair<Guid, ActiveProviderInfo> kvpGAPI in CurrentInputProviders)
             {
-                SaveFolder = Settings.CurrentSettings.CachePath,
-                MaxPictureCount = Settings.CurrentSettings.MaxPictureDownloadCount,
-                SearchProvider = api,
-                BannedURLs = Settings.CurrentSettings.BannedImages
-            };
+                ActiveProviderInfo api = kvpGAPI.Value;
+
+                var ps = new PictureSearch()
+                {
+                    SaveFolder = Settings.CurrentSettings.CachePath,
+                    MaxPictureCount = Settings.CurrentSettings.MaxPictureDownloadCount,
+                    SearchProvider = api,
+                    BannedURLs = Settings.CurrentSettings.BannedImages
+                };
+
+                //get new pictures
+                PictureList pl = PictureManager.GetPictureList(ps);
+                
+                //save to picturebatch 
+                pb.AllPictures.Add(pl);
+            }
 
             //Clear the download Queue
             DownloadManager.ClearQueue();
-
-            //get new pictures
-            PictureList pl = PictureManager.GetPictureList(ps);
-
+            
             //process downloaded picture list
-            ProcessDownloadedPicture(pl);
+            ProcessDownloadedPicture(pb);
 
+            
             //if prefetch is enabled, validate that all pictures have been downloaded
-            if (Settings.CurrentSettings.PreFetch) DownloadManager.PreFetchFiles(pl);
+            if (Settings.CurrentSettings.PreFetch) DownloadManager.PreFetchFiles(pb);
         }
 
         protected void SetTimers()
@@ -271,17 +290,16 @@ namespace Pulse.Base
             ClearOldWallpapers();
         }
 
-        private void ProcessDownloadedPicture(PictureList pl)
+        private void ProcessDownloadedPicture(PictureBatch pb)
         {
-            if (pl != null && pl.Pictures.Any())
+            if (pb != null && pb.AllPictures.Any())
             {
-                ////enable image banning
-                //banImageToolStripMenuItem.Enabled = true;
-
-                //get the picture downloading wrapper, but don't queue it up for download yet.  We need to hook into it first.
-                PictureDownload pic = DownloadManager.GetPicture(pl, CurrentPicture, false);
-                //set for max priority
-                pic.Priority = 1;
+                ////get the picture downloading wrapper, but don't queue it up for download yet.  We need to hook into it first.
+                //PictureDownload pic = DownloadManager.GetPicture(pl, CurrentPicture, false);
+                ////set for max priority
+                //pic.Priority = 1;
+                ////set current picture so that we don't reuse it and so we can ban it
+                //CurrentPicture = pic.Picture;
 
                 //call all activated output providers in order
                 foreach (var op in Settings.CurrentSettings.ProviderSettings.Values.Where(x => x.Active).OrderBy(x => x.ExecutionOrder))
@@ -292,16 +310,17 @@ namespace Pulse.Base
                     {
                         IOutputProvider ip = ((IOutputProvider)op.Instance);
                         string config = op.ProviderConfig;
+                        ip.ProcessPicture(pb, config);
 
-                        if (ip.Mode == OutputProviderMode.Single)
-                        {
-                            pic.PictureDownloaded += new PictureDownload.PictureDownloadEvent(
-                                    delegate(PictureDownload t) {
-                                        ip.ProcessPicture(pic.Picture, config);
-                                    });
-                        }
-                        else if (ip.Mode == OutputProviderMode.Multiple)
-                            ip.ProcessPictures(pl, config);
+                        //if (ip.Mode == OutputProviderMode.Single)
+                        //{
+                        //    pic.PictureDownloaded += new PictureDownload.PictureDownloadEvent(
+                        //            delegate(PictureDownload t) {
+                        //                ip.ProcessPicture(pic.Picture, config);
+                        //            });
+                        //}
+                        //else if (ip.Mode == OutputProviderMode.Multiple)
+                            
                     }
                     catch (Exception ex)
                     {
@@ -309,8 +328,8 @@ namespace Pulse.Base
                     }
                 }
 
-                //queue picture up for download
-                DownloadManager.QueuePicture(pic);
+                ////queue picture up for download
+                //DownloadManager.QueuePicture(pic);
             }
         }
 

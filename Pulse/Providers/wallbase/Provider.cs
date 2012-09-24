@@ -17,6 +17,7 @@ namespace wallbase
     [System.ComponentModel.Description("Wallbase")]
     [ProviderConfigurationUserControl(typeof(WallbaseProviderPrefs))]
     [ProviderConfigurationClass(typeof(WallbaseImageSearchSettings))]
+    [ProviderIcon(typeof(Properties.Resources), "wallbasefav")]
     public class Provider : IInputProvider
     {
         private int resultCount;

@@ -24,6 +24,8 @@ namespace Pulse.Base
         /// </summary>
         public string SaveFolder { get; private set; }
 
+        public event PictureDownload.PictureDownloadEvent QueueIsEmpty;
+        
         //Events for Download Manager UI
         public event PictureDownload.PictureDownloadEvent PictureAddedToQueue;
         public event PictureDownload.PictureDownloadEvent PictureRemovedFromQueue;
@@ -137,18 +139,26 @@ namespace Pulse.Base
                              where c.Status == PictureDownload.DownloadStatus.Downloading
                              select c).Count();
 
-                //start up the difference
-                //Include download retries here by checking for status of error and retry count < limit
-                var toStart = (from c in queueSnapshot
+                //get pictures that are queued up to go
+                var queued = (from c in queueSnapshot
                                where c.Status == PictureDownload.DownloadStatus.Stopped ||
                                c.Status == PictureDownload.DownloadStatus.Error && c.FailureCount < _failureRetries
                                orderby c.Priority ascending
-                               select c).Take(_maxConcurrentDownloads - count);                
+                               select c);
 
-                foreach (PictureDownload pd in toStart)
+                if (queued.Any())
                 {
-                    pd.StartDownload();
+                    //start up the difference
+                    //Include download retries here by checking for status of error and retry count < limit
+                    var toStart = queued.Take(_maxConcurrentDownloads - count);
+
+                    foreach (PictureDownload pd in toStart)
+                    {
+                        pd.StartDownload();
+                    }
                 }
+                else
+                    if (QueueIsEmpty != null) QueueIsEmpty(null);
             }
             catch (Exception ex)
             {
@@ -218,13 +228,16 @@ namespace Pulse.Base
             return pd;
         }
 
-        public void PreFetchFiles(PictureList pl)
+        public void PreFetchFiles(PictureBatch pb)
         {
-            if (pl == null || pl.Pictures.Count == 0) return;
+            if (pb == null || pb.AllPictures.Count == 0) return;
 
-            foreach (Picture pic in pl.Pictures)
+            foreach (PictureList pl in pb.AllPictures)
             {
-                GetPicture(pic, true);
+                foreach (Picture pic in pl.Pictures)
+                {
+                    GetPicture(pic, true);
+                }
             }
         }
 

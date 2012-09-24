@@ -6,10 +6,12 @@ using Pulse.Base;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Pulse.Base.Providers;
 
 namespace NationalGeographicWallpapers
 {
     [System.ComponentModel.Description("National Geographic")]
+    [ProviderIcon(typeof(Properties.Resources),"favicon_cb1274471343")]
     public class NationalGeographicProvider : Pulse.Base.IInputProvider
     {
         private string _baseURL = "http://ngm.nationalgeographic.com";

@@ -92,11 +92,10 @@ namespace PulseForm
                     }
                 );
 
-            BindingSource bsInput = new BindingSource();
-            bsInput.DataSource = InputProviderInfos;
-
-            lbActiveInputProviders.DataSource = bsInput;
-
+            //BindingSource bsInput = new BindingSource();
+            //bsInput.DataSource = InputProviderInfos;
+            BindProviderListView();
+            
             //load into combo box
             BindingSource bs = new BindingSource();
             bs.DataSource = (from c in inputProviders select c.Key).ToList();
@@ -135,6 +134,24 @@ namespace PulseForm
             dgvOutputProviders.DataSource = OutputProviderInfos;
 
             ApplyButton.Enabled = false;
+        }
+
+        private void BindProviderListView()
+        {
+            lbActiveInputProviders.Items.Clear();
+
+            ImageList imgList = new ImageList();
+            lbActiveInputProviders.SmallImageList = imgList;
+
+            foreach (var c in InputProviderInfos)
+            {
+                if (!imgList.Images.ContainsKey(c.ProviderName))
+                    imgList.Images.Add(c.ProviderName, ProviderManager.Instance.GetProviderIcon(c.ProviderName));
+
+                ListViewItem lvi = new ListViewItem(c.ProviderName, c.ProviderName);
+                lvi.SubItems.Add(c.ProviderInstanceID.ToString());
+                lbActiveInputProviders.Items.Add(lvi);
+            }
         }
 
         private void SortOutputProviders()
@@ -258,17 +275,21 @@ namespace PulseForm
         {
             ApplyButton.Enabled = true;
         }
-        
-        private void lbActiveInputProviders_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void lbActiveInputProviders_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             HandleProviderSettingsEnableAndLoad();
         }
 
         private void btnRemoveInputProvider_Click(object sender, EventArgs e)
         {
+            if (lbActiveInputProviders.SelectedItems.Count <= 0) return;
+
             ApplyButton.Enabled = true;
 
-            ActiveProviderInfo api = lbActiveInputProviders.SelectedItem as ActiveProviderInfo;
+            ListViewItem lvi = lbActiveInputProviders.SelectedItems[0];
+            ActiveProviderInfo api = InputProviderInfos.Where(x => x.ProviderInstanceID == new Guid(lvi.SubItems[1].Text)).SingleOrDefault();
+
             InputProviderInfos.Remove(api);
 
             _ProvidersToRemove.Add(api.ProviderInstanceID);
@@ -276,24 +297,27 @@ namespace PulseForm
             BindingSource bsInput = new BindingSource();
             bsInput.DataSource = InputProviderInfos;
 
-            lbActiveInputProviders.DataSource = bsInput;
-            lbActiveInputProviders.SelectedItem = api;
+            BindProviderListView();
         }
 
         private void HandleProviderSettingsEnableAndLoad()
         {
-            object si = lbActiveInputProviders.SelectedItem;
-            bool result=false;
+            bool result = false;
 
-            btnPreview.Enabled = si != null;
-            btnRemoveInputProvider.Enabled = si != null;
-
-            if (si != null)
+            if (lbActiveInputProviders.SelectedItems.Count > 0)
             {
-                ActiveProviderInfo api = si as ActiveProviderInfo;
-                result = ProviderManager.Instance.HasConfigurationWindow(api.ProviderName) != null;
-                                
-            }      
+                ListViewItem lvi = lbActiveInputProviders.SelectedItems[0];
+                ActiveProviderInfo api = InputProviderInfos.Where(x => x.ProviderInstanceID == new Guid(lvi.SubItems[1].Text)).SingleOrDefault();
+
+
+                btnPreview.Enabled = api != null;
+                btnRemoveInputProvider.Enabled = api != null;
+
+                if (api != null)
+                {
+                    result = ProviderManager.Instance.HasConfigurationWindow(api.ProviderName) != null;
+                }
+            }
 
             //enable or disable settings button depending on settings availability
             ProviderSettings.Enabled = result;
@@ -318,8 +342,11 @@ namespace PulseForm
 
         private void ProviderSettings_Click(object sender, EventArgs e)
         {
-            
-            ActiveProviderInfo api = lbActiveInputProviders.SelectedItem as ActiveProviderInfo;
+            if (lbActiveInputProviders.SelectedItems.Count <= 0) return;
+            ListViewItem lvi = lbActiveInputProviders.SelectedItems[0];
+
+            ActiveProviderInfo api = InputProviderInfos.Where(x => x.ProviderInstanceID == new Guid(lvi.SubItems[1].Text)).SingleOrDefault();
+            if (api == null) return;
 
             //get the usercontrol instance from Provider Manager
             var initSettings = ProviderManager.Instance.InitializeConfigurationWindow(api.ProviderName);
@@ -330,7 +357,11 @@ namespace PulseForm
 
         private void btnPreview_Click(object sender, EventArgs e)
         {
-            ActiveProviderInfo api = lbActiveInputProviders.SelectedItem as ActiveProviderInfo;
+            if (lbActiveInputProviders.SelectedItems.Count <= 0) return;
+            ListViewItem lvi = lbActiveInputProviders.SelectedItems[0];
+
+            ActiveProviderInfo api = InputProviderInfos.Where(x => x.ProviderInstanceID == new Guid(lvi.SubItems[1].Text)).SingleOrDefault();
+            if (api == null) return;
 
             InputProviderPreview ipp = new InputProviderPreview();
             ipp.Provider = api;
@@ -347,11 +378,13 @@ namespace PulseForm
             ActiveProviderInfo api = new ActiveProviderInfo(name) { Active = true };
             InputProviderInfos.Add(api);
 
-            BindingSource bsInput = new BindingSource();
-            bsInput.DataSource = InputProviderInfos;
+            BindProviderListView();
 
-            lbActiveInputProviders.DataSource = bsInput;
-            lbActiveInputProviders.SelectedItem = api;
+            //BindingSource bsInput = new BindingSource();
+            //bsInput.DataSource = InputProviderInfos;
+
+            //lbActiveInputProviders.DataSource = bsInput;
+            //lbActiveInputProviders.SelectedItem = api;
         }
 
 

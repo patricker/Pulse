@@ -39,10 +39,9 @@
             this.cbDeleteOldFiles = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnRemoveInputProvider = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAddInput = new System.Windows.Forms.Button();
-            this.lbActiveInputProviders = new System.Windows.Forms.ListBox();
-            this.cbProviders = new System.Windows.Forms.ComboBox();
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -62,7 +61,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnRemoveInputProvider = new System.Windows.Forms.Button();
+            this.lbActiveInputProviders = new System.Windows.Forms.ListView();
+            this.cbProviders = new PulseForm.ProviderComboBox();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -93,7 +93,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(460, 510);
+            this.tabControl1.Size = new System.Drawing.Size(724, 510);
             this.tabControl1.TabIndex = 0;
             // 
             // tpGeneral
@@ -106,7 +106,7 @@
             this.tpGeneral.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpGeneral.Name = "tpGeneral";
             this.tpGeneral.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpGeneral.Size = new System.Drawing.Size(452, 481);
+            this.tpGeneral.Size = new System.Drawing.Size(716, 481);
             this.tpGeneral.TabIndex = 0;
             this.tpGeneral.Text = "General";
             this.tpGeneral.UseVisualStyleBackColor = true;
@@ -199,10 +199,10 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.lbActiveInputProviders);
             this.panel3.Controls.Add(this.btnRemoveInputProvider);
             this.panel3.Controls.Add(this.btnPreview);
             this.panel3.Controls.Add(this.btnAddInput);
-            this.panel3.Controls.Add(this.lbActiveInputProviders);
             this.panel3.Controls.Add(this.cbProviders);
             this.panel3.Controls.Add(this.ProviderSettings);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -212,6 +212,17 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(425, 130);
             this.panel3.TabIndex = 4;
+            // 
+            // btnRemoveInputProvider
+            // 
+            this.btnRemoveInputProvider.Enabled = false;
+            this.btnRemoveInputProvider.Location = new System.Drawing.Point(237, 95);
+            this.btnRemoveInputProvider.Name = "btnRemoveInputProvider";
+            this.btnRemoveInputProvider.Size = new System.Drawing.Size(92, 26);
+            this.btnRemoveInputProvider.TabIndex = 7;
+            this.btnRemoveInputProvider.Text = "Remove";
+            this.btnRemoveInputProvider.UseVisualStyleBackColor = true;
+            this.btnRemoveInputProvider.Click += new System.EventHandler(this.btnRemoveInputProvider_Click);
             // 
             // btnPreview
             // 
@@ -234,28 +245,6 @@
             this.btnAddInput.Text = "Add";
             this.btnAddInput.UseVisualStyleBackColor = true;
             this.btnAddInput.Click += new System.EventHandler(this.btnAddInput_Click);
-            // 
-            // lbActiveInputProviders
-            // 
-            this.lbActiveInputProviders.DisplayMember = "ProviderName";
-            this.lbActiveInputProviders.FormattingEnabled = true;
-            this.lbActiveInputProviders.ItemHeight = 16;
-            this.lbActiveInputProviders.Location = new System.Drawing.Point(9, 34);
-            this.lbActiveInputProviders.Name = "lbActiveInputProviders";
-            this.lbActiveInputProviders.Size = new System.Drawing.Size(222, 84);
-            this.lbActiveInputProviders.TabIndex = 4;
-            this.lbActiveInputProviders.SelectedIndexChanged += new System.EventHandler(this.lbActiveInputProviders_SelectedIndexChanged);
-            // 
-            // cbProviders
-            // 
-            this.cbProviders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbProviders.FormattingEnabled = true;
-            this.cbProviders.Location = new System.Drawing.Point(9, 4);
-            this.cbProviders.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cbProviders.Name = "cbProviders";
-            this.cbProviders.Size = new System.Drawing.Size(222, 24);
-            this.cbProviders.TabIndex = 2;
-            this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
             // 
             // ProviderSettings
             // 
@@ -399,7 +388,7 @@
             this.tpOutputs.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpOutputs.Name = "tpOutputs";
             this.tpOutputs.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpOutputs.Size = new System.Drawing.Size(452, 481);
+            this.tpOutputs.Size = new System.Drawing.Size(716, 481);
             this.tpOutputs.TabIndex = 1;
             this.tpOutputs.Text = "Outputs";
             this.tpOutputs.UseVisualStyleBackColor = true;
@@ -419,7 +408,7 @@
             this.dgvOutputProviders.Name = "dgvOutputProviders";
             this.dgvOutputProviders.RowHeadersVisible = false;
             this.dgvOutputProviders.RowTemplate.Height = 28;
-            this.dgvOutputProviders.Size = new System.Drawing.Size(446, 477);
+            this.dgvOutputProviders.Size = new System.Drawing.Size(710, 477);
             this.dgvOutputProviders.TabIndex = 0;
             this.dgvOutputProviders.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellClick);
             this.dgvOutputProviders.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellValueChanged);
@@ -437,7 +426,7 @@
             this.tpAbout.Location = new System.Drawing.Point(4, 25);
             this.tpAbout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpAbout.Name = "tpAbout";
-            this.tpAbout.Size = new System.Drawing.Size(452, 481);
+            this.tpAbout.Size = new System.Drawing.Size(716, 481);
             this.tpAbout.TabIndex = 2;
             this.tpAbout.Text = "About";
             this.tpAbout.UseVisualStyleBackColor = true;
@@ -491,7 +480,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2MinSize = 45;
-            this.splitContainer1.Size = new System.Drawing.Size(460, 559);
+            this.splitContainer1.Size = new System.Drawing.Size(724, 559);
             this.splitContainer1.SplitterDistance = 510;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -503,25 +492,37 @@
             this.panel1.Location = new System.Drawing.Point(0, 9);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(460, 36);
+            this.panel1.Size = new System.Drawing.Size(724, 36);
             this.panel1.TabIndex = 4;
             // 
-            // btnRemoveInputProvider
+            // lbActiveInputProviders
             // 
-            this.btnRemoveInputProvider.Enabled = false;
-            this.btnRemoveInputProvider.Location = new System.Drawing.Point(237, 95);
-            this.btnRemoveInputProvider.Name = "btnRemoveInputProvider";
-            this.btnRemoveInputProvider.Size = new System.Drawing.Size(92, 26);
-            this.btnRemoveInputProvider.TabIndex = 7;
-            this.btnRemoveInputProvider.Text = "Remove";
-            this.btnRemoveInputProvider.UseVisualStyleBackColor = true;
-            this.btnRemoveInputProvider.Click += new System.EventHandler(this.btnRemoveInputProvider_Click);
+            this.lbActiveInputProviders.Location = new System.Drawing.Point(9, 30);
+            this.lbActiveInputProviders.MultiSelect = false;
+            this.lbActiveInputProviders.Name = "lbActiveInputProviders";
+            this.lbActiveInputProviders.Size = new System.Drawing.Size(222, 91);
+            this.lbActiveInputProviders.TabIndex = 14;
+            this.lbActiveInputProviders.UseCompatibleStateImageBehavior = false;
+            this.lbActiveInputProviders.View = System.Windows.Forms.View.SmallIcon;
+            this.lbActiveInputProviders.SelectedIndexChanged += new System.EventHandler(this.lbActiveInputProviders_SelectedIndexChanged_1);
+            // 
+            // cbProviders
+            // 
+            this.cbProviders.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbProviders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbProviders.FormattingEnabled = true;
+            this.cbProviders.Location = new System.Drawing.Point(9, 4);
+            this.cbProviders.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbProviders.Name = "cbProviders";
+            this.cbProviders.Size = new System.Drawing.Size(222, 24);
+            this.cbProviders.TabIndex = 2;
+            this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
             // 
             // frmPulseOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(460, 559);
+            this.ClientSize = new System.Drawing.Size(724, 559);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -569,7 +570,7 @@
         private System.Windows.Forms.CheckBox cbAutoChangeonStartup;
         private System.Windows.Forms.CheckBox cbDownloadAutomatically;
         private System.Windows.Forms.Button ProviderSettings;
-        private System.Windows.Forms.ComboBox cbProviders;
+        private ProviderComboBox cbProviders;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -586,8 +587,8 @@
         private System.Windows.Forms.CheckBox cbRunOnWindowsStartup;
         private System.Windows.Forms.DataGridViewButtonColumn oppSettings;
         private System.Windows.Forms.Button btnAddInput;
-        private System.Windows.Forms.ListBox lbActiveInputProviders;
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.Button btnRemoveInputProvider;
+        private System.Windows.Forms.ListView lbActiveInputProviders;
     }
 }

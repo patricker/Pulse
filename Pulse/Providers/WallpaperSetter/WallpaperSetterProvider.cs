@@ -14,8 +14,12 @@ namespace WallpaperSetter
     [ProviderConfigurationClass(typeof(WallpaperSetterSettings))]
     public class WallpaperSetterProvider : IOutputProvider
     {
-        public void ProcessPicture(Picture p, string config)
+        public void ProcessPicture(PictureBatch pb, string config)
         {
+            List<Picture> lp = pb.GetPictures(1);
+            if (!lp.Any()) return;
+            Picture p = lp.First();
+
             //deserialize configuration
             WallpaperSetterSettings wss = null;
 
@@ -106,12 +110,5 @@ namespace WallpaperSetter
         public void Activate(object args) { }
         public void Deactivate(object args) { }
 
-
-        public void ProcessPictures(PictureList pl, string config)
-        {
-            if (pl.Pictures.Any()) ProcessPicture(pl.Pictures.First(), config);
-        }
-
-        public OutputProviderMode Mode { get { return OutputProviderMode.Single; } }
     }
 }
