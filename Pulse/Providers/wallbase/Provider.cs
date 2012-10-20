@@ -204,11 +204,14 @@ namespace wallbase
                 var content = cawc.DownloadString(pageUrl);
                 if (string.IsNullOrEmpty(content)) return string.Empty;
 
-                var regex = new Regex(@"<img src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
+                //var regex = new Regex(@"<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
+                var regex = new Regex(@"\+B\('(?<img>.*=)'\)");
                 var m = regex.Match(content);
                 if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
                 {
-                    return m.Groups["img"].Value;
+                    byte[] decoded = Convert.FromBase64String(m.Groups["img"].Value);
+                    string final = Encoding.Default.GetString(decoded);
+                    return final;
                 }
 
                 return string.Empty;
