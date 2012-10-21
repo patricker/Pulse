@@ -76,20 +76,18 @@ namespace Pulse.Base
             RunOnWindowsStartup = false;
 
             //set wallpaper changer as a default provider for output
-            var wID = Guid.NewGuid();
-            ProviderSettings.Add(wID, new ActiveProviderInfo("Desktop Wallpaper", wID)
-            {
-                Active = true,
-                ExecutionOrder = 1
-            });
+            ActiveProviderInfo apiWallpaper = new ActiveProviderInfo("Desktop Wallpaper");
+            apiWallpaper.Active = true;
+            apiWallpaper.ExecutionOrder = 1;
+
+            ProviderSettings.Add(apiWallpaper.ProviderInstanceID, apiWallpaper);
 
             //set wallbase as default for inputs
-            var wallID = Guid.NewGuid();
-            ProviderSettings.Add(Guid.NewGuid(), new ActiveProviderInfo("Wallbase", wallID)
-            {
-                Active = true,
-                ExecutionOrder = 1
-            });
+            ActiveProviderInfo apiWallbase = new ActiveProviderInfo("Wallbase");
+
+            ProviderSettings.Add(apiWallbase.ProviderInstanceID, apiWallbase);
+            apiWallbase.Active=true;
+            apiWallbase.ExecutionOrder =1;
         }
 
         public string GetProviderSettings(Guid prov) {

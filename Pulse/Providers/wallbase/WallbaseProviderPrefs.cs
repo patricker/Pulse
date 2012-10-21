@@ -83,8 +83,8 @@ namespace wallbase
 
             wiss.SA = cbArea.SelectedValue.ToString();
             wiss.SO = cbImageSizeType.SelectedValue.ToString();
-            wiss.OB = cbOrderBy.SelectedValue.ToString();
-            wiss.OBD = cbOrderByDirection.SelectedValue.ToString();
+            wiss.OB = cbOrderBy.SelectedValue==null?"":cbOrderBy.SelectedValue.ToString();
+            wiss.OBD = cbOrderByDirection.SelectedValue==null?"":cbOrderByDirection.SelectedValue.ToString();
 
             wiss.ImageWidth = string.IsNullOrEmpty(txtWidth.Text) ? 0 : Convert.ToInt32(txtWidth.Text);
             wiss.ImageHeight = string.IsNullOrEmpty(txtHeight.Text) ? 0 : Convert.ToInt32(txtHeight.Text);
