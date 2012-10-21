@@ -152,7 +152,9 @@ namespace Pulse.Base
             PictureBatch pb = new PictureBatch() {PreviousBatch = CurrentBatch};
             this.CurrentBatch = pb;
 
-            foreach (KeyValuePair<Guid, ActiveProviderInfo> kvpGAPI in CurrentInputProviders)
+            //create another view of the input providers, otherwise if the list changes
+            // because user changes options then it breaks :)
+            foreach (KeyValuePair<Guid, ActiveProviderInfo> kvpGAPI in CurrentInputProviders.ToArray())
             {
                 ActiveProviderInfo api = kvpGAPI.Value;
 
@@ -210,14 +212,25 @@ namespace Pulse.Base
 
             foreach (var op in Settings.CurrentSettings.ProviderSettings)
             {
-                //if the provider is already contained in input providers up top then skip
-                if (!CurrentInputProviders.ContainsKey(op.Key) 
-                        && validInputs.ContainsKey(op.Value.ProviderName)    
-                        && op.Value.Active) { 
-                    CurrentInputProviders.Add(op.Key, op.Value);
-                    
-                    //activate provider
-                    op.Value.Instance.Activate(null);
+                if (!CurrentInputProviders.ContainsKey(op.Key))
+                {
+                    if (validInputs.ContainsKey(op.Value.ProviderName) && op.Value.Active)
+                    {
+                        CurrentInputProviders.Add(op.Key, op.Value);
+
+                        //activate provider
+                        op.Value.Instance.Activate(null);
+                    }
+                }
+                else
+                {
+                    //if this instance of the provider is already present then make sure settings are the same
+                    if (CurrentInputProviders[op.Key].GetComparisonHashCode() !=
+                        op.Value.GetComparisonHashCode())
+                    {
+                        //if not the same configuration the swap for new config
+                        CurrentInputProviders[op.Key] = op.Value;
+                    }
                 }
 
                 toKeep.Add(op.Key);
