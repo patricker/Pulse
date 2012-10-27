@@ -75,6 +75,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CodePlexNewReleaseChecker, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\CodePlexNewReleaseChecker.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -97,6 +101,12 @@
     </Compile>
     <Compile Include="InputProviderPreview.Designer.cs">
       <DependentUpon>InputProviderPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NewPulseVersion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewPulseVersion.Designer.cs">
+      <DependentUpon>NewPulseVersion.cs</DependentUpon>
     </Compile>
     <Compile Include="ProviderComboBox.cs">
       <SubType>Component</SubType>
@@ -126,6 +136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="InputProviderPreview.resx">
       <DependentUpon>InputProviderPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewPulseVersion.resx">
+      <DependentUpon>NewPulseVersion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProviderSettingsWindow.resx">
       <DependentUpon>ProviderSettingsWindow.cs</DependentUpon>

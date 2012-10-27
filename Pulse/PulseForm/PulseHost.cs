@@ -29,12 +29,23 @@ namespace PulseForm
 
             //create and initialize the runner
             Runner = new PulseRunner();
+            //listen for new version available events
+            Runner.NewVersionAvailable += Runner_NewVersionAvailable;
             Runner.Initialize();
 
             if (Runner.CurrentInputProviders.Count == 0)
             {
                 MessageBox.Show("A provider is not currently selected.  Please choose a wallpaper provider from the options menu.");
             }
+        }
+
+        void Runner_NewVersionAvailable(CodePlexNewReleaseChecker.Release obj)
+        {
+            //show popup that new version is available.
+            NewPulseVersion npv = new NewPulseVersion();
+            npv.LoadRelease(obj);
+
+            npv.ShowDialog();
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs args)
