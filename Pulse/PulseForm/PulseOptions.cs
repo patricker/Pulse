@@ -55,6 +55,7 @@ namespace PulseForm
             cbPrefetch.Checked = Settings.CurrentSettings.PreFetch;
 
             cbRunOnWindowsStartup.Checked = Settings.CurrentSettings.RunOnWindowsStartup;
+            cbCheckForNewVersions.Checked = Settings.CurrentSettings.CheckForNewPulseVersions;
             //frequency
 
             //LanguageComboBox.Items.Add(new ComboBoxItem() { Content = CultureInfo.GetCultureInfo("en-US").NativeName });
@@ -203,6 +204,9 @@ namespace PulseForm
                     rkApp.DeleteValue("Pulse", false);
                 }
             }
+
+            //check for new versions on startup?
+            Settings.CurrentSettings.CheckForNewPulseVersions = cbCheckForNewVersions.Checked;
             
             //save inputs
             foreach (ActiveProviderInfo api in InputProviderInfos)

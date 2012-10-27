@@ -39,6 +39,7 @@
             this.cbDeleteOldFiles = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.lbActiveInputProviders = new System.Windows.Forms.ListView();
             this.btnRemoveInputProvider = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAddInput = new System.Windows.Forms.Button();
@@ -61,7 +62,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.lbActiveInputProviders = new System.Windows.Forms.ListView();
+            this.cbCheckForNewVersions = new System.Windows.Forms.CheckBox();
             this.cbProviders = new PulseForm.ProviderComboBox();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
@@ -213,6 +214,17 @@
             this.panel3.Size = new System.Drawing.Size(425, 130);
             this.panel3.TabIndex = 4;
             // 
+            // lbActiveInputProviders
+            // 
+            this.lbActiveInputProviders.Location = new System.Drawing.Point(9, 30);
+            this.lbActiveInputProviders.MultiSelect = false;
+            this.lbActiveInputProviders.Name = "lbActiveInputProviders";
+            this.lbActiveInputProviders.Size = new System.Drawing.Size(222, 91);
+            this.lbActiveInputProviders.TabIndex = 14;
+            this.lbActiveInputProviders.UseCompatibleStateImageBehavior = false;
+            this.lbActiveInputProviders.View = System.Windows.Forms.View.SmallIcon;
+            this.lbActiveInputProviders.SelectedIndexChanged += new System.EventHandler(this.lbActiveInputProviders_SelectedIndexChanged_1);
+            // 
             // btnRemoveInputProvider
             // 
             this.btnRemoveInputProvider.Enabled = false;
@@ -273,6 +285,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.cbCheckForNewVersions);
             this.panel2.Controls.Add(this.cbRunOnWindowsStartup);
             this.panel2.Controls.Add(this.udInterval);
             this.panel2.Controls.Add(this.cbDownloadAutomatically);
@@ -291,7 +304,7 @@
             // cbRunOnWindowsStartup
             // 
             this.cbRunOnWindowsStartup.AutoSize = true;
-            this.cbRunOnWindowsStartup.Location = new System.Drawing.Point(3, 132);
+            this.cbRunOnWindowsStartup.Location = new System.Drawing.Point(3, 104);
             this.cbRunOnWindowsStartup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbRunOnWindowsStartup.Name = "cbRunOnWindowsStartup";
             this.cbRunOnWindowsStartup.Size = new System.Drawing.Size(186, 21);
@@ -495,16 +508,15 @@
             this.panel1.Size = new System.Drawing.Size(724, 36);
             this.panel1.TabIndex = 4;
             // 
-            // lbActiveInputProviders
+            // cbCheckForNewVersions
             // 
-            this.lbActiveInputProviders.Location = new System.Drawing.Point(9, 30);
-            this.lbActiveInputProviders.MultiSelect = false;
-            this.lbActiveInputProviders.Name = "lbActiveInputProviders";
-            this.lbActiveInputProviders.Size = new System.Drawing.Size(222, 91);
-            this.lbActiveInputProviders.TabIndex = 14;
-            this.lbActiveInputProviders.UseCompatibleStateImageBehavior = false;
-            this.lbActiveInputProviders.View = System.Windows.Forms.View.SmallIcon;
-            this.lbActiveInputProviders.SelectedIndexChanged += new System.EventHandler(this.lbActiveInputProviders_SelectedIndexChanged_1);
+            this.cbCheckForNewVersions.AutoSize = true;
+            this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 130);
+            this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
+            this.cbCheckForNewVersions.Size = new System.Drawing.Size(244, 21);
+            this.cbCheckForNewVersions.TabIndex = 13;
+            this.cbCheckForNewVersions.Text = "Check for new versions on startup\r\n";
+            this.cbCheckForNewVersions.UseVisualStyleBackColor = true;
             // 
             // cbProviders
             // 
@@ -590,5 +602,6 @@
         private System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.Button btnRemoveInputProvider;
         private System.Windows.Forms.ListView lbActiveInputProviders;
+        private System.Windows.Forms.CheckBox cbCheckForNewVersions;
     }
 }

@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", 
 	ProjectSection(SolutionItems) = preProject
 		References\AppleScriptSlim.dll = References\AppleScriptSlim.dll
 		References\AppleScriptSlim.pdb = References\AppleScriptSlim.pdb
+		References\CodePlexNewReleaseChecker.dll = References\CodePlexNewReleaseChecker.dll
+		References\CodePlexNewReleaseChecker.pdb = References\CodePlexNewReleaseChecker.pdb
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{504B2B05-2EC4-4701-B4D0-66E277208FE8}"

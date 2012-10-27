@@ -6,13 +6,15 @@ using System.Timers;
 using System.IO;
 using System.Threading;
 using System.Resources;
+using CodePlexNewReleaseChecker;
 
 namespace Pulse.Base
 {
     public class PulseRunner : IDisposable
     {
         public event Pulse.Base.Status.StatusChanged StatusChanged;
-        
+        public event Action<CodePlexNewReleaseChecker.Release> NewVersionAvailable;
+
         public PictureBatch CurrentBatch { get; set; }
 
         public PictureManager PictureManager = new PictureManager();
@@ -33,6 +35,13 @@ namespace Pulse.Base
             if (Log.Logger.LoggerLevel == Log.LoggerLevels.Verbose)
             {
                 Log.Logger.Write(string.Format("Settings loaded, settings are: {0}", Environment.NewLine + Settings.CurrentSettings.Save()), Log.LoggerLevels.Verbose);
+            }
+
+            //check if we should check for new versions or not, if yes then use the awesome CodePlex version Checker project :)
+            Log.Logger.Write(string.Format("Check for new Pulse Versions set to '{0}'", Settings.CurrentSettings.CheckForNewPulseVersions.ToString()), Log.LoggerLevels.Verbose);
+            if (Settings.CurrentSettings.CheckForNewPulseVersions)
+            {
+                CheckForNewVersion();
             }
 
             Log.Logger.Write(string.Format("Clear old pics flag set to '{0}'", Settings.CurrentSettings.ClearOldPics.ToString()), Log.LoggerLevels.Verbose);
@@ -63,6 +72,37 @@ namespace Pulse.Base
 
                     SkipToNextPicture();
                 }
+            }
+        }
+
+        public void CheckForNewVersion()
+        {
+            //NewVersionAvailable
+            try
+            {
+                VersionChecker vcReleasedPageStripper = new VersionChecker("Pulse", new RssFeedReleases());
+
+                //get the release record for the version installed on the client
+                Release client = vcReleasedPageStripper.GetReleaseByName(string.Format("Pulse {0}",
+                                        System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+
+                //if we weren't able to find the current version then return
+                if (client == null) return;
+
+                //get the default release
+                Release defaultRelease = vcReleasedPageStripper.GetDefaultRelease();
+
+                //compare against the version installed on client (logic is up to you)
+                if (defaultRelease.ReleaseDate > client.ReleaseDate)
+                {
+                    //Notify user of upgrade
+                    if (NewVersionAvailable != null)
+                        NewVersionAvailable(defaultRelease);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write(string.Format("Error checking for new Pulse Versions: {0}", ex.ToString()), Log.LoggerLevels.Warnings);
             }
         }
 
