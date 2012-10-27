@@ -79,6 +79,8 @@ namespace Pulse.Base
                     {
                         var ppa = from ProviderPlatformAttribute ppaI in attrPlatform 
                                   where ppaI.Platform == Environment.OSVersion.Platform
+                                        && (ppaI.MajorVersion == 0 || ppaI.MajorVersion == Environment.OSVersion.Version.Major)
+                                        && (ppaI.MinorVersion == 0 || ppaI.MinorVersion == Environment.OSVersion.Version.Minor)
                                   select ppaI;
 
                         // BUT none of the platforms are supported by this computer, then skip this provider
@@ -150,6 +152,8 @@ namespace Pulse.Base
 
         public IProvider InitializeProvider(string name, object initArgs, params object[] activationArgs)
         {
+            if (!Providers.ContainsKey(name)) return null;
+
             var ipType = Providers[name];
 
             if (ipType == null) return null;

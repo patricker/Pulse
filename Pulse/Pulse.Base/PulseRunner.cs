@@ -355,7 +355,7 @@ namespace Pulse.Base
                 //CurrentPicture = pic.Picture;
 
                 //call all activated output providers in order
-                foreach (var op in Settings.CurrentSettings.ProviderSettings.Values.Where(x => x.Active).OrderBy(x => x.ExecutionOrder))
+                foreach (var op in Settings.CurrentSettings.ProviderSettings.Values.Where(x => x.Active && x.Instance != null).OrderBy(x => x.ExecutionOrder))
                 {
                     if (!typeof(IOutputProvider).IsAssignableFrom(op.Instance.GetType())) continue;
                     //wrap each in a try/catch block so we avoid killing pulse on error

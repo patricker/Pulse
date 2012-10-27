@@ -9,7 +9,7 @@ using System.Reflection;
 namespace LogonBackground
 {
     [System.ComponentModel.Description("Logon Background")]
-    [ProviderPlatform(PlatformID.Win32NT, 0, 0)]
+    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] //restrict to Windows 7 (doesn't work on 8)
     public class OEMBackgroundProvider : IOutputProvider
     {
         public void Initialize(object args)
