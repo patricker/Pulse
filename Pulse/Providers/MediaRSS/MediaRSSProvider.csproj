@@ -47,12 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MediaRSSProviderPreferences.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="MediaRSSProviderPreferences.Designer.cs">
-      <DependentUpon>MediaRSSProviderPreferences.cs</DependentUpon>
-    </Compile>
     <Compile Include="MediaRSSSearchSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -69,9 +63,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MediaRSSProviderPreferences.resx">
-      <DependentUpon>MediaRSSProviderPreferences.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

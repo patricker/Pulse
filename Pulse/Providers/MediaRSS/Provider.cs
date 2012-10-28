@@ -12,14 +12,11 @@ using System.Xml.Linq;
 
 namespace MediaRSSProvider
 {
-    [ProviderConfigurationUserControl(typeof(MediaRSSImageProviderPreferences))]
     [ProviderConfigurationClass(typeof(MediaRSSImageSearchSettings))]
     [System.ComponentModel.Description("MediaRSS Feed")]
     [ProviderIcon(typeof(Properties.Resources),"rss")]
     public class Provider : IInputProvider
-    {
-        private string baseURL = "http://backend.deviantart.com/rss.xml?q=boost%3Apopular+in%3Acustomization%2Fwallpaper+1680x1050&type=deviation";
-        
+    {        
         public Provider()
         {
         }
@@ -36,8 +33,10 @@ namespace MediaRSSProvider
         public PictureList GetPictures(PictureSearch ps)
         {
             var result = new PictureList() { FetchDate = DateTime.Now };
-            
-            XDocument feedXML = XDocument.Load(baseURL);
+            MediaRSSImageSearchSettings mrssiss = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ?
+                new MediaRSSImageSearchSettings() : MediaRSSImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
+
+            XDocument feedXML = XDocument.Load(mrssiss.MediaRSSURL);
             XNamespace media = XNamespace.Get("http://search.yahoo.com/mrss/");
 
             var feeds = from feed in feedXML.Descendants("item")
@@ -50,49 +49,13 @@ namespace MediaRSSProvider
                         {
                             Url = url,
                             Id = id.Length > 50 ? id.Substring(0, 50) : id,
-                            Properties = new SerializableDictionary<string,string>("thumb",thumb)
+                            Properties = new SerializableDictionary<string,string>(Picture.StandardProperties.Thumbnail,thumb)
                         };
 
-            result.Pictures.AddRange(feeds);
-
-            //        var id = System.IO.Path.GetFileNameWithoutExtension(purl);
-            //        if (id.Length > 50) id = id.Substring(0, 50);
-
-            //        result.Pictures.Add(new Picture() { Url = purl, Id = id });
-
-            //            let content = feed.Element(media + "content")
-            //            where content != null 
-            //            let img = (from q in content where q.Attribute("medium").Value == "image")
-            //            where img != null
-            //            select new Picture()
-            //            {
-            //                Id = 
-            //            };
-            ////load provider search settings
-            //MediaRSSImageSearchSettings giss = MediaRSSImageSearchSettings.LoadFromXML(ps.ProviderSearchSettings);
-
-            ////to help not have so many null checks, if no search settings provided then use default ones
-            //if (giss == null) giss=new MediaRSSImageSearchSettings();
-
-            ////if search is empty, return now since we can't search without it
-            //if (string.IsNullOrEmpty(ps.SearchString)) return result;
-
-            //System.Net.WebClient client = new System.Net.WebClient();                        
-
-            //var pageIndex = 0;
-            //var imgFoundCount =0;
-            
-            ////if max picture count is 0, then no maximum, else specified max
-            //var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
-
-            ////build tbs strring
-            //var tbs = "";//isz:ex,iszw:{1},iszh:{2}
-
-            ////handle sizeing
-            //if (giss.ImageHeight > 0 && giss.ImageWidth > 0)
-            //{
-            //    tbs += string.Format("isz:ex,iszw:{0},iszh:{1},", giss.ImageWidth.ToString(), giss.ImageHeight.ToString());
-            //}
+            //get up to the maximum number of pictures, excluding banned images
+            result.Pictures.AddRange(
+                    feeds.Where(x=> !ps.BannedURLs.Contains(x.Url))
+                    .Take(ps.MaxPictureCount));
 
             ////handle colors
             //if (!string.IsNullOrEmpty(giss.Color))

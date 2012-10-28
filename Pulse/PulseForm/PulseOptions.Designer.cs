@@ -64,6 +64,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.cbCheckForNewVersions = new System.Windows.Forms.CheckBox();
             this.cbProviders = new PulseForm.ProviderComboBox();
+            this.btnBannedImageReview = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -94,7 +95,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(724, 510);
+            this.tabControl1.Size = new System.Drawing.Size(783, 320);
             this.tabControl1.TabIndex = 0;
             // 
             // tpGeneral
@@ -107,7 +108,7 @@
             this.tpGeneral.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpGeneral.Name = "tpGeneral";
             this.tpGeneral.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpGeneral.Size = new System.Drawing.Size(716, 481);
+            this.tpGeneral.Size = new System.Drawing.Size(775, 291);
             this.tpGeneral.TabIndex = 0;
             this.tpGeneral.Text = "General";
             this.tpGeneral.UseVisualStyleBackColor = true;
@@ -116,11 +117,11 @@
             // 
             this.groupBox3.Controls.Add(this.panel4);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(9, 361);
+            this.groupBox3.Location = new System.Drawing.Point(7, 170);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox3.Size = new System.Drawing.Size(428, 103);
+            this.groupBox3.Size = new System.Drawing.Size(372, 103);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Temporary Files";
@@ -136,7 +137,7 @@
             this.panel4.Location = new System.Drawing.Point(3, 29);
             this.panel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(422, 72);
+            this.panel4.Size = new System.Drawing.Size(366, 72);
             this.panel4.TabIndex = 0;
             // 
             // btnClearNow
@@ -193,7 +194,7 @@
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox2.Size = new System.Drawing.Size(431, 161);
+            this.groupBox2.Size = new System.Drawing.Size(374, 161);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Search";
@@ -211,7 +212,7 @@
             this.panel3.Location = new System.Drawing.Point(3, 29);
             this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(425, 130);
+            this.panel3.Size = new System.Drawing.Size(368, 130);
             this.panel3.TabIndex = 4;
             // 
             // lbActiveInputProviders
@@ -274,17 +275,18 @@
             // 
             this.groupBox1.Controls.Add(this.panel2);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(9, 170);
+            this.groupBox1.Location = new System.Drawing.Point(387, 5);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Size = new System.Drawing.Size(428, 187);
+            this.groupBox1.Size = new System.Drawing.Size(372, 266);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Behavior";
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnBannedImageReview);
             this.panel2.Controls.Add(this.cbCheckForNewVersions);
             this.panel2.Controls.Add(this.cbRunOnWindowsStartup);
             this.panel2.Controls.Add(this.udInterval);
@@ -298,13 +300,13 @@
             this.panel2.Location = new System.Drawing.Point(3, 29);
             this.panel2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(422, 156);
+            this.panel2.Size = new System.Drawing.Size(366, 235);
             this.panel2.TabIndex = 11;
             // 
             // cbRunOnWindowsStartup
             // 
             this.cbRunOnWindowsStartup.AutoSize = true;
-            this.cbRunOnWindowsStartup.Location = new System.Drawing.Point(3, 104);
+            this.cbRunOnWindowsStartup.Location = new System.Drawing.Point(3, 184);
             this.cbRunOnWindowsStartup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbRunOnWindowsStartup.Name = "cbRunOnWindowsStartup";
             this.cbRunOnWindowsStartup.Size = new System.Drawing.Size(186, 21);
@@ -315,7 +317,7 @@
             // 
             // udInterval
             // 
-            this.udInterval.Location = new System.Drawing.Point(163, 49);
+            this.udInterval.Location = new System.Drawing.Point(188, 49);
             this.udInterval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.udInterval.Maximum = new decimal(new int[] {
             999999,
@@ -352,7 +354,7 @@
             // cbPrefetch
             // 
             this.cbPrefetch.AutoSize = true;
-            this.cbPrefetch.Location = new System.Drawing.Point(3, 79);
+            this.cbPrefetch.Location = new System.Drawing.Point(3, 71);
             this.cbPrefetch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbPrefetch.Name = "cbPrefetch";
             this.cbPrefetch.Size = new System.Drawing.Size(146, 21);
@@ -364,7 +366,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 52);
+            this.label3.Location = new System.Drawing.Point(33, 52);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(153, 17);
             this.label3.TabIndex = 7;
@@ -386,7 +388,7 @@
             // 
             this.cbUpdateFrequencyUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbUpdateFrequencyUnit.FormattingEnabled = true;
-            this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(235, 49);
+            this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(251, 49);
             this.cbUpdateFrequencyUnit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbUpdateFrequencyUnit.Name = "cbUpdateFrequencyUnit";
             this.cbUpdateFrequencyUnit.Size = new System.Drawing.Size(108, 24);
@@ -401,7 +403,7 @@
             this.tpOutputs.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpOutputs.Name = "tpOutputs";
             this.tpOutputs.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpOutputs.Size = new System.Drawing.Size(716, 481);
+            this.tpOutputs.Size = new System.Drawing.Size(775, 481);
             this.tpOutputs.TabIndex = 1;
             this.tpOutputs.Text = "Outputs";
             this.tpOutputs.UseVisualStyleBackColor = true;
@@ -421,7 +423,7 @@
             this.dgvOutputProviders.Name = "dgvOutputProviders";
             this.dgvOutputProviders.RowHeadersVisible = false;
             this.dgvOutputProviders.RowTemplate.Height = 28;
-            this.dgvOutputProviders.Size = new System.Drawing.Size(710, 477);
+            this.dgvOutputProviders.Size = new System.Drawing.Size(769, 477);
             this.dgvOutputProviders.TabIndex = 0;
             this.dgvOutputProviders.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellClick);
             this.dgvOutputProviders.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellValueChanged);
@@ -439,7 +441,7 @@
             this.tpAbout.Location = new System.Drawing.Point(4, 25);
             this.tpAbout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpAbout.Name = "tpAbout";
-            this.tpAbout.Size = new System.Drawing.Size(716, 481);
+            this.tpAbout.Size = new System.Drawing.Size(775, 481);
             this.tpAbout.TabIndex = 2;
             this.tpAbout.Text = "About";
             this.tpAbout.UseVisualStyleBackColor = true;
@@ -493,8 +495,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2MinSize = 45;
-            this.splitContainer1.Size = new System.Drawing.Size(724, 559);
-            this.splitContainer1.SplitterDistance = 510;
+            this.splitContainer1.Size = new System.Drawing.Size(783, 369);
+            this.splitContainer1.SplitterDistance = 320;
             this.splitContainer1.TabIndex = 4;
             // 
             // panel1
@@ -505,13 +507,13 @@
             this.panel1.Location = new System.Drawing.Point(0, 9);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(724, 36);
+            this.panel1.Size = new System.Drawing.Size(783, 36);
             this.panel1.TabIndex = 4;
             // 
             // cbCheckForNewVersions
             // 
             this.cbCheckForNewVersions.AutoSize = true;
-            this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 130);
+            this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 210);
             this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
             this.cbCheckForNewVersions.Size = new System.Drawing.Size(244, 21);
             this.cbCheckForNewVersions.TabIndex = 13;
@@ -530,11 +532,21 @@
             this.cbProviders.TabIndex = 2;
             this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
             // 
+            // btnBannedImageReview
+            // 
+            this.btnBannedImageReview.Location = new System.Drawing.Point(4, 98);
+            this.btnBannedImageReview.Name = "btnBannedImageReview";
+            this.btnBannedImageReview.Size = new System.Drawing.Size(182, 26);
+            this.btnBannedImageReview.TabIndex = 14;
+            this.btnBannedImageReview.Text = "Review Banned Images";
+            this.btnBannedImageReview.UseVisualStyleBackColor = true;
+            this.btnBannedImageReview.Click += new System.EventHandler(this.btnBannedImageReview_Click);
+            // 
             // frmPulseOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(724, 559);
+            this.ClientSize = new System.Drawing.Size(783, 369);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -603,5 +615,6 @@
         private System.Windows.Forms.Button btnRemoveInputProvider;
         private System.Windows.Forms.ListView lbActiveInputProviders;
         private System.Windows.Forms.CheckBox cbCheckForNewVersions;
+        private System.Windows.Forms.Button btnBannedImageReview;
     }
 }

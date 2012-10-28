@@ -14,7 +14,8 @@ namespace AeroGlassChanger
 {
     //Most of this code came from http://aura.codeplex.com/ (Aura project)
     [System.ComponentModel.Description("Aero Glass Color Sync")]
-    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] //now restricted to windows 7
+    [ProviderPlatform(PlatformID.Win32NT, 6, 2)] //windows 8
+    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] //windows 7
     public class AeroGlassChangerProvider : Pulse.Base.IOutputProvider
     {
         public void ProcessPicture(Pulse.Base.PictureBatch pb, string config)

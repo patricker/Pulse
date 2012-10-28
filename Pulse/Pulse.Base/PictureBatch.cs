@@ -40,9 +40,11 @@ namespace Pulse.Base
 
         public List<Picture> GetPictures(int count)
         {
-            count -= CurrentPictures.Count;
+            //calculate how many pictures we need to get download  
+            int toDownloadCount = count - CurrentPictures.Count;
 
-            if(count > 0){
+            if (toDownloadCount > 0)
+            {
                 Random random = new Random();
                 var allPics = (from c in AllPictures select c.Pictures)
                                 .SelectMany(p=>p)
