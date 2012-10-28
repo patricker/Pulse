@@ -6,6 +6,7 @@ using Pulse.Base;
 using Pulse.Base.Providers;
 using Microsoft.Win32;
 using Pulse.Base.WinAPI;
+using System.Drawing;
 
 namespace WallpaperSetter
 {
@@ -38,7 +39,10 @@ namespace WallpaperSetter
             }
             else if (wss.BackgroundColorMode == WallpaperSetterSettings.BackgroundColorModes.Computed)
             {
-
+                using(Bitmap bmp = (Bitmap)Image.FromFile(p.LocalPath)) {
+                    int[] aiElements = { WinAPI.COLOR_DESKTOP };
+                    WinAPI.SetSysColors(1, aiElements, new WinAPI.COLORREF(CalcAverageColor(bmp)));
+                }
             }
 
             //set the wallpaper to the new image
@@ -54,6 +58,27 @@ namespace WallpaperSetter
 
                 tryCount++;
             } while (tryCount < 3);
+        }
+
+        //hey... code you look an awfull lot like the block that lives in AeroGlassChangerProvider...
+        public static Color CalcAverageColor(System.Drawing.Bitmap image)
+        {
+            var bmp = new System.Drawing.Bitmap(1, 1);
+            var orig = image;
+            using (var g = System.Drawing.Graphics.FromImage(bmp))
+            {
+                // the Interpolation mode needs to be set to 
+                // HighQualityBilinear or HighQualityBicubic or this method
+                // doesn't work at all.  With either setting, the results are
+                // slightly different from the averaging method.
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(orig, new System.Drawing.Rectangle(0, 0, 1, 1));
+            }
+            var pixel = bmp.GetPixel(0, 0);
+            orig.Dispose();
+            bmp.Dispose();
+            // pixel will contain average values for entire orig Bitmap
+            return Color.FromArgb(pixel.R, pixel.G, pixel.B);
         }
 
         private void SetWallpaperType(WallpaperSetterSettings.PicturePositions position)

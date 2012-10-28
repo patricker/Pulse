@@ -458,5 +458,11 @@ namespace PulseForm
             ApplyButton.Enabled = true;
         }
 
+        private void btnBannedImageReview_Click(object sender, EventArgs e)
+        {
+            BannedImageReview bir = new BannedImageReview();
+            bir.ShowDialog();
+        }
+
     }
 }
