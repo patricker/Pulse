@@ -61,9 +61,16 @@ namespace wallbase
 
                 using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
-                    //content = _client.UploadString(pageURL, postParams);
-                    byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
-                    content = System.Text.Encoding.Default.GetString(reqResult);
+                    //if random then don't post values
+                    if (wiss.SA == "random")
+                    {
+                        content = _client.DownloadString(pageURL);
+                    }
+                    else
+                    {
+                        byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
+                        content = System.Text.Encoding.Default.GetString(reqResult);
+                    }
                 }
 
                 if (string.IsNullOrEmpty(content))
@@ -179,7 +186,7 @@ namespace wallbase
         //find links to pages with wallpaper only with matching resolution
         private List<Picture> ParsePictures(string content)
         {
-            var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*)\" id=\".*\" .*>.*<img.*src=\"(?<img>.*)\".*style=\".*</a>");
+            var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*?)\" id=\".*?\" .*?>.*?<img.*?src=\"(?<img>.*?)\".*?style=\".*?</a>", RegexOptions.Singleline);
             var picsMatches = picsRegex.Matches(content);
 
             var result = new List<Picture>();

@@ -26,7 +26,7 @@ namespace Pulse.Base
             {
                 //load settings from file
                 if(_current==null)
-                    _current = Settings.LoadFromFile("settings.conf") ?? new Settings();
+                    _current = Settings.LoadFromFile(Path.Combine(AppPath,"settings.conf")) ?? new Settings();
 
                 return _current;
             }
