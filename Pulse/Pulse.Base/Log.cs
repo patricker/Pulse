@@ -76,10 +76,10 @@ namespace Pulse.Base
             try
             {
                 File.AppendAllText(LogFilePath, 
-                    string.Format("{0} -- {1} -- {2}", 
+                    string.Format("{0} -- {1} -- {2}{3}", 
                         DateTime.Now.ToString(),
                         level.ToString(),
-                        message));
+                        message, Environment.NewLine));
             }
             catch { }
         }
