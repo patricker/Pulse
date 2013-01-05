@@ -31,8 +31,12 @@ namespace PulseForm
                 fph.niPulse.Visible = false;
             }
             else {
-                fph.WindowState = FormWindowState.Minimized;
-                fph.Visible = false;
+                fph.ShowInTaskbar = false;
+                Form f1 = new Form();
+                f1.ShowInTaskbar = false;
+                f1.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+
+                fph.Owner = f1;
 
                 fph.niPulse.Visible = true; 
             }

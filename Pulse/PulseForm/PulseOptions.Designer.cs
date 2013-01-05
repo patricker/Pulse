@@ -43,9 +43,12 @@
             this.btnRemoveInputProvider = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAddInput = new System.Windows.Forms.Button();
+            this.cbProviders = new PulseForm.ProviderComboBox();
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnBannedImageReview = new System.Windows.Forms.Button();
+            this.cbCheckForNewVersions = new System.Windows.Forms.CheckBox();
             this.cbRunOnWindowsStartup = new System.Windows.Forms.CheckBox();
             this.udInterval = new System.Windows.Forms.NumericUpDown();
             this.cbDownloadAutomatically = new System.Windows.Forms.CheckBox();
@@ -62,9 +65,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.cbCheckForNewVersions = new System.Windows.Forms.CheckBox();
-            this.cbProviders = new PulseForm.ProviderComboBox();
-            this.btnBannedImageReview = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -259,6 +259,18 @@
             this.btnAddInput.UseVisualStyleBackColor = true;
             this.btnAddInput.Click += new System.EventHandler(this.btnAddInput_Click);
             // 
+            // cbProviders
+            // 
+            this.cbProviders.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbProviders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbProviders.FormattingEnabled = true;
+            this.cbProviders.Location = new System.Drawing.Point(9, 4);
+            this.cbProviders.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbProviders.Name = "cbProviders";
+            this.cbProviders.Size = new System.Drawing.Size(222, 24);
+            this.cbProviders.TabIndex = 2;
+            this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
+            // 
             // ProviderSettings
             // 
             this.ProviderSettings.Enabled = false;
@@ -302,6 +314,27 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(366, 235);
             this.panel2.TabIndex = 11;
+            // 
+            // btnBannedImageReview
+            // 
+            this.btnBannedImageReview.Location = new System.Drawing.Point(4, 98);
+            this.btnBannedImageReview.Name = "btnBannedImageReview";
+            this.btnBannedImageReview.Size = new System.Drawing.Size(182, 26);
+            this.btnBannedImageReview.TabIndex = 14;
+            this.btnBannedImageReview.Text = "Review Banned Images";
+            this.btnBannedImageReview.UseVisualStyleBackColor = true;
+            this.btnBannedImageReview.Click += new System.EventHandler(this.btnBannedImageReview_Click);
+            // 
+            // cbCheckForNewVersions
+            // 
+            this.cbCheckForNewVersions.AutoSize = true;
+            this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 210);
+            this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
+            this.cbCheckForNewVersions.Size = new System.Drawing.Size(244, 21);
+            this.cbCheckForNewVersions.TabIndex = 13;
+            this.cbCheckForNewVersions.Text = "Check for new versions on startup\r\n";
+            this.cbCheckForNewVersions.UseVisualStyleBackColor = true;
+            this.cbCheckForNewVersions.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
             // 
             // cbRunOnWindowsStartup
             // 
@@ -403,7 +436,7 @@
             this.tpOutputs.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpOutputs.Name = "tpOutputs";
             this.tpOutputs.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpOutputs.Size = new System.Drawing.Size(775, 481);
+            this.tpOutputs.Size = new System.Drawing.Size(775, 291);
             this.tpOutputs.TabIndex = 1;
             this.tpOutputs.Text = "Outputs";
             this.tpOutputs.UseVisualStyleBackColor = true;
@@ -423,7 +456,7 @@
             this.dgvOutputProviders.Name = "dgvOutputProviders";
             this.dgvOutputProviders.RowHeadersVisible = false;
             this.dgvOutputProviders.RowTemplate.Height = 28;
-            this.dgvOutputProviders.Size = new System.Drawing.Size(769, 477);
+            this.dgvOutputProviders.Size = new System.Drawing.Size(769, 287);
             this.dgvOutputProviders.TabIndex = 0;
             this.dgvOutputProviders.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellClick);
             this.dgvOutputProviders.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvOutputProviders_CellValueChanged);
@@ -441,7 +474,7 @@
             this.tpAbout.Location = new System.Drawing.Point(4, 25);
             this.tpAbout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpAbout.Name = "tpAbout";
-            this.tpAbout.Size = new System.Drawing.Size(775, 481);
+            this.tpAbout.Size = new System.Drawing.Size(775, 291);
             this.tpAbout.TabIndex = 2;
             this.tpAbout.Text = "About";
             this.tpAbout.UseVisualStyleBackColor = true;
@@ -509,38 +542,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(783, 36);
             this.panel1.TabIndex = 4;
-            // 
-            // cbCheckForNewVersions
-            // 
-            this.cbCheckForNewVersions.AutoSize = true;
-            this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 210);
-            this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
-            this.cbCheckForNewVersions.Size = new System.Drawing.Size(244, 21);
-            this.cbCheckForNewVersions.TabIndex = 13;
-            this.cbCheckForNewVersions.Text = "Check for new versions on startup\r\n";
-            this.cbCheckForNewVersions.UseVisualStyleBackColor = true;
-            // 
-            // cbProviders
-            // 
-            this.cbProviders.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.cbProviders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbProviders.FormattingEnabled = true;
-            this.cbProviders.Location = new System.Drawing.Point(9, 4);
-            this.cbProviders.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cbProviders.Name = "cbProviders";
-            this.cbProviders.Size = new System.Drawing.Size(222, 24);
-            this.cbProviders.TabIndex = 2;
-            this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
-            // 
-            // btnBannedImageReview
-            // 
-            this.btnBannedImageReview.Location = new System.Drawing.Point(4, 98);
-            this.btnBannedImageReview.Name = "btnBannedImageReview";
-            this.btnBannedImageReview.Size = new System.Drawing.Size(182, 26);
-            this.btnBannedImageReview.TabIndex = 14;
-            this.btnBannedImageReview.Text = "Review Banned Images";
-            this.btnBannedImageReview.UseVisualStyleBackColor = true;
-            this.btnBannedImageReview.Click += new System.EventHandler(this.btnBannedImageReview_Click);
             // 
             // frmPulseOptions
             // 
