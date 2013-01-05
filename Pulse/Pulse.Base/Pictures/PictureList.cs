@@ -9,6 +9,7 @@ namespace Pulse.Base
     {
         public string ProviderName { get; set; }
         public DateTime FetchDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
         public int SearchSettingsHash { get; set; }
 
         public List<Picture> Pictures { get; set; }
@@ -16,6 +17,8 @@ namespace Pulse.Base
         public PictureList()
         {
             Pictures = new List<Picture>();
+            //default to 1 day expiration
+            ExpirationDate = DateTime.Now.AddDays(1);
         }
     }
 }

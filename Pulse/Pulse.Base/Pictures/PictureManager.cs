@@ -154,14 +154,15 @@ namespace Pulse.Base
             PictureList Pictures = null;
 
             if (ps == null || ps.SearchProvider == null || ps.SearchProvider.Instance == null) return Pictures;
-
+            //load any in memory cached results
             Pictures = ps.SearchProvider.SearchResults;
+
             var loadedFromFile = false;
             var fPath = Path.Combine(ps.SaveFolder, "CACHE_" + ps.GetSearchHash().ToString() + "_" + ps.SearchProvider.Instance.GetType().ToString() + ".xml");
 
             if (Pictures == null)
             {
-
+                //if nothing in memory then try to load from disc
                 Pictures = LoadCachedSearch(ps, fPath);
                 loadedFromFile = Pictures != null;
             }
@@ -170,8 +171,8 @@ namespace Pulse.Base
                 loadedFromFile = false;
             }
             
-            //if we have no pictures to work with try and get them
-            if (Pictures == null || Pictures.Pictures.Count == 0)
+            //if we have no pictures to work with, or our cached data has expired, try and get them
+            if (Pictures == null || Pictures.Pictures.Count == 0 || Pictures.ExpirationDate < DateTime.Now)
             {
                 Pictures = ((IInputProvider)ps.SearchProvider.Instance).GetPictures(ps);
                 Pictures.SearchSettingsHash = ps.GetSearchHash();
