@@ -51,7 +51,7 @@ namespace PulseForm
             cbAutoChangeonStartup.Checked = Settings.CurrentSettings.DownloadOnAppStartup;
             udInterval.Value = Settings.CurrentSettings.RefreshInterval;
             cbUpdateFrequencyUnit.SelectedItem = Settings.CurrentSettings.IntervalUnit;
-
+            nudMaxPictureCount.Value = Settings.CurrentSettings.MaxPictureDownloadCount;
             cbPrefetch.Checked = Settings.CurrentSettings.PreFetch;
 
             cbRunOnWindowsStartup.Checked = Settings.CurrentSettings.RunOnWindowsStartup;
@@ -181,7 +181,7 @@ namespace PulseForm
             Settings.CurrentSettings.DownloadOnAppStartup = cbDownloadAutomatically.Checked;
             Settings.CurrentSettings.ClearOldPics = cbDeleteOldFiles.Checked;
             Settings.CurrentSettings.ClearInterval = Convert.ToInt32(nudTempAge.Value);
-
+            Settings.CurrentSettings.MaxPictureDownloadCount = Convert.ToInt32(nudMaxPictureCount.Value);
             //set pre-fetch flag
             Settings.CurrentSettings.PreFetch = cbPrefetch.Checked;
 
