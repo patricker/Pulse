@@ -65,6 +65,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.nudMaxPictureCount = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -83,6 +85,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -298,6 +301,8 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.nudMaxPictureCount);
+            this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.btnBannedImageReview);
             this.panel2.Controls.Add(this.cbCheckForNewVersions);
             this.panel2.Controls.Add(this.cbRunOnWindowsStartup);
@@ -317,7 +322,7 @@
             // 
             // btnBannedImageReview
             // 
-            this.btnBannedImageReview.Location = new System.Drawing.Point(4, 98);
+            this.btnBannedImageReview.Location = new System.Drawing.Point(3, 136);
             this.btnBannedImageReview.Name = "btnBannedImageReview";
             this.btnBannedImageReview.Size = new System.Drawing.Size(182, 26);
             this.btnBannedImageReview.TabIndex = 14;
@@ -543,6 +548,38 @@
             this.panel1.Size = new System.Drawing.Size(783, 36);
             this.panel1.TabIndex = 4;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 100);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(175, 17);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Max Search Result Count: ";
+            // 
+            // nudMaxPictureCount
+            // 
+            this.nudMaxPictureCount.Location = new System.Drawing.Point(184, 98);
+            this.nudMaxPictureCount.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.nudMaxPictureCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.nudMaxPictureCount.Name = "nudMaxPictureCount";
+            this.nudMaxPictureCount.Size = new System.Drawing.Size(59, 23);
+            this.nudMaxPictureCount.TabIndex = 16;
+            this.nudMaxPictureCount.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudMaxPictureCount.ValueChanged += new System.EventHandler(this.ComboBoxSelectionChanged);
+            // 
             // frmPulseOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -575,6 +612,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -617,5 +655,7 @@
         private System.Windows.Forms.ListView lbActiveInputProviders;
         private System.Windows.Forms.CheckBox cbCheckForNewVersions;
         private System.Windows.Forms.Button btnBannedImageReview;
+        private System.Windows.Forms.NumericUpDown nudMaxPictureCount;
+        private System.Windows.Forms.Label label2;
     }
 }
