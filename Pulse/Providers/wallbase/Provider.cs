@@ -61,15 +61,22 @@ namespace wallbase
 
                 using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
-                    //if random then don't post values
-                    if (wiss.SA == "random")
+                    try
                     {
-                        content = _client.DownloadString(pageURL);
+                        //if random then don't post values
+                        if (wiss.SA == "random")
+                        {
+                            content = _client.DownloadString(pageURL);
+                        }
+                        else
+                        {
+                            byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
+                            content = System.Text.Encoding.Default.GetString(reqResult);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
-                        content = System.Text.Encoding.Default.GetString(reqResult);
+                        Log.Logger.Write(string.Format("Failed to download search results from wallbase.cc, error: {0}", ex.ToString()), Log.LoggerLevels.Warnings);
                     }
                 }
 

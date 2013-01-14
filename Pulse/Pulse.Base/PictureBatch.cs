@@ -53,43 +53,48 @@ namespace Pulse.Base
 
                 List<Picture> toProcess = allPics.Take(count).ToList();
 
-                //download the new pictures, wait for them to all finish
-                ManualResetEvent[] manualEvents = new ManualResetEvent[toProcess.Count];
-
-                // Queue the work items that create and write to the files.
-                for (int i = 0; i < toProcess.Count; i++)
+                //validate that there are actually pictures to be processed (search may return 0 results, or very few results)
+                if (toProcess.Count > 0)
                 {
-                    manualEvents[i] = new ManualResetEvent(false);
+                    //download the new pictures, wait for them to all finish
+                    ManualResetEvent[] manualEvents = new ManualResetEvent[toProcess.Count];
 
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(delegate(object state)
+                    // Queue the work items that create and write to the files.
+                    for (int i = 0; i < toProcess.Count; i++)
                     {
-                        object[] states = (object[])state;
+                        manualEvents[i] = new ManualResetEvent(false);
 
-                        ManualResetEvent mre = (ManualResetEvent)states[0];
-                        Picture p = (Picture)states[1];
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(delegate(object state)
+                        {
+                            object[] states = (object[])state;
 
-                        PictureDownload pd = DownloadManager.Current.GetPicture(p, false);
-                        
-                        //hook events and set mre in event
-                        PictureDownload.PictureDownloadEvent pdEvent = new PictureDownload.PictureDownloadEvent(
-                                delegate(PictureDownload t) {
-                                    mre.Set();
-                                });
+                            ManualResetEvent mre = (ManualResetEvent)states[0];
+                            Picture p = (Picture)states[1];
 
-                        //on success or failure make sure to set mre
-                        pd.PictureDownloaded += pdEvent;
-                        pd.PictureDownloadingAborted += pdEvent;
+                            PictureDownload pd = DownloadManager.Current.GetPicture(p, false);
 
-                        DownloadManager.Current.QueuePicture(pd);
+                            //hook events and set mre in event
+                            PictureDownload.PictureDownloadEvent pdEvent = new PictureDownload.PictureDownloadEvent(
+                                    delegate(PictureDownload t)
+                                    {
+                                        mre.Set();
+                                    });
 
-                    }), new object[] { manualEvents[i], toProcess[i] });
+                            //on success or failure make sure to set mre
+                            pd.PictureDownloaded += pdEvent;
+                            pd.PictureDownloadingAborted += pdEvent;
+
+                            DownloadManager.Current.QueuePicture(pd);
+
+                        }), new object[] { manualEvents[i], toProcess[i] });
+                    }
+
+                    //wait for all items to finish
+                    //3 minute timeout
+                    WaitHandle.WaitAll(manualEvents, 3 * 60 * 1000);
+
+                    CurrentPictures.AddRange(toProcess);
                 }
-
-                //wait for all items to finish
-                //3 minute timeout
-                WaitHandle.WaitAll(manualEvents, 3 * 60 * 1000);
-                
-                CurrentPictures.AddRange(toProcess);
             }
 
             return CurrentPictures.Take(count).ToList();
