@@ -26,6 +26,8 @@ namespace AeroGlassChanger
 
             ManualResetEvent mre = new ManualResetEvent(false);
 
+            int stepCount = 13;
+
             //get color to start with
             Color currentAero = GetCurrentAeroColor();
             Color endAeroColor;
@@ -41,7 +43,7 @@ namespace AeroGlassChanger
             }
 
             //build transition
-            Color[] transitionColors = CalcColorTransition(currentAero, endAeroColor, 7);
+            Color[] transitionColors = CalcColorTransition(currentAero, endAeroColor, stepCount);
 
             //build timer
             System.Timers.Timer t = new System.Timers.Timer(100);
@@ -50,15 +52,15 @@ namespace AeroGlassChanger
 
             t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
             {
-                //double check (I've seen cases where timer fires even though currentStep is past 7
-                if (currentStep >= 7) { mre.Set(); t.Stop(); return; }
+                //double check (I've seen cases where timer fires even though currentStep is past {stepCount}
+                if (currentStep >= stepCount) { mre.Set(); t.Stop(); return; }
 
                 //set to next color
                 SetDwmColor(transitionColors[currentStep]);
 
                 //increment steps and check if we should stop the timer
                 currentStep++;
-                if (currentStep >= 7) { mre.Set(); t.Stop(); }
+                if (currentStep >= stepCount) { mre.Set(); t.Stop(); }
             };
 
             t.Start();
