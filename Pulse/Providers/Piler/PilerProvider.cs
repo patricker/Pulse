@@ -16,6 +16,8 @@ namespace Piler
         {
             List<Picture> pics = pb.GetPictures(20);
 
+            if (!pics.Any()) return;
+
             //for starters lets use an existing image as the backdrop
             Picture pBackdrop = pics.First();
             Image bmpBackdrop = Image.FromFile(pBackdrop.LocalPath);
