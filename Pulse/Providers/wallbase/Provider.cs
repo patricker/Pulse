@@ -143,6 +143,7 @@ namespace wallbase
                                 {
                                     //save original URL as referrer
                                     p.Properties.Add(Picture.StandardProperties.Referrer, p.Url);
+                                    p.Properties.Add(Picture.StandardProperties.BanImageKey, Path.GetFileName(p.Url));
 
                                     //get actual image URL if this is not a preview
                                     if(!previewOnly)

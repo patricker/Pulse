@@ -164,17 +164,21 @@ namespace Pulse.Base
             t.Start();
         }
 
-        public void BanPicture(string pictureURL, string localPath)
+        public void BanPicture(Picture p)
         {
+            string banString =
+                        (p.Properties.ContainsKey(Picture.StandardProperties.BanImageKey)
+                        ? p.Properties[Picture.StandardProperties.BanImageKey] : p.Url);
+
             //add the url to the ban list
-            Settings.CurrentSettings.BannedImages.Add(pictureURL);
+            Settings.CurrentSettings.BannedImages.Add(banString);
             //save the settings file
             Settings.CurrentSettings.Save(Settings.AppPath + "\\settings.conf");
 
             try
             {
                 //delete the file from the local disk
-                File.Delete(localPath);
+                File.Delete(p.LocalPath);
             }
             catch (Exception ex)
             {
