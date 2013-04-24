@@ -61,7 +61,7 @@ namespace Pulse.Base
             if (!this.Picture.IsGood)
             {
                 //generate a temp path to save the file to
-                _tempDownloadPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                _tempDownloadPath = Path.Combine(Path.GetTempPath(), "PulseTemp_" + Path.GetRandomFileName());
                 //download the file async
                 _client.DownloadFileAsync(new Uri(Picture.Url), _tempDownloadPath, Picture);
 
@@ -86,6 +86,16 @@ namespace Pulse.Base
                 Status = DownloadStatus.Cancelled;
         }
 
+        void deleteTempFile()
+        {
+            try
+            {
+                //delete temp file (this fails sometimes so I put it in a try/catch)
+                File.Delete(_tempDownloadPath);
+            }
+            catch { }
+        }
+
         void _client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             DownloadProgress = e.ProgressPercentage;
@@ -100,8 +110,7 @@ namespace Pulse.Base
                 Status = DownloadStatus.Cancelled;
                 DownloadProgress = 0;
                 //try to delete the partially downloaded file
-                try { File.Delete(_tempDownloadPath); }
-                catch (Exception) { }
+                deleteTempFile();
 
                 //call aborted event
                 if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
@@ -131,16 +140,14 @@ namespace Pulse.Base
                 HandleErrorRetry();
             }
 
-            try
-            {
-                //delete temp file (this fails sometimes so I put it in a try/catch)
-                File.Delete(_tempDownloadPath);
-            }
-            catch { }
+            deleteTempFile();
         }
 
         private void HandleErrorRetry()
         {
+            //try delete temp file on error/retry
+            deleteTempFile();
+
             _failureCount++;
             Status = DownloadStatus.Error;
             //call download aborted

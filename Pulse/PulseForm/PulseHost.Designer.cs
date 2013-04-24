@@ -37,6 +37,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.niPulse = new System.Windows.Forms.NotifyIcon(this.components);
+            this.downloadManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsTrayIcon.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -46,24 +47,25 @@
             this.nextPictureToolStripMenuItem,
             this.banImageToolStripMenuItem,
             this.openCacheFolderToolStripMenuItem,
+            this.downloadManagerToolStripMenuItem,
             this.toolStripMenuItem1,
             this.toolStripSeparator1,
             this.closeToolStripMenuItem});
             this.cmsTrayIcon.Name = "cmsTrayIcon";
-            this.cmsTrayIcon.Size = new System.Drawing.Size(236, 182);
+            this.cmsTrayIcon.Size = new System.Drawing.Size(211, 176);
             // 
             // nextPictureToolStripMenuItem
             // 
             this.nextPictureToolStripMenuItem.Image = global::PulseForm.Properties.Resources._112_DownArrowLong_Green_24x24_72;
             this.nextPictureToolStripMenuItem.Name = "nextPictureToolStripMenuItem";
-            this.nextPictureToolStripMenuItem.Size = new System.Drawing.Size(235, 30);
+            this.nextPictureToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.nextPictureToolStripMenuItem.Text = "Next Picture";
             this.nextPictureToolStripMenuItem.Click += new System.EventHandler(this.nextPictureToolStripMenuItem_Click);
             // 
             // banImageToolStripMenuItem
             // 
             this.banImageToolStripMenuItem.Name = "banImageToolStripMenuItem";
-            this.banImageToolStripMenuItem.Size = new System.Drawing.Size(235, 30);
+            this.banImageToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.banImageToolStripMenuItem.Text = "Ban Image";
             this.banImageToolStripMenuItem.Click += new System.EventHandler(this.banImageToolStripMenuItem_Click);
             // 
@@ -71,7 +73,7 @@
             // 
             this.openCacheFolderToolStripMenuItem.Image = global::PulseForm.Properties.Resources.InsertPictureHS;
             this.openCacheFolderToolStripMenuItem.Name = "openCacheFolderToolStripMenuItem";
-            this.openCacheFolderToolStripMenuItem.Size = new System.Drawing.Size(235, 30);
+            this.openCacheFolderToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.openCacheFolderToolStripMenuItem.Text = "Open Cache Folder";
             this.openCacheFolderToolStripMenuItem.Click += new System.EventHandler(this.openCacheFolderToolStripMenuItem_Click);
             // 
@@ -79,19 +81,19 @@
             // 
             this.toolStripMenuItem1.Image = global::PulseForm.Properties.Resources._327_Options_16x16_72;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(235, 30);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
             this.toolStripMenuItem1.Text = "Options";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(232, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(207, 6);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(235, 30);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -99,6 +101,13 @@
             // 
             this.niPulse.ContextMenuStrip = this.cmsTrayIcon;
             this.niPulse.Text = "Pulse";
+            // 
+            // downloadManagerToolStripMenuItem
+            // 
+            this.downloadManagerToolStripMenuItem.Name = "downloadManagerToolStripMenuItem";
+            this.downloadManagerToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.downloadManagerToolStripMenuItem.Text = "Download Manager";
+            this.downloadManagerToolStripMenuItem.Click += new System.EventHandler(this.downloadManagerToolStripMenuItem_Click);
             // 
             // frmPulseHost
             // 
@@ -128,6 +137,7 @@
         private System.Windows.Forms.ToolStripMenuItem banImageToolStripMenuItem;
         internal System.Windows.Forms.ContextMenuStrip cmsTrayIcon;
         public System.Windows.Forms.NotifyIcon niPulse;
+        private System.Windows.Forms.ToolStripMenuItem downloadManagerToolStripMenuItem;
     }
 }
 

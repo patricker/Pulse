@@ -179,29 +179,6 @@ namespace Pulse.Base
                     //if we have a custom referrer, and we aren't involved in a redirect, then use our custom referrer
                     if (!string.IsNullOrEmpty(Referrer) && string.IsNullOrEmpty(httpRequest.Referer))
                         httpRequest.Referer = Referrer;
-
-                //    //Don't run this code block on MONO as the underlying name is not the same as it is in Microsoft .NET
-                //    if (!GeneralHelper.IsClientLinux)
-                //    {
-                //        lock (Cookies)
-                //        {
-                //            var obj = Cookies.GetType().InvokeMember("m_domainTable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.GetField | System.Reflection.BindingFlags.Instance, null, Cookies, new object[] { });
-
-                //            if (obj != null)
-                //            {
-                //                var table = (Hashtable)obj;
-                //                var keys = new ArrayList(table.Keys);
-                //                foreach (var key in keys)
-                //                {
-                //                    if (!string.IsNullOrEmpty(key.ToString()))
-                //                    {
-                //                        var newKey = (key as string).Substring(1);
-                //                        table[newKey] = table[key];
-                //                    }
-                //                }
-                //            }
-                //        }
-                //    }
                 }
                 return request;
             }

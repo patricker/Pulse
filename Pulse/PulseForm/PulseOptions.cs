@@ -178,7 +178,7 @@ namespace PulseForm
         private void ApplySettings()
         {            
             Settings.CurrentSettings.ChangeOnTimer = cbDownloadAutomatically.Checked;
-            Settings.CurrentSettings.DownloadOnAppStartup = cbDownloadAutomatically.Checked;
+            Settings.CurrentSettings.DownloadOnAppStartup = cbAutoChangeonStartup.Checked;
             Settings.CurrentSettings.ClearOldPics = cbDeleteOldFiles.Checked;
             Settings.CurrentSettings.ClearInterval = Convert.ToInt32(nudTempAge.Value);
             Settings.CurrentSettings.MaxPictureDownloadCount = Convert.ToInt32(nudMaxPictureCount.Value);
@@ -450,6 +450,11 @@ namespace PulseForm
                 {
                     MessageBox.Show(string.Format("Sorry! No settings available for {0}.", api.ProviderName));
                 }
+            }
+            //fix for the Active checkbox not causing the apply button to activate for options
+            else if (e.RowIndex >= 0 && e.ColumnIndex > 0)
+            {
+                ApplyButton.Enabled = true;
             }
         }
 

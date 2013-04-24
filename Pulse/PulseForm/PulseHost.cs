@@ -87,12 +87,16 @@ namespace PulseForm
             {
                 foreach (Picture p in Runner.CurrentBatch.CurrentPictures)
                 {
-                    if (MessageBox.Show(string.Format("Ban '{0}'?", p.Url), "Image Ban", MessageBoxButtons.YesNo) != System.Windows.Forms.DialogResult.Yes)
+                    string banString =
+                        (p.Properties.ContainsKey(Picture.StandardProperties.BanImageKey)
+                        ? p.Properties[Picture.StandardProperties.BanImageKey] : p.Url);
+
+                    if (MessageBox.Show(string.Format("Ban '{0}'?", banString), "Image Ban", MessageBoxButtons.YesNo) != System.Windows.Forms.DialogResult.Yes)
                     {
-                        return;
+                        continue;
                     }
 
-                    Runner.BanPicture(p.Url, p.LocalPath);
+                    Runner.BanPicture(p);
                 }
             }
         }
@@ -100,6 +104,12 @@ namespace PulseForm
         private void nextPictureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runner.SkipToNextPicture();
+        }
+
+        private void downloadManagerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DownloadMonitor dm = new DownloadMonitor();
+            dm.Show();
         }
     }
 }
