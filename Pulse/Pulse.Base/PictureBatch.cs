@@ -24,7 +24,7 @@ namespace Pulse.Base
         }
 
         private PictureBatch _previousBatch = null;
-
+        
         public enum PictureBatchStatus
         {
             Prepping,
@@ -41,23 +41,26 @@ namespace Pulse.Base
 
         public List<Picture> GetPictures(int count)
         {
-            //calculate how many pictures we need to get download  
-            int toDownloadCount = count - CurrentPictures.Count;
-
-            if (toDownloadCount > 0)
+            lock (CurrentPictures)
             {
-                Random random = new Random();
-                var allPics = (from c in AllPictures select c.Pictures)
-                                .SelectMany(p=>p)
-                                .Where(p=> !(CurrentPictures.Contains(p)))
-                                .OrderBy(p=> random.Next());
+                //calculate how many pictures we need to get download  
+                int toDownloadCount = count - CurrentPictures.Count;
 
-                List<Picture> toProcess = allPics.Take(count).ToList();
+                if (toDownloadCount > 0)
+                {
+                    Random random = new Random();
+                    var allPics = (from c in AllPictures select c.Pictures)
+                                    .SelectMany(p => p)
+                                    .Where(p => !(CurrentPictures.Contains(p)))
+                                    .OrderBy(p => random.Next());
 
-                DownloadSelectedPictures(toProcess);
+                    List<Picture> toProcess = allPics.Take(count).ToList();
+
+                    DownloadSelectedPictures(toProcess);
+                }
+
+                return CurrentPictures.Take(count).ToList();
             }
-
-            return CurrentPictures.Take(count).ToList();
         }
 
         private void DownloadSelectedPictures(List<Picture> toProcess)

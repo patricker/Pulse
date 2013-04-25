@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Resources;
 using CodePlexNewReleaseChecker;
+using System.Threading.Tasks;
 
 namespace Pulse.Base
 {
@@ -351,12 +352,7 @@ namespace Pulse.Base
         {
             if (pb != null && pb.AllPictures.Any())
             {
-                ////get the picture downloading wrapper, but don't queue it up for download yet.  We need to hook into it first.
-                //PictureDownload pic = DownloadManager.GetPicture(pl, CurrentPicture, false);
-                ////set for max priority
-                //pic.Priority = 1;
-                ////set current picture so that we don't reuse it and so we can ban it
-                //CurrentPicture = pic.Picture;
+                List<ManualResetEvent> manualEvents = new List<ManualResetEvent>();
 
                 //call all activated output providers in order
                 foreach (var op in Settings.CurrentSettings.ProviderSettings.Values.Where(x => x.Active && x.Instance != null).OrderBy(x => x.ExecutionOrder))
@@ -365,28 +361,47 @@ namespace Pulse.Base
                     //wrap each in a try/catch block so we avoid killing pulse on error
                     try
                     {
+                        //check if this can be run in async
+                        bool asyncOK = ProviderManager.GetAsyncStatusForType(op.Instance.GetType());
+
                         IOutputProvider ip = ((IOutputProvider)op.Instance);
                         string config = op.ProviderConfig;
-                        ip.ProcessPicture(pb, config);
 
-                        //if (ip.Mode == OutputProviderMode.Single)
-                        //{
-                        //    pic.PictureDownloaded += new PictureDownload.PictureDownloadEvent(
-                        //            delegate(PictureDownload t) {
-                        //                ip.ProcessPicture(pic.Picture, config);
-                        //            });
-                        //}
-                        //else if (ip.Mode == OutputProviderMode.Multiple)
-                            
+                        if (asyncOK)
+                        {
+                            ThreadStart threadStarter = () =>
+                            {
+                                ManualResetEvent mre = new ManualResetEvent(false);
+                                manualEvents.Add(mre);
+                                try
+                                {
+                                    ip.ProcessPicture(pb, config);
+                                }
+                                catch { throw; }
+                                finally { mre.Set(); }
+                            };
+                            Thread thread = new Thread(threadStarter);
+                            thread.Start();
+                        }
+                        else
+                        {
+                            ip.ProcessPicture(pb, config);
+                        }
                     }
                     catch (Exception ex)
                     {
                         Log.Logger.Write(string.Format("Error processing output plugin '{0}'.  Error: {1}", op.ProviderName, ex.ToString()), Log.LoggerLevels.Errors);
                     }
                 }
-
-                ////queue picture up for download
-                //DownloadManager.QueuePicture(pic);
+                //make sure async operations finish before
+                if (manualEvents.Count > 1)
+                {
+                    WaitHandle.WaitAll(manualEvents.ToArray(), 60 * 1000);
+                }
+                else if (manualEvents.Count == 1)
+                {
+                    manualEvents[0].WaitOne();
+                }
             }
         }
 

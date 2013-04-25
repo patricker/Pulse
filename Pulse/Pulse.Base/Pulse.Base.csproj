@@ -86,6 +86,7 @@
     <Compile Include="Providers\ProviderConfigurationUserControlAttribute.cs" />
     <Compile Include="Providers\ProviderManager.cs" />
     <Compile Include="Pictures\PictureSearch.cs" />
+    <Compile Include="Providers\ProviderRunsAsyncAttribute.cs" />
     <Compile Include="PulseRunner.cs" />
     <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Settings.cs" />

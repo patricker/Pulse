@@ -7,6 +7,8 @@ using Pulse.Base.Providers;
 using Microsoft.Win32;
 using Pulse.Base.WinAPI;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace WallpaperSetter
 {
@@ -27,8 +29,11 @@ namespace WallpaperSetter
             if (!string.IsNullOrEmpty(config)) { wss = WallpaperSetterSettings.LoadFromXML(config); }
             else wss = new WallpaperSetterSettings();
 
+            //make sure active desktop is enabled
+            //EnableActiveDesktop();
+
             //set wallpaper style (tiled, centered, etc...)
-            SetWallpaperType(wss.Position);
+            //SetWallpaperType(wss.Position);
 
             //set desktop background color
             //Code came roughly form http://www.tek-tips.com/viewthread.cfm?qid=1449619
@@ -45,19 +50,13 @@ namespace WallpaperSetter
                 }
             }
 
-            //set the wallpaper to the new image
-            WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, p.LocalPath, WinAPI.SPIF_UPDATEINIFILE | WinAPI.SPIF_SENDWININICHANGE);
-            //check if really set and retry up to 3 times
-            int tryCount = 0;
-            do
-            {
-                //if matching, break
-                if (GetWallpaper().ToLower() == p.LocalPath.ToLower()) break;
+            SetWallpaper(p.LocalPath);
+        }
 
-                WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, p.LocalPath, WinAPI.SPIF_UPDATEINIFILE | WinAPI.SPIF_SENDWININICHANGE);
-
-                tryCount++;
-            } while (tryCount < 3);
+        public void EnableActiveDesktop()
+        {
+            IntPtr result = IntPtr.Zero;
+            WinAPI.SendMessageTimeout(WinAPI.FindWindow("Progman", null), 0x52c, IntPtr.Zero, IntPtr.Zero, 0, 500, out result);
         }
 
         //hey... code you look an awfull lot like the block that lives in AeroGlassChangerProvider...
@@ -131,9 +130,44 @@ namespace WallpaperSetter
             return wallpaper;
         }
 
+        public void SetWallpaperWithRetry(string path, int retryCount)
+        {
+            //set the wallpaper to the new image
+            SetWallpaper(path);
+
+            //check if really set and retry up to 3 times
+            int tryCount = 0;
+            do
+            {
+                //if matching, break
+                if (GetWallpaper().ToLower() == path.ToLower()) break;
+
+                SetWallpaper(path);
+
+                tryCount++;
+            } while (tryCount < 3);
+        }
+
+        public void SetWallpaper(string path)
+        {
+            ThreadStart threadStarter = () =>
+            {
+                Pulse.Base.WinAPI.WinAPI.IActiveDesktop _activeDesktop = Pulse.Base.WinAPI.WinAPI.ActiveDesktopWrapper.GetActiveDesktop();
+                _activeDesktop.SetWallpaper(path, 0);
+                _activeDesktop.ApplyChanges(Pulse.Base.WinAPI.WinAPI.AD_Apply.ALL | Pulse.Base.WinAPI.WinAPI.AD_Apply.FORCE);
+
+                Marshal.ReleaseComObject(_activeDesktop);
+            };
+            Thread thread = new Thread(threadStarter);
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA (REQUIRED!!!!)
+            thread.Start();
+            thread.Join(2000);
+
+            //WinAPI.SystemParametersInfo(WinAPI.SPI_SETDESKWALLPAPER, 0, path, WinAPI.SPIF_UPDATEINIFILE | WinAPI.SPIF_SENDWININICHANGE);
+        }
+
         public void Initialize(object args) { }
         public void Activate(object args) { }
         public void Deactivate(object args) { }
-
     }
 }
