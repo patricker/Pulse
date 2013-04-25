@@ -131,6 +131,13 @@ namespace Pulse.Base
             return (from Pulse.Base.ProviderPlatformAttribute c in attrPlatform select c).ToList();
         }
 
+        public static bool GetAsyncStatusForType(Type ipType)
+        {
+            var attrPlatform = ipType.GetCustomAttributes(typeof(Pulse.Base.Providers.ProviderRunsAsyncAttribute), true);
+
+            return (from Pulse.Base.Providers.ProviderRunsAsyncAttribute c in attrPlatform select c.AsyncOK).FirstOrDefault();
+        }
+
         public Image GetProviderIcon(string provName)
         {
             return GetProviderIcon(Providers[provName]);

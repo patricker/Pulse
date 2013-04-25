@@ -9,6 +9,7 @@ using System.Threading;
 using Pulse.Base;
 using Pulse.Base.WinAPI;
 using System.IO;
+using Pulse.Base.Providers;
 
 namespace AeroGlassChanger
 {
@@ -16,6 +17,7 @@ namespace AeroGlassChanger
     [System.ComponentModel.Description("Aero Glass Color Sync")]
     [ProviderPlatform(PlatformID.Win32NT, 6, 2)] //windows 8
     [ProviderPlatform(PlatformID.Win32NT, 6, 1)] //windows 7
+    [ProviderRunsAsyncAttribute(true)]
     public class AeroGlassChangerProvider : Pulse.Base.IOutputProvider
     {
         public void ProcessPicture(Pulse.Base.PictureBatch pb, string config)
