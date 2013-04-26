@@ -30,7 +30,7 @@ namespace WallpaperSetter
             else wss = new WallpaperSetterSettings();
 
             //make sure active desktop is enabled
-            //EnableActiveDesktop();
+            EnableActiveDesktop();
 
             //set wallpaper style (tiled, centered, etc...)
             //SetWallpaperType(wss.Position);
