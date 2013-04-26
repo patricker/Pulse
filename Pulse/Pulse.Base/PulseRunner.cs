@@ -377,7 +377,9 @@ namespace Pulse.Base
                                 {
                                     ip.ProcessPicture(pb, config);
                                 }
-                                catch { throw; }
+                                catch (Exception ex) { 
+                                    Log.Logger.Write(string.Format("Error processing output plugin '{0}'.  Error: {1}", op.ProviderName, ex.ToString()), Log.LoggerLevels.Warnings);
+                                }
                                 finally { mre.Set(); }
                             };
                             Thread thread = new Thread(threadStarter);

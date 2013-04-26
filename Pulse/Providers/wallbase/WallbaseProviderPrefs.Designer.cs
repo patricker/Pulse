@@ -50,7 +50,11 @@
             this.cbImageSizeType = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tpAuthenticate = new System.Windows.Forms.TabPage();
             this.tpSearch = new System.Windows.Forms.TabPage();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtSearch = new System.Windows.Forms.TextBox();
             this.lbClearColor = new System.Windows.Forms.LinkLabel();
             this.lbPickColor = new System.Windows.Forms.LinkLabel();
             this.pnlColor = new System.Windows.Forms.Panel();
@@ -65,18 +69,14 @@
             this.txtFavoritesID = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.cdPicker = new System.Windows.Forms.ColorDialog();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.tpAuthenticate = new System.Windows.Forms.TabPage();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tpAuthenticate.SuspendLayout();
             this.tpSearch.SuspendLayout();
             this.tpCollections.SuspendLayout();
             this.tpFavorites.SuspendLayout();
-            this.tpAuthenticate.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -240,8 +240,8 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.txtHeight);
+            this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.txtWidth);
             this.groupBox3.Controls.Add(this.cbImageSizeType);
             this.groupBox3.Controls.Add(this.label5);
@@ -265,7 +265,7 @@
             // 
             // txtHeight
             // 
-            this.txtHeight.Location = new System.Drawing.Point(313, 17);
+            this.txtHeight.Location = new System.Drawing.Point(307, 17);
             this.txtHeight.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtHeight.Name = "txtHeight";
             this.txtHeight.Size = new System.Drawing.Size(73, 22);
@@ -313,6 +313,20 @@
             this.tabControl1.Size = new System.Drawing.Size(421, 168);
             this.tabControl1.TabIndex = 10;
             // 
+            // tpAuthenticate
+            // 
+            this.tpAuthenticate.Controls.Add(this.label4);
+            this.tpAuthenticate.Controls.Add(this.label2);
+            this.tpAuthenticate.Controls.Add(this.txtUserID);
+            this.tpAuthenticate.Controls.Add(this.label3);
+            this.tpAuthenticate.Controls.Add(this.txtPassword);
+            this.tpAuthenticate.Location = new System.Drawing.Point(4, 25);
+            this.tpAuthenticate.Name = "tpAuthenticate";
+            this.tpAuthenticate.Size = new System.Drawing.Size(413, 139);
+            this.tpAuthenticate.TabIndex = 3;
+            this.tpAuthenticate.Text = "Authentication";
+            this.tpAuthenticate.UseVisualStyleBackColor = true;
+            // 
             // tpSearch
             // 
             this.tpSearch.Controls.Add(this.label12);
@@ -333,6 +347,32 @@
             this.tpSearch.TabIndex = 0;
             this.tpSearch.Text = "Search";
             this.tpSearch.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(37, 50);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(179, 17);
+            this.label12.TabIndex = 13;
+            this.label12.Text = "Search Query OR Color";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 70);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(55, 17);
+            this.label11.TabIndex = 12;
+            this.label11.Text = "Query: ";
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(78, 70);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(192, 22);
+            this.txtSearch.TabIndex = 11;
             // 
             // lbClearColor
             // 
@@ -442,9 +482,9 @@
             this.tpFavorites.Controls.Add(this.txtFavoritesID);
             this.tpFavorites.Controls.Add(this.label10);
             this.tpFavorites.Location = new System.Drawing.Point(4, 25);
-            this.tpFavorites.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tpFavorites.Margin = new System.Windows.Forms.Padding(4);
             this.tpFavorites.Name = "tpFavorites";
-            this.tpFavorites.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tpFavorites.Padding = new System.Windows.Forms.Padding(4);
             this.tpFavorites.Size = new System.Drawing.Size(413, 139);
             this.tpFavorites.TabIndex = 2;
             this.tpFavorites.Text = "Favorites";
@@ -472,46 +512,6 @@
             this.cdPicker.AnyColor = true;
             this.cdPicker.FullOpen = true;
             // 
-            // txtSearch
-            // 
-            this.txtSearch.Location = new System.Drawing.Point(78, 70);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(192, 22);
-            this.txtSearch.TabIndex = 11;
-            // 
-            // tpAuthenticate
-            // 
-            this.tpAuthenticate.Controls.Add(this.label4);
-            this.tpAuthenticate.Controls.Add(this.label2);
-            this.tpAuthenticate.Controls.Add(this.txtUserID);
-            this.tpAuthenticate.Controls.Add(this.label3);
-            this.tpAuthenticate.Controls.Add(this.txtPassword);
-            this.tpAuthenticate.Location = new System.Drawing.Point(4, 25);
-            this.tpAuthenticate.Name = "tpAuthenticate";
-            this.tpAuthenticate.Size = new System.Drawing.Size(413, 139);
-            this.tpAuthenticate.TabIndex = 3;
-            this.tpAuthenticate.Text = "Authentication";
-            this.tpAuthenticate.UseVisualStyleBackColor = true;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 70);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(55, 17);
-            this.label11.TabIndex = 12;
-            this.label11.Text = "Query: ";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(37, 50);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(179, 17);
-            this.label12.TabIndex = 13;
-            this.label12.Text = "Search Query OR Color";
-            // 
             // WallbaseProviderPrefs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -533,14 +533,14 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tpAuthenticate.ResumeLayout(false);
+            this.tpAuthenticate.PerformLayout();
             this.tpSearch.ResumeLayout(false);
             this.tpSearch.PerformLayout();
             this.tpCollections.ResumeLayout(false);
             this.tpCollections.PerformLayout();
             this.tpFavorites.ResumeLayout(false);
             this.tpFavorites.PerformLayout();
-            this.tpAuthenticate.ResumeLayout(false);
-            this.tpAuthenticate.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

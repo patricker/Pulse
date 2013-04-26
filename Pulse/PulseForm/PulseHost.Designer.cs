@@ -33,11 +33,11 @@
             this.nextPictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.banImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openCacheFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.niPulse = new System.Windows.Forms.NotifyIcon(this.components);
-            this.downloadManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsTrayIcon.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,11 +52,11 @@
             this.toolStripSeparator1,
             this.closeToolStripMenuItem});
             this.cmsTrayIcon.Name = "cmsTrayIcon";
-            this.cmsTrayIcon.Size = new System.Drawing.Size(211, 176);
+            this.cmsTrayIcon.Size = new System.Drawing.Size(211, 154);
             // 
             // nextPictureToolStripMenuItem
             // 
-            this.nextPictureToolStripMenuItem.Image = global::PulseForm.Properties.Resources._112_DownArrowLong_Green_24x24_72;
+            this.nextPictureToolStripMenuItem.Image = global::PulseForm.Properties.Resources.arrow_Next_16xLG;
             this.nextPictureToolStripMenuItem.Name = "nextPictureToolStripMenuItem";
             this.nextPictureToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.nextPictureToolStripMenuItem.Text = "Next Picture";
@@ -64,6 +64,7 @@
             // 
             // banImageToolStripMenuItem
             // 
+            this.banImageToolStripMenuItem.Image = global::PulseForm.Properties.Resources.banimage;
             this.banImageToolStripMenuItem.Name = "banImageToolStripMenuItem";
             this.banImageToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.banImageToolStripMenuItem.Text = "Ban Image";
@@ -71,15 +72,23 @@
             // 
             // openCacheFolderToolStripMenuItem
             // 
-            this.openCacheFolderToolStripMenuItem.Image = global::PulseForm.Properties.Resources.InsertPictureHS;
+            this.openCacheFolderToolStripMenuItem.Image = global::PulseForm.Properties.Resources.folder_Open_16xLG;
             this.openCacheFolderToolStripMenuItem.Name = "openCacheFolderToolStripMenuItem";
             this.openCacheFolderToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.openCacheFolderToolStripMenuItem.Text = "Open Cache Folder";
             this.openCacheFolderToolStripMenuItem.Click += new System.EventHandler(this.openCacheFolderToolStripMenuItem_Click);
             // 
+            // downloadManagerToolStripMenuItem
+            // 
+            this.downloadManagerToolStripMenuItem.Image = global::PulseForm.Properties.Resources.asset_progressBar_26x26_on;
+            this.downloadManagerToolStripMenuItem.Name = "downloadManagerToolStripMenuItem";
+            this.downloadManagerToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.downloadManagerToolStripMenuItem.Text = "Download Manager";
+            this.downloadManagerToolStripMenuItem.Click += new System.EventHandler(this.downloadManagerToolStripMenuItem_Click);
+            // 
             // toolStripMenuItem1
             // 
-            this.toolStripMenuItem1.Image = global::PulseForm.Properties.Resources._327_Options_16x16_72;
+            this.toolStripMenuItem1.Image = global::PulseForm.Properties.Resources.properties_16xLG;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
             this.toolStripMenuItem1.Text = "Options";
@@ -92,6 +101,7 @@
             // 
             // closeToolStripMenuItem
             // 
+            this.closeToolStripMenuItem.Image = global::PulseForm.Properties.Resources.Close_16xLG;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.closeToolStripMenuItem.Text = "Close";
@@ -101,13 +111,6 @@
             // 
             this.niPulse.ContextMenuStrip = this.cmsTrayIcon;
             this.niPulse.Text = "Pulse";
-            // 
-            // downloadManagerToolStripMenuItem
-            // 
-            this.downloadManagerToolStripMenuItem.Name = "downloadManagerToolStripMenuItem";
-            this.downloadManagerToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.downloadManagerToolStripMenuItem.Text = "Download Manager";
-            this.downloadManagerToolStripMenuItem.Click += new System.EventHandler(this.downloadManagerToolStripMenuItem_Click);
             // 
             // frmPulseHost
             // 

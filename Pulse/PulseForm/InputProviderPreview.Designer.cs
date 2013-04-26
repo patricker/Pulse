@@ -48,7 +48,6 @@
             this.Controls.Add(this.flowLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "InputProviderPreview";
-            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Provider Preview";
             this.Load += new System.EventHandler(this.InputProviderPreview_Load);

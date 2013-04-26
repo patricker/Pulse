@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPulseOptions));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
@@ -47,6 +48,8 @@
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.nudMaxPictureCount = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.btnBannedImageReview = new System.Windows.Forms.Button();
             this.cbCheckForNewVersions = new System.Windows.Forms.CheckBox();
             this.cbRunOnWindowsStartup = new System.Windows.Forms.CheckBox();
@@ -60,13 +63,18 @@
             this.dgvOutputProviders = new System.Windows.Forms.DataGridView();
             this.oppSettings = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tpAbout = new System.Windows.Forms.TabPage();
+            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.BuildTag = new System.Windows.Forms.Label();
+            this.ilTabs = new System.Windows.Forms.ImageList(this.components);
             this.ApplyButton = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.nudMaxPictureCount = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -76,16 +84,18 @@
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udInterval)).BeginInit();
             this.tpOutputs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOutputProviders)).BeginInit();
             this.tpAbout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -94,6 +104,7 @@
             this.tabControl1.Controls.Add(this.tpOutputs);
             this.tabControl1.Controls.Add(this.tpAbout);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.ilTabs;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabControl1.Name = "tabControl1";
@@ -107,6 +118,7 @@
             this.tpGeneral.Controls.Add(this.groupBox3);
             this.tpGeneral.Controls.Add(this.groupBox2);
             this.tpGeneral.Controls.Add(this.groupBox1);
+            this.tpGeneral.ImageIndex = 0;
             this.tpGeneral.Location = new System.Drawing.Point(4, 25);
             this.tpGeneral.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpGeneral.Name = "tpGeneral";
@@ -145,6 +157,8 @@
             // 
             // btnClearNow
             // 
+            this.btnClearNow.Image = global::PulseForm.Properties.Resources.Close_6519;
+            this.btnClearNow.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnClearNow.Location = new System.Drawing.Point(7, 36);
             this.btnClearNow.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnClearNow.Name = "btnClearNow";
@@ -232,9 +246,11 @@
             // btnRemoveInputProvider
             // 
             this.btnRemoveInputProvider.Enabled = false;
+            this.btnRemoveInputProvider.Image = global::PulseForm.Properties.Resources.Disconnect_9957;
+            this.btnRemoveInputProvider.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnRemoveInputProvider.Location = new System.Drawing.Point(237, 95);
             this.btnRemoveInputProvider.Name = "btnRemoveInputProvider";
-            this.btnRemoveInputProvider.Size = new System.Drawing.Size(92, 26);
+            this.btnRemoveInputProvider.Size = new System.Drawing.Size(128, 26);
             this.btnRemoveInputProvider.TabIndex = 7;
             this.btnRemoveInputProvider.Text = "Remove";
             this.btnRemoveInputProvider.UseVisualStyleBackColor = true;
@@ -243,9 +259,11 @@
             // btnPreview
             // 
             this.btnPreview.Enabled = false;
+            this.btnPreview.Image = global::PulseForm.Properties.Resources.Preview_Thumbnail_;
+            this.btnPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPreview.Location = new System.Drawing.Point(237, 65);
             this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(92, 26);
+            this.btnPreview.Size = new System.Drawing.Size(128, 26);
             this.btnPreview.TabIndex = 6;
             this.btnPreview.Text = "Preview";
             this.btnPreview.UseVisualStyleBackColor = true;
@@ -254,9 +272,11 @@
             // btnAddInput
             // 
             this.btnAddInput.Enabled = false;
+            this.btnAddInput.Image = global::PulseForm.Properties.Resources.AddConnection_477;
+            this.btnAddInput.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAddInput.Location = new System.Drawing.Point(237, 4);
             this.btnAddInput.Name = "btnAddInput";
-            this.btnAddInput.Size = new System.Drawing.Size(92, 26);
+            this.btnAddInput.Size = new System.Drawing.Size(128, 26);
             this.btnAddInput.TabIndex = 5;
             this.btnAddInput.Text = "Add";
             this.btnAddInput.UseVisualStyleBackColor = true;
@@ -277,10 +297,12 @@
             // ProviderSettings
             // 
             this.ProviderSettings.Enabled = false;
+            this.ProviderSettings.Image = global::PulseForm.Properties.Resources.properties_16xLG;
+            this.ProviderSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ProviderSettings.Location = new System.Drawing.Point(237, 34);
             this.ProviderSettings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ProviderSettings.Name = "ProviderSettings";
-            this.ProviderSettings.Size = new System.Drawing.Size(92, 26);
+            this.ProviderSettings.Size = new System.Drawing.Size(128, 26);
             this.ProviderSettings.TabIndex = 3;
             this.ProviderSettings.Text = "Settings";
             this.ProviderSettings.UseVisualStyleBackColor = true;
@@ -320,6 +342,38 @@
             this.panel2.Size = new System.Drawing.Size(366, 235);
             this.panel2.TabIndex = 11;
             // 
+            // nudMaxPictureCount
+            // 
+            this.nudMaxPictureCount.Location = new System.Drawing.Point(175, 98);
+            this.nudMaxPictureCount.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.nudMaxPictureCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.nudMaxPictureCount.Name = "nudMaxPictureCount";
+            this.nudMaxPictureCount.Size = new System.Drawing.Size(59, 23);
+            this.nudMaxPictureCount.TabIndex = 16;
+            this.nudMaxPictureCount.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.nudMaxPictureCount.ValueChanged += new System.EventHandler(this.ComboBoxSelectionChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 100);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(175, 17);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Max Search Result Count: ";
+            // 
             // btnBannedImageReview
             // 
             this.btnBannedImageReview.Location = new System.Drawing.Point(3, 136);
@@ -333,11 +387,14 @@
             // cbCheckForNewVersions
             // 
             this.cbCheckForNewVersions.AutoSize = true;
+            this.cbCheckForNewVersions.Image = global::PulseForm.Properties.Resources.GetLatestVersion_13186;
+            this.cbCheckForNewVersions.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 210);
             this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
-            this.cbCheckForNewVersions.Size = new System.Drawing.Size(244, 21);
+            this.cbCheckForNewVersions.Size = new System.Drawing.Size(260, 21);
             this.cbCheckForNewVersions.TabIndex = 13;
             this.cbCheckForNewVersions.Text = "Check for new versions on startup\r\n";
+            this.cbCheckForNewVersions.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.cbCheckForNewVersions.UseVisualStyleBackColor = true;
             this.cbCheckForNewVersions.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
             // 
@@ -355,7 +412,7 @@
             // 
             // udInterval
             // 
-            this.udInterval.Location = new System.Drawing.Point(188, 49);
+            this.udInterval.Location = new System.Drawing.Point(121, 50);
             this.udInterval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.udInterval.Maximum = new decimal(new int[] {
             999999,
@@ -380,45 +437,54 @@
             // cbDownloadAutomatically
             // 
             this.cbDownloadAutomatically.AutoSize = true;
+            this.cbDownloadAutomatically.Image = global::PulseForm.Properties.Resources.timer_16xLG;
+            this.cbDownloadAutomatically.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbDownloadAutomatically.Location = new System.Drawing.Point(3, 28);
             this.cbDownloadAutomatically.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbDownloadAutomatically.Name = "cbDownloadAutomatically";
-            this.cbDownloadAutomatically.Size = new System.Drawing.Size(187, 21);
+            this.cbDownloadAutomatically.Size = new System.Drawing.Size(203, 21);
             this.cbDownloadAutomatically.TabIndex = 5;
             this.cbDownloadAutomatically.Text = "Change Picture on Timer";
+            this.cbDownloadAutomatically.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.cbDownloadAutomatically.UseVisualStyleBackColor = true;
             this.cbDownloadAutomatically.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
             // 
             // cbPrefetch
             // 
             this.cbPrefetch.AutoSize = true;
-            this.cbPrefetch.Location = new System.Drawing.Point(3, 71);
+            this.cbPrefetch.Image = global::PulseForm.Properties.Resources.ImageListControl_683_12x;
+            this.cbPrefetch.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.cbPrefetch.Location = new System.Drawing.Point(3, 77);
             this.cbPrefetch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbPrefetch.Name = "cbPrefetch";
-            this.cbPrefetch.Size = new System.Drawing.Size(146, 21);
+            this.cbPrefetch.Size = new System.Drawing.Size(158, 21);
             this.cbPrefetch.TabIndex = 10;
             this.cbPrefetch.Text = "Pre Fetch Pictures";
+            this.cbPrefetch.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.cbPrefetch.UseVisualStyleBackColor = true;
             this.cbPrefetch.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(33, 52);
+            this.label3.Location = new System.Drawing.Point(69, 52);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(153, 17);
+            this.label3.Size = new System.Drawing.Size(52, 17);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Change Picture Every: ";
+            this.label3.Text = "Every: ";
             // 
             // cbAutoChangeonStartup
             // 
             this.cbAutoChangeonStartup.AutoSize = true;
+            this.cbAutoChangeonStartup.Image = global::PulseForm.Properties.Resources.arrow_Sync_16xMD;
+            this.cbAutoChangeonStartup.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbAutoChangeonStartup.Location = new System.Drawing.Point(3, 2);
             this.cbAutoChangeonStartup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbAutoChangeonStartup.Name = "cbAutoChangeonStartup";
-            this.cbAutoChangeonStartup.Size = new System.Drawing.Size(197, 21);
+            this.cbAutoChangeonStartup.Size = new System.Drawing.Size(213, 21);
             this.cbAutoChangeonStartup.TabIndex = 6;
             this.cbAutoChangeonStartup.Text = "Change Picture on Startup";
+            this.cbAutoChangeonStartup.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.cbAutoChangeonStartup.UseVisualStyleBackColor = true;
             this.cbAutoChangeonStartup.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
             // 
@@ -426,7 +492,7 @@
             // 
             this.cbUpdateFrequencyUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbUpdateFrequencyUnit.FormattingEnabled = true;
-            this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(251, 49);
+            this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(184, 50);
             this.cbUpdateFrequencyUnit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cbUpdateFrequencyUnit.Name = "cbUpdateFrequencyUnit";
             this.cbUpdateFrequencyUnit.Size = new System.Drawing.Size(108, 24);
@@ -437,6 +503,7 @@
             // 
             this.tpOutputs.AutoScroll = true;
             this.tpOutputs.Controls.Add(this.dgvOutputProviders);
+            this.tpOutputs.ImageIndex = 2;
             this.tpOutputs.Location = new System.Drawing.Point(4, 25);
             this.tpOutputs.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpOutputs.Name = "tpOutputs";
@@ -475,7 +542,14 @@
             // 
             // tpAbout
             // 
+            this.tpAbout.Controls.Add(this.linkLabel2);
+            this.tpAbout.Controls.Add(this.pictureBox2);
+            this.tpAbout.Controls.Add(this.linkLabel1);
+            this.tpAbout.Controls.Add(this.pictureBox1);
+            this.tpAbout.Controls.Add(this.label5);
+            this.tpAbout.Controls.Add(this.label4);
             this.tpAbout.Controls.Add(this.BuildTag);
+            this.tpAbout.ImageIndex = 1;
             this.tpAbout.Location = new System.Drawing.Point(4, 25);
             this.tpAbout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tpAbout.Name = "tpAbout";
@@ -484,29 +558,101 @@
             this.tpAbout.Text = "About";
             this.tpAbout.UseVisualStyleBackColor = true;
             // 
+            // linkLabel2
+            // 
+            this.linkLabel2.AutoSize = true;
+            this.linkLabel2.Location = new System.Drawing.Point(34, 75);
+            this.linkLabel2.Name = "linkLabel2";
+            this.linkLabel2.Size = new System.Drawing.Size(133, 17);
+            this.linkLabel2.TabIndex = 6;
+            this.linkLabel2.TabStop = true;
+            this.linkLabel2.Text = "Pulse Issue Tracker";
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::PulseForm.Properties.Resources.bug;
+            this.pictureBox2.Location = new System.Drawing.Point(19, 76);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox2.TabIndex = 5;
+            this.pictureBox2.TabStop = false;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(34, 55);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(87, 17);
+            this.linkLabel1.TabIndex = 4;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Pulse Forum";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::PulseForm.Properties.Resources.Addacomment_8818;
+            this.pictureBox1.Location = new System.Drawing.Point(19, 56);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 36);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(399, 17);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Have a comment or find a bug in Pulse? Please come share it!";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(8, 9);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(64, 17);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Version: ";
+            // 
             // BuildTag
             // 
             this.BuildTag.AutoSize = true;
-            this.BuildTag.Location = new System.Drawing.Point(7, 6);
+            this.BuildTag.Location = new System.Drawing.Point(78, 9);
             this.BuildTag.Name = "BuildTag";
             this.BuildTag.Size = new System.Drawing.Size(0, 17);
             this.BuildTag.TabIndex = 0;
             // 
+            // ilTabs
+            // 
+            this.ilTabs.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("ilTabs.ImageStream")));
+            this.ilTabs.TransparentColor = System.Drawing.Color.Transparent;
+            this.ilTabs.Images.SetKeyName(0, "OptionsHS.png");
+            this.ilTabs.Images.SetKeyName(1, "Symbols_Help_and_inclusive_16xLG.png");
+            this.ilTabs.Images.SetKeyName(2, "arrow_Up_16xLG.png");
+            // 
             // ApplyButton
             // 
             this.ApplyButton.Enabled = false;
-            this.ApplyButton.Location = new System.Drawing.Point(272, 5);
+            this.ApplyButton.Image = global::PulseForm.Properties.Resources.Save_6530;
+            this.ApplyButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ApplyButton.Location = new System.Drawing.Point(299, 1);
             this.ApplyButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ApplyButton.Name = "ApplyButton";
             this.ApplyButton.Size = new System.Drawing.Size(87, 28);
             this.ApplyButton.TabIndex = 1;
-            this.ApplyButton.Text = "OK";
+            this.ApplyButton.Text = "Save";
             this.ApplyButton.UseVisualStyleBackColor = true;
             this.ApplyButton.Click += new System.EventHandler(this.OkButtonClick);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(369, 5);
+            this.button3.Image = global::PulseForm.Properties.Resources.action_Cancel_16xLG;
+            this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button3.Location = new System.Drawing.Point(396, 1);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(87, 28);
@@ -541,44 +687,12 @@
             // 
             this.panel1.Controls.Add(this.ApplyButton);
             this.panel1.Controls.Add(this.button3);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 9);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(783, 36);
+            this.panel1.Size = new System.Drawing.Size(783, 45);
             this.panel1.TabIndex = 4;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 100);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(175, 17);
-            this.label2.TabIndex = 15;
-            this.label2.Text = "Max Search Result Count: ";
-            // 
-            // nudMaxPictureCount
-            // 
-            this.nudMaxPictureCount.Location = new System.Drawing.Point(184, 98);
-            this.nudMaxPictureCount.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.nudMaxPictureCount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.nudMaxPictureCount.Name = "nudMaxPictureCount";
-            this.nudMaxPictureCount.Size = new System.Drawing.Size(59, 23);
-            this.nudMaxPictureCount.TabIndex = 16;
-            this.nudMaxPictureCount.Value = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.nudMaxPictureCount.ValueChanged += new System.EventHandler(this.ComboBoxSelectionChanged);
             // 
             // frmPulseOptions
             // 
@@ -602,17 +716,19 @@
             this.groupBox1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udInterval)).EndInit();
             this.tpOutputs.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvOutputProviders)).EndInit();
             this.tpAbout.ResumeLayout(false);
             this.tpAbout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -657,5 +773,12 @@
         private System.Windows.Forms.Button btnBannedImageReview;
         private System.Windows.Forms.NumericUpDown nudMaxPictureCount;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ImageList ilTabs;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.LinkLabel linkLabel2;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
