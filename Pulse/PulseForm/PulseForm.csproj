@@ -186,6 +186,37 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="Resources\Close_16xLG.png" />
+    <None Include="Resources\folder_Open_16xLG.png" />
+    <None Include="Resources\Image_24x.png" />
+    <None Include="Resources\banimage.png" />
+    <None Include="Resources\Image_12x.png" />
+    <None Include="Resources\arrow_Next_16xLG.png" />
+    <None Include="Resources\arrow_previous_16xLG.png" />
+    <None Include="Resources\arrow_Sync_16xMD.png" />
+    <None Include="Resources\arrow_Up_16xLG.png" />
+    <None Include="Resources\ImageListControl_683_12x.png" />
+    <None Include="Resources\ImageListControl_683.png" />
+    <None Include="Resources\GetLatestVersion_13186.png" />
+    <None Include="Resources\timer_16xLG.png" />
+    <None Include="Resources\bug.png" />
+    <None Include="Resources\Addacomment_8818.png" />
+    <None Include="Resources\Symbols_Help_and_inclusive_16xLG.png" />
+    <None Include="Resources\action_Cancel_16xLG.png" />
+    <None Include="Resources\StatusAnnotations_Play_16xLG.png" />
+    <None Include="Resources\StatusAnnotations_Pause_16xLG.png" />
+    <None Include="Resources\StatusAnnotations_Pause_16xLG_color.png" />
+    <None Include="Resources\StatusAnnotations_Play_16xLG_color.png" />
+    <None Include="Resources\properties_16xLG.png" />
+    <None Include="Resources\ShowGridPane_281.png" />
+    <None Include="Resources\startwithoutdebugging_6556.png" />
+    <None Include="Resources\Preview%28Thumbnail%29.png" />
+    <None Include="Resources\Save_6530.png" />
+    <None Include="Resources\Close_6519.png" />
+    <None Include="Resources\Disconnect_9957.png" />
+    <None Include="Resources\AddConnection_477.png" />
+    <None Include="Resources\asset_progressBar_26x26_on.png" />
+    <None Include="Resources\Breakall_6323.png" />
     <None Include="PulseForm_TemporaryKey.pfx" />
     <None Include="Resources\PulseIcon.ico" />
     <None Include="Resources\112_DownArrowLong_Green_24x24_72.png" />

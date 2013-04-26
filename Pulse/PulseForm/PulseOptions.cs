@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace PulseForm
 {
@@ -402,6 +403,13 @@ namespace PulseForm
             //dialog window which will house the user control
             ProviderSettingsWindow psw = new ProviderSettingsWindow();
 
+            Bitmap img = (Bitmap)ProviderManager.GetProviderIcon(api.Instance.GetType());
+            if (img != null)
+            {
+                psw.Icon = System.Drawing.Icon.FromHandle(img.GetHicon());
+                img.Dispose();
+            }
+
             //load the usercontrol into the window
             psw.LoadSettings(initSettings, api.ProviderName);
 
@@ -467,6 +475,16 @@ namespace PulseForm
         {
             BannedImageReview bir = new BannedImageReview();
             bir.ShowDialog();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://pulse.codeplex.com/discussions");
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://pulse.codeplex.com/workitem/list/basic");
         }
 
     }
