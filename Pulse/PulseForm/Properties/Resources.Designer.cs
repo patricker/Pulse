@@ -303,6 +303,16 @@ namespace PulseForm.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap PlayHS {
+            get {
+                object obj = ResourceManager.GetObject("PlayHS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Preview_Thumbnail_ {
             get {
                 object obj = ResourceManager.GetObject("Preview_Thumbnail_", resourceCulture);
@@ -346,16 +356,6 @@ namespace PulseForm.Properties {
         internal static System.Drawing.Bitmap ShowGridPane_281 {
             get {
                 object obj = ResourceManager.GetObject("ShowGridPane_281", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap startwithoutdebugging_6556 {
-            get {
-                object obj = ResourceManager.GetObject("startwithoutdebugging_6556", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

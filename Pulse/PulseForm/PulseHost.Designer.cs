@@ -31,7 +31,10 @@
             this.components = new System.ComponentModel.Container();
             this.cmsTrayIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.nextPictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previousPictureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timerStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.banImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.openCacheFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,14 +48,17 @@
             // 
             this.cmsTrayIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.nextPictureToolStripMenuItem,
+            this.previousPictureToolStripMenuItem,
+            this.timerStatusToolStripMenuItem,
             this.banImageToolStripMenuItem,
+            this.toolStripSeparator2,
             this.openCacheFolderToolStripMenuItem,
             this.downloadManagerToolStripMenuItem,
             this.toolStripMenuItem1,
             this.toolStripSeparator1,
             this.closeToolStripMenuItem});
             this.cmsTrayIcon.Name = "cmsTrayIcon";
-            this.cmsTrayIcon.Size = new System.Drawing.Size(211, 154);
+            this.cmsTrayIcon.Size = new System.Drawing.Size(211, 230);
             // 
             // nextPictureToolStripMenuItem
             // 
@@ -62,13 +68,36 @@
             this.nextPictureToolStripMenuItem.Text = "Next Picture";
             this.nextPictureToolStripMenuItem.Click += new System.EventHandler(this.nextPictureToolStripMenuItem_Click);
             // 
+            // previousPictureToolStripMenuItem
+            // 
+            this.previousPictureToolStripMenuItem.Enabled = false;
+            this.previousPictureToolStripMenuItem.Image = global::PulseForm.Properties.Resources.arrow_previous_16xLG;
+            this.previousPictureToolStripMenuItem.Name = "previousPictureToolStripMenuItem";
+            this.previousPictureToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.previousPictureToolStripMenuItem.Text = "Previous Picture";
+            this.previousPictureToolStripMenuItem.Click += new System.EventHandler(this.previousPictureToolStripMenuItem_Click);
+            // 
+            // timerStatusToolStripMenuItem
+            // 
+            this.timerStatusToolStripMenuItem.Image = global::PulseForm.Properties.Resources.PlayHS;
+            this.timerStatusToolStripMenuItem.Name = "timerStatusToolStripMenuItem";
+            this.timerStatusToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.timerStatusToolStripMenuItem.Text = "Start Timer";
+            this.timerStatusToolStripMenuItem.Click += new System.EventHandler(this.timerStatusToolStripMenuItem_Click);
+            // 
             // banImageToolStripMenuItem
             // 
+            this.banImageToolStripMenuItem.Enabled = false;
             this.banImageToolStripMenuItem.Image = global::PulseForm.Properties.Resources.banimage;
             this.banImageToolStripMenuItem.Name = "banImageToolStripMenuItem";
             this.banImageToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.banImageToolStripMenuItem.Text = "Ban Image";
             this.banImageToolStripMenuItem.Click += new System.EventHandler(this.banImageToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(207, 6);
             // 
             // openCacheFolderToolStripMenuItem
             // 
@@ -141,6 +170,9 @@
         internal System.Windows.Forms.ContextMenuStrip cmsTrayIcon;
         public System.Windows.Forms.NotifyIcon niPulse;
         private System.Windows.Forms.ToolStripMenuItem downloadManagerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem previousPictureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem timerStatusToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 

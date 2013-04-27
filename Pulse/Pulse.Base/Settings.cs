@@ -47,6 +47,7 @@ namespace Pulse.Base
 
         public bool PreFetch { get; set; }
         public int MaxPictureDownloadCount { get; set; }
+        public int MaxPreviousPictureDepth { get; set; }
         public string CachePath { get; set; }
         public bool CheckForNewPulseVersions { get; set; }
 
@@ -71,11 +72,14 @@ namespace Pulse.Base
             ClearInterval = 3;
             PreFetch = false;
             MaxPictureDownloadCount = 100;
+            MaxPreviousPictureDepth = 5;
             CheckForNewPulseVersions = true;
             CachePath = System.IO.Path.Combine(AppPath, "Cache");
             ProviderSettings = new SerializableDictionary<Guid, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
             RunOnWindowsStartup = false;
+
+            BannedImages = new List<string>();
 
             //set wallpaper changer as a default provider for output
             ActiveProviderInfo apiWallpaper = new ActiveProviderInfo("Desktop Wallpaper");
