@@ -69,11 +69,15 @@
     <ManifestKeyFile>PulseForm_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="CodePlexNewReleaseChecker, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -186,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <None Include="Resources\PlayHS.png" />
     <None Include="Resources\Close_16xLG.png" />
     <None Include="Resources\folder_Open_16xLG.png" />
     <None Include="Resources\Image_24x.png" />
@@ -217,7 +222,6 @@
     <None Include="Resources\AddConnection_477.png" />
     <None Include="Resources\asset_progressBar_26x26_on.png" />
     <None Include="Resources\Breakall_6323.png" />
-    <None Include="PulseForm_TemporaryKey.pfx" />
     <None Include="Resources\PulseIcon.ico" />
     <None Include="Resources\112_DownArrowLong_Green_24x24_72.png" />
     <None Include="Resources\112_DownArrowLong_Green_16x16_72.png" />

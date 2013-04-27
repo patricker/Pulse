@@ -15,16 +15,22 @@ namespace Pulse.Base
     {
         public event Pulse.Base.Status.StatusChanged StatusChanged;
         public event Action<CodePlexNewReleaseChecker.Release> NewVersionAvailable;
+        public event Action<PictureBatch> BatchChanging;
+        public event Action<PictureBatch> BatchChanged;
+        public event Action TimerStarted;
+        public event Action TimerStopped;
 
         public PictureBatch CurrentBatch { get; set; }
+
+        public bool IsTimerRunning { get { return wallpaperChangerTimer.Enabled; } }
 
         public PictureManager PictureManager = new PictureManager();
         public Dictionary<Guid, ActiveProviderInfo> CurrentInputProviders = new Dictionary<Guid, ActiveProviderInfo>();
 
         private DownloadManager DownloadManager = DownloadManager.Current;
 
-        private System.Timers.Timer wallpaperChangerTimer;
-        private System.Timers.Timer clearOldWallpapersTimer;
+        private System.Timers.Timer wallpaperChangerTimer = new System.Timers.Timer();
+        private System.Timers.Timer clearOldWallpapersTimer = new System.Timers.Timer();
 
         public void Initialize()
         {
@@ -51,9 +57,6 @@ namespace Pulse.Base
             {
                 ClearOldWallpapers();
             }           
-
-            wallpaperChangerTimer = new System.Timers.Timer();
-            clearOldWallpapersTimer = new System.Timers.Timer();
 
             wallpaperChangerTimer.Elapsed += WallpaperChangerTimerTick;
             clearOldWallpapersTimer.Elapsed += clearOldWallpapersTimer_Elapsed;
@@ -105,6 +108,20 @@ namespace Pulse.Base
             {
                 Log.Logger.Write(string.Format("Error checking for new Pulse Versions: {0}", ex.ToString()), Log.LoggerLevels.Warnings);
             }
+        }
+
+        public void StartTimer()
+        {
+            wallpaperChangerTimer.Start();
+            if (TimerStarted != null)
+                TimerStarted();
+        }
+
+        public void StopTimer()
+        {
+            wallpaperChangerTimer.Stop();
+            if (TimerStopped != null)
+                TimerStopped();
         }
 
         public void UpdateFromConfiguration()
@@ -165,6 +182,13 @@ namespace Pulse.Base
             t.Start();
         }
 
+        public void BackToPreviousPicture()
+        {
+            if (CurrentBatch == null || CurrentBatch.PreviousBatch == null) return;
+
+            ProcessDownloadedPicture(CurrentBatch.PreviousBatch);
+        }
+
         public void BanPicture(Picture p)
         {
             string banString =
@@ -195,7 +219,6 @@ namespace Pulse.Base
             if (CurrentInputProviders.Count == 0) return;
             //create the new picture batch
             PictureBatch pb = new PictureBatch() {PreviousBatch = CurrentBatch};
-            this.CurrentBatch = pb;
 
             //create another view of the input providers, otherwise if the list changes
             // because user changes options then it breaks :)
@@ -217,13 +240,9 @@ namespace Pulse.Base
                 //save to picturebatch 
                 pb.AllPictures.Add(pl);
             }
-
-            //Clear the download Queue
-            DownloadManager.ClearQueue();
             
             //process downloaded picture list
             ProcessDownloadedPicture(pb);
-
             
             //if prefetch is enabled, validate that all pictures have been downloaded
             if (Settings.CurrentSettings.PreFetch) DownloadManager.PreFetchFiles(pb);
@@ -231,9 +250,20 @@ namespace Pulse.Base
 
         protected void SetTimers()
         {
-            wallpaperChangerTimer.Stop();
+            StopTimer();
             clearOldWallpapersTimer.Stop();
 
+            RecalculateTimerIntervals();
+
+            if(Settings.CurrentSettings.ClearOldPics)
+                clearOldWallpapersTimer.Start();
+
+            if (Settings.CurrentSettings.ChangeOnTimer)
+                StartTimer();
+        }
+
+        protected void RecalculateTimerIntervals()
+        {
             wallpaperChangerTimer.Interval =
                 GetTimerTickTime(
                     Settings.CurrentSettings.IntervalUnit,
@@ -241,12 +271,6 @@ namespace Pulse.Base
                         ).TotalMilliseconds;
 
             clearOldWallpapersTimer.Interval = TimeSpan.FromDays(Settings.CurrentSettings.ClearInterval).TotalMilliseconds;
-
-            if(Settings.CurrentSettings.ClearOldPics)
-                clearOldWallpapersTimer.Start();
-
-            if (Settings.CurrentSettings.ChangeOnTimer)
-                wallpaperChangerTimer.Start();
         }
 
         protected void SetInputProviders()
@@ -352,6 +376,14 @@ namespace Pulse.Base
         {
             if (pb != null && pb.AllPictures.Any())
             {
+                this.CurrentBatch = pb;
+
+                if (BatchChanging != null)
+                    BatchChanging(pb);
+
+                //Clear the download Queue
+                DownloadManager.ClearQueue();
+
                 List<ManualResetEvent> manualEvents = new List<ManualResetEvent>();
 
                 //call all activated output providers in order
@@ -404,6 +436,9 @@ namespace Pulse.Base
                 {
                     manualEvents[0].WaitOne();
                 }
+
+                if (BatchChanged != null)
+                    BatchChanged(pb);
             }
         }
 

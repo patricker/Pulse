@@ -166,9 +166,6 @@
   <data name="ShowGridPane_281" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ShowGridPane_281.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="startwithoutdebugging_6556" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\startwithoutdebugging_6556.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="StatusAnnotations_Pause_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\StatusAnnotations_Pause_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -225,5 +222,8 @@
   </data>
   <data name="Image_12x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Image_24x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PlayHS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PlayHS.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

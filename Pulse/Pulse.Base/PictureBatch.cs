@@ -15,11 +15,10 @@ namespace Pulse.Base
         public PictureBatch PreviousBatch {
             get { return _previousBatch; }
             set
-            {
-                //we don't want a never ending change of previous batch history, so only keep it one deep
-                if (value != null) value.PreviousBatch = null;
-                
+            {   
                 _previousBatch = value;
+                //run decendent cleanup process
+                PreviousBatchCleanupRecursive(0);
             }
         }
 
@@ -106,6 +105,19 @@ namespace Pulse.Base
                 WaitHandle.WaitAll(manualEvents, 3 * 60 * 1000);
 
                 CurrentPictures.AddRange(toProcess);
+            }
+        }
+
+        private void PreviousBatchCleanupRecursive(int myDepth)
+        {
+            if (myDepth > Settings.CurrentSettings.MaxPreviousPictureDepth)
+            {
+                _previousBatch = null;
+            }
+            else
+            {
+                if(PreviousBatch != null) 
+                    PreviousBatch.PreviousBatchCleanupRecursive(myDepth + 1);
             }
         }
     }

@@ -31,12 +31,39 @@ namespace PulseForm
             Runner = new PulseRunner();
             //listen for new version available events
             Runner.NewVersionAvailable += Runner_NewVersionAvailable;
+            Runner.BatchChanged += Runner_PictureChanged;
+            Runner.TimerStarted += Runner_TimerStarted;
+            Runner.TimerStopped += Runner_TimerStopped;
             Runner.Initialize();
 
             if (Runner.CurrentInputProviders.Count == 0)
             {
                 MessageBox.Show("A provider is not currently selected.  Please choose a wallpaper provider from the options menu.");
             }
+        }
+
+        void Runner_TimerStopped()
+        {
+            this.Invoke((Action)delegate
+            {
+                this.timerStatusToolStripMenuItem.Image = global::PulseForm.Properties.Resources.PlayHS;
+                this.timerStatusToolStripMenuItem.Text = "Start Timer";
+            });
+        }
+
+        void Runner_TimerStarted()
+        {
+            this.timerStatusToolStripMenuItem.Image = global::PulseForm.Properties.Resources.Breakall_6323;
+            this.timerStatusToolStripMenuItem.Text = "Pause Timer";
+        }
+
+        void Runner_PictureChanged(PictureBatch obj)
+        {
+            this.Invoke((Action)delegate
+            {
+                banImageToolStripMenuItem.Enabled = obj.CurrentPictures.Count > 0;
+                previousPictureToolStripMenuItem.Enabled = (obj.PreviousBatch != null && obj.PreviousBatch.CurrentPictures.Count > 0);
+            });
         }
 
         void Runner_NewVersionAvailable(CodePlexNewReleaseChecker.Release obj)
@@ -110,6 +137,23 @@ namespace PulseForm
         {
             DownloadMonitor dm = new DownloadMonitor();
             dm.Show();
+        }
+
+        private void previousPictureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Runner.BackToPreviousPicture();
+        }
+
+        private void timerStatusToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runner.IsTimerRunning)
+            {
+                Runner.StopTimer();
+            }
+            else
+            {
+                Runner.StartTimer();
+            }
         }
     }
 }
