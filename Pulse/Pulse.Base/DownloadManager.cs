@@ -48,7 +48,7 @@ namespace Pulse.Base
         private readonly Random rnd = new Random();
 
         //download queue for all queued images
-        private DownloadQueue _downloadQueue = new DownloadQueue();
+        private DownloadQueue _downloadQueue = null;
 
         public DownloadManager() : this(Settings.CurrentSettings.CachePath) { 
            
@@ -56,6 +56,8 @@ namespace Pulse.Base
 
         public DownloadManager(string saveFolder)
         {
+            _downloadQueue = new DownloadQueue();
+
             this.SaveFolder = saveFolder;
 
             //validate that the output directory exists

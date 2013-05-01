@@ -10,6 +10,7 @@ using System.Reflection;
 using Pulse.Base;
 using System.IO;
 using System.Diagnostics;
+using Pulse.Forms.UI;
 
 namespace PulseForm
 {
@@ -46,14 +47,14 @@ namespace PulseForm
         {
             this.Invoke((Action)delegate
             {
-                this.timerStatusToolStripMenuItem.Image = global::PulseForm.Properties.Resources.PlayHS;
+                this.timerStatusToolStripMenuItem.Image = Pulse.Forms.UI.Properties.Resources.PlayHS;
                 this.timerStatusToolStripMenuItem.Text = "Start Timer";
             });
         }
 
         void Runner_TimerStarted()
         {
-            this.timerStatusToolStripMenuItem.Image = global::PulseForm.Properties.Resources.Breakall_6323;
+            this.timerStatusToolStripMenuItem.Image = Pulse.Forms.UI.Properties.Resources.Breakall_6323;
             this.timerStatusToolStripMenuItem.Text = "Pause Timer";
         }
 

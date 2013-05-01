@@ -31,7 +31,7 @@ namespace AeroGlassChanger
             int stepCount = 13;
 
             //get color to start with
-            Color currentAero = GetCurrentAeroColor();
+            Color currentAero = Desktop.GetCurrentAeroColor();
             Color endAeroColor;
 
             //load file
@@ -40,7 +40,7 @@ namespace AeroGlassChanger
                 using (Bitmap bmp = (Bitmap)Bitmap.FromStream(ms))
                 {
                     //get final color
-                    endAeroColor = CalcAverageColor(bmp);
+                    endAeroColor = PictureManager.CalcAverageColor(bmp);
                 }
             }
 
@@ -58,7 +58,7 @@ namespace AeroGlassChanger
                 if (currentStep >= stepCount) { mre.Set(); t.Stop(); return; }
 
                 //set to next color
-                SetDwmColor(transitionColors[currentStep]);
+                Desktop.SetDwmColor(transitionColors[currentStep]);
 
                 //increment steps and check if we should stop the timer
                 currentStep++;
@@ -68,26 +68,6 @@ namespace AeroGlassChanger
             t.Start();
 
             mre.WaitOne();
-        }
-
-        public static Color CalcAverageColor(System.Drawing.Bitmap image)
-        {
-            var bmp = new System.Drawing.Bitmap(1, 1);
-            var orig = image;
-            using (var g = System.Drawing.Graphics.FromImage(bmp))
-            {
-                // the Interpolation mode needs to be set to 
-                // HighQualityBilinear or HighQualityBicubic or this method
-                // doesn't work at all.  With either setting, the results are
-                // slightly different from the averaging method.
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(orig, new System.Drawing.Rectangle(0, 0, 1, 1));
-            }
-            var pixel = bmp.GetPixel(0, 0);
-            orig.Dispose();
-            bmp.Dispose();
-            // pixel will contain average values for entire orig Bitmap
-            return Color.FromArgb(pixel.R, pixel.G, pixel.B);
         }
 
         public static Color[] CalcColorTransition(Color from, Color to, int steps)
@@ -116,35 +96,6 @@ namespace AeroGlassChanger
 
         }
 
-        public static void SetDwmColor(System.Drawing.Color newColor)
-        {
-            if (WinAPI.DwmIsCompositionEnabled())
-            {
-                WinAPI.DWM_COLORIZATION_PARAMS color;
-                //get the current color
-                WinAPI.DwmGetColorizationParameters(out color);
-                //set new color to transition too
-                color.ColorizationColor = (uint)System.Drawing.Color.FromArgb(255, newColor.R, newColor.G, newColor.B).ToArgb();
-                //transition
-                WinAPI.DwmSetColorizationParameters(ref color, 0);
-            }
-        }
-
-        public static Color GetCurrentAeroColor()
-        {
-            if (WinAPI.DwmIsCompositionEnabled())
-            {
-                WinAPI.DWM_COLORIZATION_PARAMS color;
-                //get the current color
-                WinAPI.DwmGetColorizationParameters(out color);
-
-                Color c = Color.FromArgb((int)color.ColorizationColor);
-
-                return c;
-            }
-
-            return Color.Empty;
-        }
 
         public void Activate(object args) { }
 

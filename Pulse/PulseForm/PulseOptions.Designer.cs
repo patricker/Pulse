@@ -157,7 +157,7 @@
             // 
             // btnClearNow
             // 
-            this.btnClearNow.Image = global::PulseForm.Properties.Resources.Close_6519;
+            this.btnClearNow.Image = Pulse.Forms.UI.Properties.Resources.Close_6519;
             this.btnClearNow.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnClearNow.Location = new System.Drawing.Point(7, 36);
             this.btnClearNow.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -246,7 +246,7 @@
             // btnRemoveInputProvider
             // 
             this.btnRemoveInputProvider.Enabled = false;
-            this.btnRemoveInputProvider.Image = global::PulseForm.Properties.Resources.Disconnect_9957;
+            this.btnRemoveInputProvider.Image = Pulse.Forms.UI.Properties.Resources.Disconnect_9957;
             this.btnRemoveInputProvider.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnRemoveInputProvider.Location = new System.Drawing.Point(237, 95);
             this.btnRemoveInputProvider.Name = "btnRemoveInputProvider";
@@ -259,7 +259,7 @@
             // btnPreview
             // 
             this.btnPreview.Enabled = false;
-            this.btnPreview.Image = global::PulseForm.Properties.Resources.Preview_Thumbnail_;
+            this.btnPreview.Image = Pulse.Forms.UI.Properties.Resources.Preview_Thumbnail_;
             this.btnPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPreview.Location = new System.Drawing.Point(237, 65);
             this.btnPreview.Name = "btnPreview";
@@ -272,7 +272,7 @@
             // btnAddInput
             // 
             this.btnAddInput.Enabled = false;
-            this.btnAddInput.Image = global::PulseForm.Properties.Resources.AddConnection_477;
+            this.btnAddInput.Image = Pulse.Forms.UI.Properties.Resources.AddConnection_477;
             this.btnAddInput.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAddInput.Location = new System.Drawing.Point(237, 4);
             this.btnAddInput.Name = "btnAddInput";
@@ -297,7 +297,7 @@
             // ProviderSettings
             // 
             this.ProviderSettings.Enabled = false;
-            this.ProviderSettings.Image = global::PulseForm.Properties.Resources.properties_16xLG;
+            this.ProviderSettings.Image = Pulse.Forms.UI.Properties.Resources.properties_16xLG;
             this.ProviderSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ProviderSettings.Location = new System.Drawing.Point(237, 34);
             this.ProviderSettings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -387,7 +387,7 @@
             // cbCheckForNewVersions
             // 
             this.cbCheckForNewVersions.AutoSize = true;
-            this.cbCheckForNewVersions.Image = global::PulseForm.Properties.Resources.GetLatestVersion_13186;
+            this.cbCheckForNewVersions.Image = Pulse.Forms.UI.Properties.Resources.GetLatestVersion_13186;
             this.cbCheckForNewVersions.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbCheckForNewVersions.Location = new System.Drawing.Point(3, 210);
             this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
@@ -437,7 +437,7 @@
             // cbDownloadAutomatically
             // 
             this.cbDownloadAutomatically.AutoSize = true;
-            this.cbDownloadAutomatically.Image = global::PulseForm.Properties.Resources.timer_16xLG;
+            this.cbDownloadAutomatically.Image = Pulse.Forms.UI.Properties.Resources.timer_16xLG;
             this.cbDownloadAutomatically.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbDownloadAutomatically.Location = new System.Drawing.Point(3, 28);
             this.cbDownloadAutomatically.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -452,7 +452,7 @@
             // cbPrefetch
             // 
             this.cbPrefetch.AutoSize = true;
-            this.cbPrefetch.Image = global::PulseForm.Properties.Resources.ImageListControl_683_12x;
+            this.cbPrefetch.Image = Pulse.Forms.UI.Properties.Resources.ImageListControl_683_12x;
             this.cbPrefetch.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbPrefetch.Location = new System.Drawing.Point(3, 77);
             this.cbPrefetch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -476,7 +476,7 @@
             // cbAutoChangeonStartup
             // 
             this.cbAutoChangeonStartup.AutoSize = true;
-            this.cbAutoChangeonStartup.Image = global::PulseForm.Properties.Resources.arrow_Sync_16xMD;
+            this.cbAutoChangeonStartup.Image = Pulse.Forms.UI.Properties.Resources.arrow_Sync_16xMD;
             this.cbAutoChangeonStartup.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbAutoChangeonStartup.Location = new System.Drawing.Point(3, 2);
             this.cbAutoChangeonStartup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -571,7 +571,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = global::PulseForm.Properties.Resources.bug;
+            this.pictureBox2.Image = Pulse.Forms.UI.Properties.Resources.bug;
             this.pictureBox2.Location = new System.Drawing.Point(19, 76);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(16, 16);
@@ -592,7 +592,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::PulseForm.Properties.Resources.Addacomment_8818;
+            this.pictureBox1.Image = Pulse.Forms.UI.Properties.Resources.Addacomment_8818;
             this.pictureBox1.Location = new System.Drawing.Point(19, 56);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(16, 16);
@@ -637,7 +637,7 @@
             // ApplyButton
             // 
             this.ApplyButton.Enabled = false;
-            this.ApplyButton.Image = global::PulseForm.Properties.Resources.Save_6530;
+            this.ApplyButton.Image = Pulse.Forms.UI.Properties.Resources.Save_6530;
             this.ApplyButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ApplyButton.Location = new System.Drawing.Point(299, 1);
             this.ApplyButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -650,7 +650,7 @@
             // 
             // button3
             // 
-            this.button3.Image = global::PulseForm.Properties.Resources.action_Cancel_16xLG;
+            this.button3.Image = Pulse.Forms.UI.Properties.Resources.action_Cancel_16xLG;
             this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button3.Location = new System.Drawing.Point(396, 1);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
