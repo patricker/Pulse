@@ -15,10 +15,19 @@ namespace Pulse.Base
         public event PictureDownloadEvent PictureDownloading;
         public event PictureDownloadEvent PictureDownloadingAborted;
         public event PictureDownloadEvent PictureDownloadProgressChanged;
+        public event PictureDownloadEvent PictureDownloadStatusChanged;
 
         public Picture Picture { get; private set; }
         public int DownloadProgress { get; private set; }
-        public DownloadStatus Status { get; private set; }
+        public DownloadStatus Status
+        {
+            get { return _status; }
+            private set { 
+                _status = value;
+                if (PictureDownloadStatusChanged != null)
+                    PictureDownloadStatusChanged(this);
+            }
+        }
         public Exception LastError { get; private set; }
         public int Priority { get; set; }
         public int FailureCount { get; private set; }
@@ -26,14 +35,15 @@ namespace Pulse.Base
         private HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient();
         private int _failureCount = 0;
         private string _tempDownloadPath = string.Empty;
+        private DownloadStatus _status;
 
         public enum DownloadStatus
-        {
-            Stopped,
-            Downloading,
-            Complete,
-            Cancelled,
-            Error
+        {            
+            Downloading = 1,
+            Error = 10,
+            Stopped = 20,
+            Complete = 100,
+            Cancelled = 500            
         }
 
         public PictureDownload(Picture p)

@@ -47,7 +47,7 @@ namespace GoogleImages
             //if search is empty, return now since we can't search without it
             if (string.IsNullOrEmpty(giss.Query)) return result;
 
-            var pageIndex = 0;
+            var pageIndex = ps.PageToRetrieve; //set page to retrieve if one specified
             var imgFoundCount =0;
             
             //if max picture count is 0, then no maximum, else specified max
@@ -120,7 +120,7 @@ namespace GoogleImages
                 //increment page index so we can get the next 20 images if they exist
                 pageIndex++;
                 // Max Picture count is defined in search settings passed in, check for it here too
-            } while (imgFoundCount > 0 && result.Pictures.Count < maxPictureCount);
+            } while (imgFoundCount > 0 && result.Pictures.Count < maxPictureCount && ps.PageToRetrieve == 0);
 
             result.Pictures = result.Pictures.Take(maxPictureCount).ToList();
 

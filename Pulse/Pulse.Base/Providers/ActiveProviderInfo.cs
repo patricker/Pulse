@@ -78,7 +78,7 @@ namespace Pulse.Base
 
         public int GetComparisonHashCode()
         {
-            return ProviderConfig.GetHashCode();
+            return ProviderConfig.GetHashCode() * 31 + Active.GetHashCode();
         }
     }
 }

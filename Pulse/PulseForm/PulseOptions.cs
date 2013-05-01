@@ -228,7 +228,6 @@ namespace PulseForm
             {
                 if (Settings.CurrentSettings.ProviderSettings.ContainsKey(api.ProviderInstanceID))
                 {
-                    //check if the existing item is different then the previous
                     if (Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID].GetComparisonHashCode() != api.GetComparisonHashCode())
                     {
                         //since they are different check if we deactivated or just changed a setting

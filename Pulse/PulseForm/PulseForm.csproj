@@ -100,12 +100,6 @@
     <Compile Include="BannedImageReview.Designer.cs">
       <DependentUpon>BannedImageReview.cs</DependentUpon>
     </Compile>
-    <Compile Include="DownloadMonitor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DownloadMonitor.Designer.cs">
-      <DependentUpon>DownloadMonitor.cs</DependentUpon>
-    </Compile>
     <Compile Include="InputProviderPreview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -143,9 +137,6 @@
     </Compile>
     <EmbeddedResource Include="BannedImageReview.resx">
       <DependentUpon>BannedImageReview.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DownloadMonitor.resx">
-      <DependentUpon>DownloadMonitor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InputProviderPreview.resx">
       <DependentUpon>InputProviderPreview.cs</DependentUpon>
@@ -186,6 +177,10 @@
     <ProjectReference Include="..\Pulse.Base\Pulse.Base.csproj">
       <Project>{53B10354-56C0-4440-BBB2-F1F0C330E120}</Project>
       <Name>Pulse.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pulse.Forms.UI\Pulse.Forms.UI.csproj">
+      <Project>{c24743c5-79a5-4549-b59b-50f4e9aa92da}</Project>
+      <Name>Pulse.Forms.UI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -38,7 +38,7 @@ namespace wallbase
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
             int pageSize = wiss.GetPageSize();
-            int pageIndex = 0;
+            int pageIndex = ps.PageToRetrieve; //set page to retreive if one is specified
             var imgFoundCount = 0;
 
             //authenticate to wallbase
@@ -99,7 +99,7 @@ namespace wallbase
 
                 //increment page index so we can get the next set of images if they exist
                 pageIndex++;
-            } while (imgFoundCount > 0 && wallResults.Count < maxPictureCount);
+            } while (imgFoundCount > 0 && wallResults.Count < maxPictureCount && ps.PageToRetrieve == 0);
 
             PictureList result = FetchPictures(wallResults, ps.PreviewOnly);
             result.Pictures = result.Pictures.Take(maxPictureCount).ToList();
