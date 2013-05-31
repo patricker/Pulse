@@ -58,7 +58,7 @@ namespace AeroGlassChanger
                 if (currentStep >= stepCount) { mre.Set(); t.Stop(); return; }
 
                 //set to next color
-                Desktop.SetDwmColor(transitionColors[currentStep]);
+                Desktop.SetAeroColor(transitionColors[currentStep]);
 
                 //increment steps and check if we should stop the timer
                 currentStep++;

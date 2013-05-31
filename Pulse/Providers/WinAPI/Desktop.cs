@@ -5,11 +5,22 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace Pulse.Base.WinAPI
 {
     public class Desktop
     {
+        public enum WallpaperStyle
+        {
+            Tile,
+            Center,
+            Stretch,
+            Fit,
+            Fill,
+            NotSet
+        }
+
         public static void EnableActiveDesktop()
         {
             IntPtr result = IntPtr.Zero;
@@ -66,8 +77,13 @@ namespace Pulse.Base.WinAPI
             return wallpaper;
         }
 
+        public static void SetDesktopBackgroundColor(Color newColor)
+        {
+            int[] aiElements = { WinAPI.COLOR_DESKTOP };
+            WinAPI.SetSysColors(1, aiElements, new WinAPI.COLORREF(newColor));
+        }
 
-        public static void SetDwmColor(System.Drawing.Color newColor)
+        public static void SetAeroColor(System.Drawing.Color newColor)
         {
             if (WinAPI.DwmIsCompositionEnabled())
             {
@@ -95,6 +111,55 @@ namespace Pulse.Base.WinAPI
             }
 
             return Color.Empty;
+        }
+
+        
+
+        //from Microsoft example code:
+        //http://code.msdn.microsoft.com/windowsdesktop/CSSetDesktopWallpaper-2107409c/sourcecode?fileId=21700&pathId=734742078
+        public static void SetWallpaperType(WallpaperStyle style)
+        {
+            if (style == WallpaperStyle.NotSet) return;
+
+            // Set the wallpaper style and tile.  
+            // Two registry values are set in the Control Panel\Desktop key. 
+            // TileWallpaper 
+            //  0: The wallpaper picture should not be tiled  
+            //  1: The wallpaper picture should be tiled  
+            // WallpaperStyle 
+            //  0:  The image is centered if TileWallpaper=0 or tiled if TileWallpaper=1 
+            //  2:  The image is stretched to fill the screen 
+            //  6:  The image is resized to fit the screen while maintaining the aspect  
+            //      ratio. (Windows 7 and later) 
+            //  10: The image is resized and cropped to fill the screen while  
+            //      maintaining the aspect ratio. (Windows 7 and later) 
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
+
+            switch (style)
+            {
+                case WallpaperStyle.Tile:
+                    key.SetValue(@"WallpaperStyle", "0");
+                    key.SetValue(@"TileWallpaper", "1");
+                    break;
+                case WallpaperStyle.Center:
+                    key.SetValue(@"WallpaperStyle", "0");
+                    key.SetValue(@"TileWallpaper", "0");
+                    break;
+                case WallpaperStyle.Stretch:
+                    key.SetValue(@"WallpaperStyle", "2");
+                    key.SetValue(@"TileWallpaper", "0");
+                    break;
+                case WallpaperStyle.Fit: // (Windows 7 and later) 
+                    key.SetValue(@"WallpaperStyle", "6");
+                    key.SetValue(@"TileWallpaper", "0");
+                    break;
+                case WallpaperStyle.Fill: // (Windows 7 and later) 
+                    key.SetValue(@"WallpaperStyle", "10");
+                    key.SetValue(@"TileWallpaper", "0");
+                    break;
+            }
+
+            key.Close();
         }
     }
 }

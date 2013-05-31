@@ -11,7 +11,7 @@ namespace WallpaperSetter
     public class WallpaperSetterSettings : Pulse.Base.XmlSerializable<WallpaperSetterSettings>
     {
         //Picture Position
-        public PicturePositions Position { get; set; }
+        public Pulse.Base.WinAPI.Desktop.WallpaperStyle Position { get; set; }
 
         //background color mode
         [DisplayName("Background Color Mode")]
@@ -33,19 +33,10 @@ namespace WallpaperSetter
 
         public WallpaperSetterSettings()
         {
-            Position = PicturePositions.NotSet;
+            Position = Pulse.Base.WinAPI.Desktop.WallpaperStyle.NotSet;
             BackgroundColorMode = BackgroundColorModes.NotSet;
         }
-
-        public enum PicturePositions  {
-            Fill,
-            Fit,
-            Stretch,
-            Tile,
-            Center,
-            NotSet
-        }
-
+        
         public enum BackgroundColorModes
         {
             Specific,

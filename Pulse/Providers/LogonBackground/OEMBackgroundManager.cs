@@ -113,41 +113,7 @@ namespace LogonBackground
                 if (fiNewFile.Length / 1024 >= 245)
                 {
                     //reduce quality until we are under 245kb
-                    ReduceQuality(outPutFile, outPutFile, 90);
-                }
-            }
-        }
-
-        public static void ReduceQuality(string file, string destFile, int quality)
-        {
-            // we get the image/jpeg encoder using linq
-            ImageCodecInfo iciJpegCodec = (from c in ImageCodecInfo.GetImageEncoders() where c.MimeType == "image/jpeg" select c).SingleOrDefault();
-
-            // Store the quality parameter in the list of encoder parameters
-            EncoderParameters epParameters = new EncoderParameters(1);
-            epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-
-            //original image ms
-            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(file)))
-            {
-                //we use htis to keep track of the current size of the image, default to int.max to make sure we always run
-                var fSize = int.MaxValue;
-
-                using (Image newImage = Image.FromStream(ms))
-                {
-                    //check if the image we generated is larger then 245kb, if it is reduce quality by 10 and try again
-                    while (fSize >= 245)
-                    {
-                        // Save the new file at tshe selected path with the specified encoder parameters, and reuse the same file name
-                        newImage.Save(destFile, iciJpegCodec, epParameters);
-
-                        //get output size in kb
-                        fSize = (int)(new FileInfo(destFile).Length / 1024);
-
-                        //reduce quality by 10, this will only affect the output if while loop continues
-                        quality -= 10;
-                        epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-                    }
+                    PictureManager.ReduceQuality(outPutFile, outPutFile, 90);
                 }
             }
         }

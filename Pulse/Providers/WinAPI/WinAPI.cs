@@ -156,6 +156,9 @@ namespace Pulse.Base.WinAPI
         public struct COMPONENT
         {
             private const int INTERNET_MAX_URL_LENGTH = 2084; // = INTERNET_MAX_SCHEME_LENGTH (32) + "://\0".Length +   INTERNET_MAX_PATH_LENGTH (2048)
+            public const int IS_NORMAL = 1;
+            public const int IS_FULLSCREEN = 2;
+            public const int IS_SPLIT = 4;
             public static readonly int SizeOf = Marshal.SizeOf(typeof(COMPONENT));
 
             public int dwSize;
