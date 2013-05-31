@@ -9,6 +9,8 @@ using Pulse.Base.WinAPI;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace WallpaperSetter
 {
@@ -37,63 +39,17 @@ namespace WallpaperSetter
             //Code came roughly form http://www.tek-tips.com/viewthread.cfm?qid=1449619
             if (wss.BackgroundColorMode == WallpaperSetterSettings.BackgroundColorModes.Specific)
             {
-                int[] aiElements = { WinAPI.COLOR_DESKTOP };
-                WinAPI.SetSysColors(1, aiElements, new WinAPI.COLORREF(wss.Color));
+                Desktop.SetDesktopBackgroundColor(wss.Color);
             }
             else if (wss.BackgroundColorMode == WallpaperSetterSettings.BackgroundColorModes.Computed)
             {
                 using(Bitmap bmp = (Bitmap)Image.FromFile(p.LocalPath)) {
-                    int[] aiElements = { WinAPI.COLOR_DESKTOP };
-                    WinAPI.SetSysColors(1, aiElements, new WinAPI.COLORREF(PictureManager.CalcAverageColor(bmp)));
+                    Desktop.SetDesktopBackgroundColor(PictureManager.CalcAverageColor(bmp));
                 }
             }
-
-            Desktop.SetWallpaperUsingActiveDesktop(p.LocalPath);
+           
+            Desktop.SetWallpaperUsingActiveDesktop(p.LocalPath);            
         }
-               
-
-        private void SetWallpaperType(WallpaperSetterSettings.PicturePositions position)
-        {
-            if (position == WallpaperSetterSettings.PicturePositions.NotSet) return;
-
-            //vars
-            string wallpaperStyle = "0";
-            string tileWallpaper = "0";
-
-            // Set to the appropriate background position
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
-
-            switch (position)
-            {
-                case WallpaperSetterSettings.PicturePositions.Fill:
-                    wallpaperStyle = "10";
-                    tileWallpaper = "0";
-                    break;
-                case WallpaperSetterSettings.PicturePositions.Fit:
-                    wallpaperStyle = "6";
-                    tileWallpaper = "0";
-                    break;
-                case WallpaperSetterSettings.PicturePositions.Stretch:
-                    wallpaperStyle = "2";
-                    tileWallpaper = "0";
-                    break;
-                case WallpaperSetterSettings.PicturePositions.Tile:
-                    wallpaperStyle = "0";
-                    tileWallpaper = "1";
-                    break;
-                case WallpaperSetterSettings.PicturePositions.Center:
-                    wallpaperStyle = "0";
-                    tileWallpaper = "0";
-                    break;
-                default:
-                    break;
-            }
-
-
-            key.SetValue(@"WallpaperStyle", wallpaperStyle);
-            key.SetValue(@"TileWallpaper", tileWallpaper);
-        }
-
         
         public void Initialize(object args) { }
         public void Activate(object args) { }
