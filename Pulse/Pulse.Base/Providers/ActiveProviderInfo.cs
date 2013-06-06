@@ -39,6 +39,7 @@ namespace Pulse.Base
             } 
         }
 
+        [Browsable(false)]
         [System.Xml.Serialization.XmlIgnore()]
         public PictureList SearchResults
         {
