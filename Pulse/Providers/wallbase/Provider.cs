@@ -47,13 +47,11 @@ namespace wallbase
             var wallResults = new List<Picture>();
 
             string areaURL = wiss.BuildURL();
-            //string postParams = wiss.GetPostParams(search);
-
 
             do
             {
                 //calculate page index.  Random does not use pages, so for random just refresh with same url
-                string strPageNum = (pageIndex > 0 && wiss.SA != "random") || (wiss.SA == "toplist" || wiss.SA=="user/collection" || wiss.SA =="user/favorites") ? (pageIndex * pageSize).ToString() : "";
+                string strPageNum = (pageIndex * pageSize).ToString();
 
                 string pageURL = areaURL.Contains("{0}") ? string.Format(areaURL, strPageNum) : areaURL;
                 //string content = HttpPost(pageURL, postParams);
@@ -64,15 +62,15 @@ namespace wallbase
                     try
                     {
                         //if random then don't post values
-                        if (wiss.SA == "random")
-                        {
+                        //if (wiss.SA == "random")
+                        //{
                             content = _client.DownloadString(pageURL);
-                        }
-                        else
-                        {
-                            byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
-                            content = System.Text.Encoding.Default.GetString(reqResult);
-                        }
+                        //}
+                        //else
+                        //{
+                        //    byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
+                        //    content = System.Text.Encoding.Default.GetString(reqResult);
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -194,7 +192,7 @@ namespace wallbase
         //find links to pages with wallpaper only with matching resolution
         private List<Picture> ParsePictures(string content)
         {
-            var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*?)\" id=\".*?\" .*?>.*?<img.*?src=\"(?<img>.*?)\".*?style=\".*?</a>", RegexOptions.Singleline);
+            var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*?)\".*?>.*?<img.*?data-original=\"(?<img>.*?)\".*?</a>", RegexOptions.Singleline);
             var picsMatches = picsRegex.Matches(content);
 
             var result = new List<Picture>();
@@ -219,14 +217,15 @@ namespace wallbase
                 var content = cawc.DownloadString(pageUrl);
                 if (string.IsNullOrEmpty(content)) return string.Empty;
 
-                //var regex = new Regex(@"<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
-                var regex = new Regex(@"\+B\('(?<img>.*?)'\)");
+                var regex = new Regex(@"<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
+                //var regex = new Regex(@"\+B\('(?<img>.*?)'\)");
                 var m = regex.Match(content);
                 if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
                 {
-                    byte[] decoded = Convert.FromBase64String(m.Groups["img"].Value);
-                    string final = Encoding.Default.GetString(decoded);
-                    return final;
+                    return m.Groups["img"].Value;
+                    //byte[] decoded = Convert.FromBase64String(m.Groups["img"].Value);
+                    //string final = Encoding.Default.GetString(decoded);
+                    //return final;
                 }
 
                 return string.Empty;
@@ -240,18 +239,31 @@ namespace wallbase
             {
                 using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
-                    var loginData = new NameValueCollection();
-                    loginData.Add("usrname", username);
-                    loginData.Add("pass", password);
-                    loginData.Add("nopass_email", "Type in your e-mail and press enter");
-                    loginData.Add("nopass", "0");
+                    //need to extract the cross-site request forgery token from the page
+                    //<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""
+                    var csrfRegex = new Regex(@"<input type=""hidden"" name=""csrf"" value=""(?<csrf>.*)"">");
+                    var refWallbase64Regex = new Regex(@"<input type=""hidden"" name=""ref"" value=""(?<ref>.*)"">");
 
-                    // Hack: Authenticate the user twice!
-                    _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
-                    var result = _client.UploadValues(@"http://wallbase.cc/user/login", "POST", loginData);
+                    string loginPage = _client.DownloadString("http://wallbase.cc/user/login");
+                    Match lpM = csrfRegex.Match(loginPage);
+                    Match lpWallbaseInbase64 = refWallbase64Regex.Match(loginPage);
+
+                    if (!lpM.Success) return;
+
+                    var loginData = new NameValueCollection();
+                    loginData.Add("csrf", lpM.Groups["csrf"].Value);
+                    loginData.Add("ref", lpWallbaseInbase64.Groups["ref"].Value);
+
+                    loginData.Add("username", username);
+                    loginData.Add("password", password);
+
+                    _client.Referrer = "http://wallbase.cc/user/login";
+                    _client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+
+                    byte[] result = _client.UploadValues(@"http://wallbase.cc/user/do_login", "POST", loginData);
 
                     //we do not need the response, all we need are the cookies
-                    //string response = System.Text.Encoding.UTF8.GetString(result);
+                    string response = System.Text.Encoding.UTF8.GetString(result);
                 }
             }
         }
