@@ -14,7 +14,7 @@ namespace wallbase
 {
     public class WallbaseImageSearchSettings : Pulse.Base.XmlSerializable<WallbaseImageSearchSettings>
     {
-        private const string Url = "http://wallbase.cc/{0}/";
+        private const string Url = "http://wallbase.cc/{0}/index/{1}?section={2}&board={3}&q={4}&res_opt={5}&res={6}&aspect={7}&purity={8}&thpp={9}&ts={10}&color={11}&order_mode={12}&order={13}";
 
         public string Query { get; set; }
 
@@ -67,10 +67,14 @@ namespace wallbase
         public string SO { get; set; }
         public int ImageWidth { get; set; }
         public int ImageHeight { get; set; }
+        public string AR { get; set; }
 
         //order by
         public string OB { get; set; }
         public string OBD { get; set; }
+
+        //top timespan
+        public string TopTimespan { get; set; }
 
         public WallbaseImageSearchSettings()
         {
@@ -86,9 +90,12 @@ namespace wallbase
             SO = "gteq";
             ImageWidth = PictureManager.PrimaryScreenResolution.First;
             ImageHeight = PictureManager.PrimaryScreenResolution.Second;
+            AR = "";
 
             OB = "relevance";
             OBD = "desc";
+
+            TopTimespan = "3d";
 
             Color = System.Drawing.Color.Empty;
         }
@@ -109,52 +116,36 @@ namespace wallbase
 
         public string BuildResolutionString()
         {
-            return ImageHeight > 0 && ImageWidth > 0 ? ImageWidth.ToString() + "x" + ImageHeight.ToString() : "0";
+            return ImageHeight > 0 && ImageWidth > 0 ? ImageWidth.ToString() + "x" + ImageHeight.ToString() : "";
         }
 
         public string BuildURL()
         {
-            string areaURL = string.Format(Url, SA);
+            string areaURL = string.Empty;
+
             var resolutionString = BuildResolutionString();
             var pageSize = GetPageSize();
 
-            //Search uses the post params, but random, top list, & collections do not
-            // random includes the options in the URL string
-            if (SA != "search")
+            if (SA == "search" || SA == "toplist" || SA == "random")
             {
-                //toplist put's it's page index before the categories
-                if (SA == "toplist")
-                {
-                    //prepend placeholder for page number.  With toplist there is always a page numer (starting at 0, multiplied by item per page count)s
-                    areaURL += "{0}/" + string.Format("{4}/{0}/{1}/0/{3}/{2}/3d", SO, resolutionString, pageSize.ToString(), BuildPurityString(), BuildCategoryString());
-                }
-                else if (SA == "random")
-                {
-                    //random does not need paging, we just reload the random page time and time again
-                    areaURL += string.Format("{4}/{0}/{1}/0/{3}/{2}", SO, resolutionString, pageSize.ToString(), BuildPurityString(), BuildCategoryString());
-                }
-                else if (SA == "user/collection")
-                {
-                    areaURL += string.Format("{0}/{1}/0", CollectionID, Convert.ToInt32(NSFW).ToString());
-                }
-                else if (SA == "user/favorites")
-                {
-                    areaURL += string.Format("{0}/{1}/0/666", FavoriteID, "{0}");
-                }
+                //new URL includes {0} placeholder for page number
+                areaURL = string.Format(Url, SA, "{0}", "wallpapers", BuildCategoryString(), Query, SO, resolutionString, AR, BuildPurityString(), pageSize, TopTimespan, GetColor(), OBD, OB);
             }
-            else
+            else if (SA == "user/collection")
             {
-                //if there is a color option and SA = search then add
-                if (SA == "search" && Color != System.Drawing.Color.Empty)
-                {
-                    areaURL += string.Format("color/{0}/{1}/{2}/", Color.R.ToString(), Color.G.ToString(), Color.B.ToString());
-                }
-
-                //place holder for page number
-                areaURL += "{0}";
+                areaURL += string.Format("{0}/{1}/0", CollectionID, Convert.ToInt32(NSFW).ToString());
+            }
+            else if (SA == "user/favorites")
+            {
+                areaURL += string.Format("{0}/{1}/0/666", FavoriteID, "{0}");
             }
 
             return areaURL;
+        }
+
+        public string GetColor()
+        {
+            return (Color == Color.Empty) ? "" : ClrHtml.Replace("#","");
         }
 
         public int GetPageSize()
@@ -163,39 +154,6 @@ namespace wallbase
             if (SA == "user/collection" || SA == "user/favorites") return 32;
             //if not user collection then max size
             return 60;
-        }
-
-        //public string GetPostParams(string search)
-        //{
-        //    string postParams = string.Empty;
-            
-        //    if(SA=="search") {
-        //    postParams = string.Format("query={0}&board={7}&nsfw={6}&res_opt={2}&res={3}&aspect=0&orderby={4}&orderby_opt={5}&thpp={1}&section=wallpapers",
-        //        search, GetPageSize().ToString(), SO, BuildResolutionString(), OB, OBD, BuildPurityString(), BuildCategoryString());
-        //    }
-
-        //    return postParams;
-        //}
-
-        public NameValueCollection GetPostParams()
-        {
-            NameValueCollection postParams = new NameValueCollection();
-
-            if (SA == "search")
-            {
-                postParams.Add("query",Query);
-                postParams.Add("board", BuildCategoryString());
-                postParams.Add("nsfw",BuildPurityString());
-                postParams.Add("res_opt",SO);
-                postParams.Add("res",BuildResolutionString());
-                postParams.Add("aspect","0.000");
-                postParams.Add("orderby",OB);
-                postParams.Add("orderby_opt",OBD);
-                postParams.Add("thpp",GetPageSize().ToString());
-                postParams.Add("section","wallpapers");
-            }
-
-            return postParams;
         }
 
         public class SearchArea
@@ -264,6 +222,52 @@ namespace wallbase
                 sa.Add(new SizingOption() { Name = "At Least", Value = "gteq" });
 
                 return sa;
+            }
+        }
+
+        public class TopTimeSpan
+        {
+            public string Name { get; private set; }
+            public string Value { get; private set; }
+
+            public static List<TopTimeSpan> GetTimespanList()
+            {
+                List<TopTimeSpan> tts = new List<TopTimeSpan>();
+
+                tts.Add(new TopTimeSpan() { Name = "1 day (24h)", Value = "1d" });
+                tts.Add(new TopTimeSpan() { Name = "3 days", Value = "3d" });
+                tts.Add(new TopTimeSpan() { Name = "1 week", Value = "1w" });
+                tts.Add(new TopTimeSpan() { Name = "2 weeks", Value = "2w" });
+                tts.Add(new TopTimeSpan() { Name = "1 month", Value = "1m" });
+                tts.Add(new TopTimeSpan() { Name = "2 months", Value = "2m" });
+                tts.Add(new TopTimeSpan() { Name = "3 months", Value = "3m" });
+                tts.Add(new TopTimeSpan() { Name = "All time", Value = "1" });
+
+                return tts;
+            }
+        }
+
+        public class AspectRatio
+        {
+            public string Name { get; private set; }
+            public string Value { get; private set; }
+
+            public static List<AspectRatio> GetAspectRatioList()
+            {
+                List<AspectRatio> tts = new List<AspectRatio>();
+
+                tts.Add(new AspectRatio() { Name = "All", Value = "" });
+                tts.Add(new AspectRatio() { Name = "4:3", Value = "1.33" });
+                tts.Add(new AspectRatio() { Name = "5:4", Value = "1.25" });
+                tts.Add(new AspectRatio() { Name = "16:9", Value = "1.77" });
+                tts.Add(new AspectRatio() { Name = "16:10", Value = "1.60" });
+                tts.Add(new AspectRatio() { Name = "Netbook", Value = "1.70" });
+                tts.Add(new AspectRatio() { Name = "Dual", Value = "2.50" });
+                tts.Add(new AspectRatio() { Name = "Dual wide", Value = "3.20" });
+                tts.Add(new AspectRatio() { Name = "Widescreen", Value = "1.01" });
+                tts.Add(new AspectRatio() { Name = "Portrait", Value = "0.99" });
+
+                return tts;
             }
         }
     }

@@ -29,9 +29,12 @@ namespace Pulse.Forms.UI
 
             this.Invoke((Action)delegate
             {
-                lblFileName.Text = Path.GetFileName(pd.Picture.LocalPath);
+                if (!lblFileName.IsDisposed)
+                {
+                    lblFileName.Text = Path.GetFileName(pd.Picture.LocalPath);
 
-                SetStatus(pd.Status);
+                    SetStatus(pd.Status);
+                }
             });
         }
 
@@ -45,7 +48,8 @@ namespace Pulse.Forms.UI
         {
             this.Invoke((Action)delegate
             {
-                pbDownloadProgress.Value = sender.DownloadProgress;
+                if(!pbDownloadProgress.IsDisposed)
+                    pbDownloadProgress.Value = sender.DownloadProgress;
             });
         }
 
@@ -59,6 +63,8 @@ namespace Pulse.Forms.UI
 
         protected void SetStatus(Pulse.Base.PictureDownload.DownloadStatus status)
         {
+            if (pbStatus.IsDisposed) return;
+
             switch (status)
             {
                 case Pulse.Base.PictureDownload.DownloadStatus.Stopped:

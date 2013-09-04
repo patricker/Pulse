@@ -44,8 +44,8 @@
             this.cbSketchy = new System.Windows.Forms.CheckBox();
             this.cbSFW = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.txtHeight = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.txtWidth = new System.Windows.Forms.TextBox();
             this.cbImageSizeType = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -69,6 +69,10 @@
             this.txtFavoritesID = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.cdPicker = new System.Windows.Forms.ColorDialog();
+            this.tpTop = new System.Windows.Forms.TabPage();
+            this.label13 = new System.Windows.Forms.Label();
+            this.cbTopTimespan = new System.Windows.Forms.ComboBox();
+            this.cbAspectRatio = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -77,14 +81,16 @@
             this.tpSearch.SuspendLayout();
             this.tpCollections.SuspendLayout();
             this.tpFavorites.SuspendLayout();
+            this.tpTop.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 11);
+            this.label1.Location = new System.Drawing.Point(3, 9);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 17);
+            this.label1.Size = new System.Drawing.Size(67, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Image Area: ";
             // 
@@ -93,10 +99,10 @@
             this.cbArea.DisplayMember = "Name";
             this.cbArea.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbArea.FormattingEnabled = true;
-            this.cbArea.Location = new System.Drawing.Point(98, 11);
-            this.cbArea.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbArea.Location = new System.Drawing.Point(74, 9);
+            this.cbArea.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbArea.Name = "cbArea";
-            this.cbArea.Size = new System.Drawing.Size(143, 24);
+            this.cbArea.Size = new System.Drawing.Size(108, 21);
             this.cbArea.TabIndex = 1;
             this.cbArea.ValueMember = "Value";
             this.cbArea.SelectedIndexChanged += new System.EventHandler(this.cbArea_SelectedIndexChanged);
@@ -104,43 +110,46 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 47);
+            this.label2.Location = new System.Drawing.Point(6, 38);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 17);
+            this.label2.Size = new System.Drawing.Size(39, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Login: ";
             // 
             // txtUserID
             // 
-            this.txtUserID.Location = new System.Drawing.Point(58, 47);
-            this.txtUserID.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtUserID.Location = new System.Drawing.Point(44, 38);
+            this.txtUserID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtUserID.Name = "txtUserID";
-            this.txtUserID.Size = new System.Drawing.Size(89, 22);
+            this.txtUserID.Size = new System.Drawing.Size(68, 20);
             this.txtUserID.TabIndex = 3;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 76);
+            this.label3.Location = new System.Drawing.Point(9, 62);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 17);
+            this.label3.Size = new System.Drawing.Size(36, 13);
             this.label3.TabIndex = 4;
             this.label3.Text = "Pass: ";
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(58, 73);
-            this.txtPassword.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtPassword.Location = new System.Drawing.Point(44, 59);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(89, 22);
+            this.txtPassword.Size = new System.Drawing.Size(68, 20);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(5, 0);
+            this.label4.Location = new System.Drawing.Point(4, 0);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(342, 34);
+            this.label4.Size = new System.Drawing.Size(256, 28);
             this.label4.TabIndex = 6;
             this.label4.Text = "Authentication is optional.  Authentication enables NSFW and Favorites.";
             // 
@@ -149,11 +158,11 @@
             this.groupBox1.Controls.Add(this.cbHR);
             this.groupBox1.Controls.Add(this.cbW);
             this.groupBox1.Controls.Add(this.cbWG);
-            this.groupBox1.Location = new System.Drawing.Point(0, 43);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.groupBox1.Location = new System.Drawing.Point(0, 35);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Size = new System.Drawing.Size(161, 49);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Size = new System.Drawing.Size(121, 40);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Categories";
@@ -161,10 +170,10 @@
             // cbHR
             // 
             this.cbHR.AutoSize = true;
-            this.cbHR.Location = new System.Drawing.Point(104, 22);
-            this.cbHR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbHR.Location = new System.Drawing.Point(78, 18);
+            this.cbHR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbHR.Name = "cbHR";
-            this.cbHR.Size = new System.Drawing.Size(50, 21);
+            this.cbHR.Size = new System.Drawing.Size(42, 17);
             this.cbHR.TabIndex = 9;
             this.cbHR.Text = "HR";
             this.cbHR.UseVisualStyleBackColor = true;
@@ -172,10 +181,10 @@
             // cbW
             // 
             this.cbW.AutoSize = true;
-            this.cbW.Location = new System.Drawing.Point(60, 22);
-            this.cbW.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbW.Location = new System.Drawing.Point(45, 18);
+            this.cbW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbW.Name = "cbW";
-            this.cbW.Size = new System.Drawing.Size(43, 21);
+            this.cbW.Size = new System.Drawing.Size(37, 17);
             this.cbW.TabIndex = 10;
             this.cbW.Text = "W";
             this.cbW.UseVisualStyleBackColor = true;
@@ -183,10 +192,10 @@
             // cbWG
             // 
             this.cbWG.AutoSize = true;
-            this.cbWG.Location = new System.Drawing.Point(7, 22);
-            this.cbWG.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbWG.Location = new System.Drawing.Point(5, 18);
+            this.cbWG.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbWG.Name = "cbWG";
-            this.cbWG.Size = new System.Drawing.Size(54, 21);
+            this.cbWG.Size = new System.Drawing.Size(45, 17);
             this.cbWG.TabIndex = 11;
             this.cbWG.Text = "WG";
             this.cbWG.UseVisualStyleBackColor = true;
@@ -196,11 +205,11 @@
             this.groupBox2.Controls.Add(this.cbNSFW);
             this.groupBox2.Controls.Add(this.cbSketchy);
             this.groupBox2.Controls.Add(this.cbSFW);
-            this.groupBox2.Location = new System.Drawing.Point(166, 43);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.groupBox2.Location = new System.Drawing.Point(124, 35);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox2.Size = new System.Drawing.Size(255, 49);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Size = new System.Drawing.Size(191, 40);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Purity";
@@ -208,10 +217,10 @@
             // cbNSFW
             // 
             this.cbNSFW.AutoSize = true;
-            this.cbNSFW.Location = new System.Drawing.Point(176, 22);
-            this.cbNSFW.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbNSFW.Location = new System.Drawing.Point(132, 18);
+            this.cbNSFW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbNSFW.Name = "cbNSFW";
-            this.cbNSFW.Size = new System.Drawing.Size(70, 21);
+            this.cbNSFW.Size = new System.Drawing.Size(58, 17);
             this.cbNSFW.TabIndex = 2;
             this.cbNSFW.Text = "NSFW";
             this.cbNSFW.UseVisualStyleBackColor = true;
@@ -219,10 +228,10 @@
             // cbSketchy
             // 
             this.cbSketchy.AutoSize = true;
-            this.cbSketchy.Location = new System.Drawing.Point(75, 22);
-            this.cbSketchy.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbSketchy.Location = new System.Drawing.Point(56, 18);
+            this.cbSketchy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbSketchy.Name = "cbSketchy";
-            this.cbSketchy.Size = new System.Drawing.Size(94, 21);
+            this.cbSketchy.Size = new System.Drawing.Size(76, 17);
             this.cbSketchy.TabIndex = 1;
             this.cbSketchy.Text = "SKETCHY";
             this.cbSketchy.UseVisualStyleBackColor = true;
@@ -230,53 +239,55 @@
             // cbSFW
             // 
             this.cbSFW.AutoSize = true;
-            this.cbSFW.Location = new System.Drawing.Point(7, 22);
-            this.cbSFW.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbSFW.Location = new System.Drawing.Point(5, 18);
+            this.cbSFW.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbSFW.Name = "cbSFW";
-            this.cbSFW.Size = new System.Drawing.Size(60, 21);
+            this.cbSFW.Size = new System.Drawing.Size(50, 17);
             this.cbSFW.TabIndex = 0;
             this.cbSFW.Text = "SFW";
             this.cbSFW.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.cbAspectRatio);
             this.groupBox3.Controls.Add(this.txtHeight);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.txtWidth);
             this.groupBox3.Controls.Add(this.cbImageSizeType);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(4, 97);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.groupBox3.Location = new System.Drawing.Point(3, 79);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox3.Size = new System.Drawing.Size(417, 50);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox3.Size = new System.Drawing.Size(313, 72);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Resolution";
             // 
+            // txtHeight
+            // 
+            this.txtHeight.Location = new System.Drawing.Point(230, 14);
+            this.txtHeight.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtHeight.Name = "txtHeight";
+            this.txtHeight.Size = new System.Drawing.Size(56, 20);
+            this.txtHeight.TabIndex = 3;
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(294, 19);
+            this.label6.Location = new System.Drawing.Point(221, 15);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(14, 17);
+            this.label6.Size = new System.Drawing.Size(12, 13);
             this.label6.TabIndex = 4;
             this.label6.Text = "x";
             // 
-            // txtHeight
-            // 
-            this.txtHeight.Location = new System.Drawing.Point(307, 17);
-            this.txtHeight.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtHeight.Name = "txtHeight";
-            this.txtHeight.Size = new System.Drawing.Size(73, 22);
-            this.txtHeight.TabIndex = 3;
-            // 
             // txtWidth
             // 
-            this.txtWidth.Location = new System.Drawing.Point(221, 17);
-            this.txtWidth.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtWidth.Location = new System.Drawing.Point(166, 14);
+            this.txtWidth.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtWidth.Name = "txtWidth";
-            this.txtWidth.Size = new System.Drawing.Size(73, 22);
+            this.txtWidth.Size = new System.Drawing.Size(56, 20);
             this.txtWidth.TabIndex = 2;
             // 
             // cbImageSizeType
@@ -284,19 +295,20 @@
             this.cbImageSizeType.DisplayMember = "Name";
             this.cbImageSizeType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbImageSizeType.FormattingEnabled = true;
-            this.cbImageSizeType.Location = new System.Drawing.Point(108, 17);
-            this.cbImageSizeType.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbImageSizeType.Location = new System.Drawing.Point(81, 14);
+            this.cbImageSizeType.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbImageSizeType.Name = "cbImageSizeType";
-            this.cbImageSizeType.Size = new System.Drawing.Size(108, 24);
+            this.cbImageSizeType.Size = new System.Drawing.Size(82, 21);
             this.cbImageSizeType.TabIndex = 1;
             this.cbImageSizeType.ValueMember = "Value";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(18, 19);
+            this.label5.Location = new System.Drawing.Point(14, 15);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 17);
+            this.label5.Size = new System.Drawing.Size(65, 13);
             this.label5.TabIndex = 0;
             this.label5.Text = "Image Size: ";
             // 
@@ -306,11 +318,12 @@
             this.tabControl1.Controls.Add(this.tpSearch);
             this.tabControl1.Controls.Add(this.tpCollections);
             this.tabControl1.Controls.Add(this.tpFavorites);
-            this.tabControl1.Location = new System.Drawing.Point(4, 151);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabControl1.Controls.Add(this.tpTop);
+            this.tabControl1.Location = new System.Drawing.Point(3, 167);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(421, 168);
+            this.tabControl1.Size = new System.Drawing.Size(316, 136);
             this.tabControl1.TabIndex = 10;
             // 
             // tpAuthenticate
@@ -320,9 +333,10 @@
             this.tpAuthenticate.Controls.Add(this.txtUserID);
             this.tpAuthenticate.Controls.Add(this.label3);
             this.tpAuthenticate.Controls.Add(this.txtPassword);
-            this.tpAuthenticate.Location = new System.Drawing.Point(4, 25);
+            this.tpAuthenticate.Location = new System.Drawing.Point(4, 22);
+            this.tpAuthenticate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tpAuthenticate.Name = "tpAuthenticate";
-            this.tpAuthenticate.Size = new System.Drawing.Size(413, 139);
+            this.tpAuthenticate.Size = new System.Drawing.Size(308, 110);
             this.tpAuthenticate.TabIndex = 3;
             this.tpAuthenticate.Text = "Authentication";
             this.tpAuthenticate.UseVisualStyleBackColor = true;
@@ -339,11 +353,11 @@
             this.tpSearch.Controls.Add(this.cbOrderByDirection);
             this.tpSearch.Controls.Add(this.cbOrderBy);
             this.tpSearch.Controls.Add(this.label7);
-            this.tpSearch.Location = new System.Drawing.Point(4, 25);
-            this.tpSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tpSearch.Location = new System.Drawing.Point(4, 22);
+            this.tpSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tpSearch.Name = "tpSearch";
-            this.tpSearch.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpSearch.Size = new System.Drawing.Size(413, 139);
+            this.tpSearch.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpSearch.Size = new System.Drawing.Size(308, 110);
             this.tpSearch.TabIndex = 0;
             this.tpSearch.Text = "Search";
             this.tpSearch.UseVisualStyleBackColor = true;
@@ -352,34 +366,38 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(37, 50);
+            this.label12.Location = new System.Drawing.Point(28, 41);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(179, 17);
+            this.label12.Size = new System.Drawing.Size(139, 13);
             this.label12.TabIndex = 13;
             this.label12.Text = "Search Query OR Color";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 70);
+            this.label11.Location = new System.Drawing.Point(4, 57);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(55, 17);
+            this.label11.Size = new System.Drawing.Size(41, 13);
             this.label11.TabIndex = 12;
             this.label11.Text = "Query: ";
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(78, 70);
+            this.txtSearch.Location = new System.Drawing.Point(58, 57);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(192, 22);
+            this.txtSearch.Size = new System.Drawing.Size(145, 20);
             this.txtSearch.TabIndex = 11;
             // 
             // lbClearColor
             // 
             this.lbClearColor.AutoSize = true;
-            this.lbClearColor.Location = new System.Drawing.Point(192, 109);
+            this.lbClearColor.Location = new System.Drawing.Point(144, 89);
+            this.lbClearColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbClearColor.Name = "lbClearColor";
-            this.lbClearColor.Size = new System.Drawing.Size(78, 17);
+            this.lbClearColor.Size = new System.Drawing.Size(58, 13);
             this.lbClearColor.TabIndex = 6;
             this.lbClearColor.TabStop = true;
             this.lbClearColor.Text = "Clear Color";
@@ -388,9 +406,10 @@
             // lbPickColor
             // 
             this.lbPickColor.AutoSize = true;
-            this.lbPickColor.Location = new System.Drawing.Point(112, 109);
+            this.lbPickColor.Location = new System.Drawing.Point(84, 89);
+            this.lbPickColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbPickColor.Name = "lbPickColor";
-            this.lbPickColor.Size = new System.Drawing.Size(71, 17);
+            this.lbPickColor.Size = new System.Drawing.Size(55, 13);
             this.lbPickColor.TabIndex = 5;
             this.lbPickColor.TabStop = true;
             this.lbPickColor.Text = "Pick Color";
@@ -399,18 +418,19 @@
             // pnlColor
             // 
             this.pnlColor.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pnlColor.Location = new System.Drawing.Point(78, 102);
-            this.pnlColor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pnlColor.Location = new System.Drawing.Point(58, 83);
+            this.pnlColor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlColor.Name = "pnlColor";
-            this.pnlColor.Size = new System.Drawing.Size(29, 23);
+            this.pnlColor.Size = new System.Drawing.Size(22, 19);
             this.pnlColor.TabIndex = 4;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 109);
+            this.label8.Location = new System.Drawing.Point(4, 89);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(49, 17);
+            this.label8.Size = new System.Drawing.Size(37, 13);
             this.label8.TabIndex = 3;
             this.label8.Text = "Color: ";
             // 
@@ -419,10 +439,10 @@
             this.cbOrderByDirection.DisplayMember = "Name";
             this.cbOrderByDirection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbOrderByDirection.FormattingEnabled = true;
-            this.cbOrderByDirection.Location = new System.Drawing.Point(197, 6);
-            this.cbOrderByDirection.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbOrderByDirection.Location = new System.Drawing.Point(148, 5);
+            this.cbOrderByDirection.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbOrderByDirection.Name = "cbOrderByDirection";
-            this.cbOrderByDirection.Size = new System.Drawing.Size(108, 24);
+            this.cbOrderByDirection.Size = new System.Drawing.Size(82, 21);
             this.cbOrderByDirection.TabIndex = 2;
             this.cbOrderByDirection.ValueMember = "Value";
             // 
@@ -431,19 +451,20 @@
             this.cbOrderBy.DisplayMember = "Name";
             this.cbOrderBy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbOrderBy.FormattingEnabled = true;
-            this.cbOrderBy.Location = new System.Drawing.Point(79, 6);
-            this.cbOrderBy.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cbOrderBy.Location = new System.Drawing.Point(59, 5);
+            this.cbOrderBy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbOrderBy.Name = "cbOrderBy";
-            this.cbOrderBy.Size = new System.Drawing.Size(108, 24);
+            this.cbOrderBy.Size = new System.Drawing.Size(82, 21);
             this.cbOrderBy.TabIndex = 1;
             this.cbOrderBy.ValueMember = "Value";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 6);
+            this.label7.Location = new System.Drawing.Point(2, 5);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(73, 17);
+            this.label7.Size = new System.Drawing.Size(54, 13);
             this.label7.TabIndex = 0;
             this.label7.Text = "Order By: ";
             // 
@@ -451,29 +472,30 @@
             // 
             this.tpCollections.Controls.Add(this.txtCollectionID);
             this.tpCollections.Controls.Add(this.label9);
-            this.tpCollections.Location = new System.Drawing.Point(4, 25);
-            this.tpCollections.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tpCollections.Location = new System.Drawing.Point(4, 22);
+            this.tpCollections.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tpCollections.Name = "tpCollections";
-            this.tpCollections.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tpCollections.Size = new System.Drawing.Size(413, 139);
+            this.tpCollections.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpCollections.Size = new System.Drawing.Size(308, 110);
             this.tpCollections.TabIndex = 1;
             this.tpCollections.Text = "Collections";
             this.tpCollections.UseVisualStyleBackColor = true;
             // 
             // txtCollectionID
             // 
-            this.txtCollectionID.Location = new System.Drawing.Point(100, 4);
-            this.txtCollectionID.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtCollectionID.Location = new System.Drawing.Point(75, 3);
+            this.txtCollectionID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCollectionID.Name = "txtCollectionID";
-            this.txtCollectionID.Size = new System.Drawing.Size(133, 22);
+            this.txtCollectionID.Size = new System.Drawing.Size(101, 20);
             this.txtCollectionID.TabIndex = 1;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(7, 6);
+            this.label9.Location = new System.Drawing.Point(5, 5);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(94, 17);
+            this.label9.Size = new System.Drawing.Size(73, 13);
             this.label9.TabIndex = 0;
             this.label9.Text = "Collection ID: ";
             // 
@@ -481,29 +503,29 @@
             // 
             this.tpFavorites.Controls.Add(this.txtFavoritesID);
             this.tpFavorites.Controls.Add(this.label10);
-            this.tpFavorites.Location = new System.Drawing.Point(4, 25);
-            this.tpFavorites.Margin = new System.Windows.Forms.Padding(4);
+            this.tpFavorites.Location = new System.Drawing.Point(4, 22);
             this.tpFavorites.Name = "tpFavorites";
-            this.tpFavorites.Padding = new System.Windows.Forms.Padding(4);
-            this.tpFavorites.Size = new System.Drawing.Size(413, 139);
+            this.tpFavorites.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tpFavorites.Size = new System.Drawing.Size(308, 110);
             this.tpFavorites.TabIndex = 2;
             this.tpFavorites.Text = "Favorites";
             this.tpFavorites.UseVisualStyleBackColor = true;
             // 
             // txtFavoritesID
             // 
-            this.txtFavoritesID.Location = new System.Drawing.Point(100, 1);
-            this.txtFavoritesID.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtFavoritesID.Location = new System.Drawing.Point(75, 1);
+            this.txtFavoritesID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtFavoritesID.Name = "txtFavoritesID";
-            this.txtFavoritesID.Size = new System.Drawing.Size(133, 22);
+            this.txtFavoritesID.Size = new System.Drawing.Size(101, 20);
             this.txtFavoritesID.TabIndex = 3;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(7, 4);
+            this.label10.Location = new System.Drawing.Point(5, 3);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(91, 17);
+            this.label10.Size = new System.Drawing.Size(70, 13);
             this.label10.TabIndex = 2;
             this.label10.Text = "Favorites ID: ";
             // 
@@ -512,9 +534,54 @@
             this.cdPicker.AnyColor = true;
             this.cdPicker.FullOpen = true;
             // 
+            // tpTop
+            // 
+            this.tpTop.Controls.Add(this.cbTopTimespan);
+            this.tpTop.Controls.Add(this.label13);
+            this.tpTop.Location = new System.Drawing.Point(4, 22);
+            this.tpTop.Name = "tpTop";
+            this.tpTop.Padding = new System.Windows.Forms.Padding(3);
+            this.tpTop.Size = new System.Drawing.Size(308, 110);
+            this.tpTop.TabIndex = 4;
+            this.tpTop.Text = "Top";
+            this.tpTop.UseVisualStyleBackColor = true;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(7, 13);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(59, 13);
+            this.label13.TabIndex = 1;
+            this.label13.Text = "Timespan: ";
+            // 
+            // cbTopTimespan
+            // 
+            this.cbTopTimespan.DisplayMember = "Name";
+            this.cbTopTimespan.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbTopTimespan.FormattingEnabled = true;
+            this.cbTopTimespan.Location = new System.Drawing.Point(67, 10);
+            this.cbTopTimespan.Margin = new System.Windows.Forms.Padding(2);
+            this.cbTopTimespan.Name = "cbTopTimespan";
+            this.cbTopTimespan.Size = new System.Drawing.Size(108, 21);
+            this.cbTopTimespan.TabIndex = 2;
+            this.cbTopTimespan.ValueMember = "Value";
+            // 
+            // cbAspectRatio
+            // 
+            this.cbAspectRatio.DisplayMember = "Name";
+            this.cbAspectRatio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbAspectRatio.FormattingEnabled = true;
+            this.cbAspectRatio.Location = new System.Drawing.Point(81, 39);
+            this.cbAspectRatio.Margin = new System.Windows.Forms.Padding(2);
+            this.cbAspectRatio.Name = "cbAspectRatio";
+            this.cbAspectRatio.Size = new System.Drawing.Size(82, 21);
+            this.cbAspectRatio.TabIndex = 5;
+            this.cbAspectRatio.ValueMember = "Value";
+            // 
             // WallbaseProviderPrefs
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.groupBox3);
@@ -522,9 +589,9 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cbArea);
             this.Controls.Add(this.label1);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "WallbaseProviderPrefs";
-            this.Size = new System.Drawing.Size(486, 321);
+            this.Size = new System.Drawing.Size(364, 317);
             this.Load += new System.EventHandler(this.WallbaseProviderPrefs_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -541,6 +608,8 @@
             this.tpCollections.PerformLayout();
             this.tpFavorites.ResumeLayout(false);
             this.tpFavorites.PerformLayout();
+            this.tpTop.ResumeLayout(false);
+            this.tpTop.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -589,5 +658,9 @@
         private System.Windows.Forms.TabPage tpAuthenticate;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TabPage tpTop;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox cbTopTimespan;
+        private System.Windows.Forms.ComboBox cbAspectRatio;
     }
 }
