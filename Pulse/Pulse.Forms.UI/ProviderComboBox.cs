@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using Pulse.Base;
 
-namespace PulseForm
+namespace Pulse.Forms.UI
 {
     public class ProviderComboBox : ComboBox
     {

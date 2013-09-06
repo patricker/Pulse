@@ -112,9 +112,6 @@
     <Compile Include="NewPulseVersion.Designer.cs">
       <DependentUpon>NewPulseVersion.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProviderComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="ProviderSettingsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
