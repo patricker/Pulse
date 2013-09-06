@@ -133,11 +133,11 @@ namespace wallbase
             }
             else if (SA == "user/collection")
             {
-                areaURL += string.Format("{0}/{1}/0", CollectionID, Convert.ToInt32(NSFW).ToString());
+                areaURL += string.Format("http://wallbase.cc/collection/{0}/{1}", CollectionID, "{0}");
             }
             else if (SA == "user/favorites")
             {
-                areaURL += string.Format("{0}/{1}/0/666", FavoriteID, "{0}");
+                areaURL += string.Format("http://wallbase.cc/favorites/{0}/{1}", FavoriteID, "{0}");
             }
 
             return areaURL;

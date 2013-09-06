@@ -44,7 +44,7 @@
             this.btnRemoveInputProvider = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAddInput = new System.Windows.Forms.Button();
-            this.cbProviders = new PulseForm.ProviderComboBox();
+            this.cbProviders = new Pulse.Forms.UI.ProviderComboBox();
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -749,7 +749,7 @@
         private System.Windows.Forms.CheckBox cbAutoChangeonStartup;
         private System.Windows.Forms.CheckBox cbDownloadAutomatically;
         private System.Windows.Forms.Button ProviderSettings;
-        private ProviderComboBox cbProviders;
+        private Pulse.Forms.UI.ProviderComboBox cbProviders;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.GroupBox groupBox1;

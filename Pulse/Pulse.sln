@@ -51,9 +51,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PulseStandAloneDownloader",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pulse.Screensaver", "Pulse.Screensaver\Pulse.Screensaver.csproj", "{43D95507-61A4-4990-89F7-987B57648CBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PulseMassDownloader", "PulseMassDownloader\PulseMassDownloader.csproj", "{F74B45BE-9966-41DD-83E9-AD4B271DB890}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 17
+		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -116,6 +118,9 @@ Global
 		SccProjectUniqueName16 = Pulse.Screensaver\\Pulse.Screensaver.csproj
 		SccProjectName16 = Pulse.Screensaver
 		SccLocalPath16 = Pulse.Screensaver
+		SccProjectUniqueName17 = PulseMassDownloader\\PulseMassDownloader.csproj
+		SccProjectName17 = PulseMassDownloader
+		SccLocalPath17 = PulseMassDownloader
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -290,6 +295,16 @@ Global
 		{43D95507-61A4-4990-89F7-987B57648CBD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{43D95507-61A4-4990-89F7-987B57648CBD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{43D95507-61A4-4990-89F7-987B57648CBD}.Release|x86.ActiveCfg = Release|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F74B45BE-9966-41DD-83E9-AD4B271DB890}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

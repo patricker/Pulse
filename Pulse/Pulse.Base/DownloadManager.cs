@@ -22,7 +22,7 @@ namespace Pulse.Base
         /// <summary>
         /// location where images are saved to
         /// </summary>
-        public string SaveFolder { get; private set; }
+        public string SaveFolder { get; set; }
 
         public event PictureDownload.PictureDownloadEvent QueueIsEmpty;
         

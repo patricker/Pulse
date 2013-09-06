@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnClearQueue = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.flpDownloads = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnClearQueue = new System.Windows.Forms.Button();
+            this.downloadQueue1 = new Pulse.Forms.UI.DownloadQueue();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -42,6 +42,7 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -52,10 +53,23 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.flpDownloads);
-            this.splitContainer1.Size = new System.Drawing.Size(881, 505);
-            this.splitContainer1.SplitterDistance = 43;
+            this.splitContainer1.Panel2.Controls.Add(this.downloadQueue1);
+            this.splitContainer1.Size = new System.Drawing.Size(661, 410);
+            this.splitContainer1.SplitterDistance = 34;
+            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // btnClose
+            // 
+            this.btnClose.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnClose.Location = new System.Drawing.Point(549, 0);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(112, 34);
+            this.btnClose.TabIndex = 1;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // btnClearQueue
             // 
@@ -63,43 +77,29 @@
             this.btnClearQueue.Image = global::Pulse.Forms.UI.Properties.Resources.Clearwindowcontent_6304;
             this.btnClearQueue.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnClearQueue.Location = new System.Drawing.Point(0, 0);
+            this.btnClearQueue.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnClearQueue.Name = "btnClearQueue";
-            this.btnClearQueue.Size = new System.Drawing.Size(150, 43);
+            this.btnClearQueue.Size = new System.Drawing.Size(112, 34);
             this.btnClearQueue.TabIndex = 0;
             this.btnClearQueue.Text = "Clear Queue";
             this.btnClearQueue.UseVisualStyleBackColor = true;
             this.btnClearQueue.Click += new System.EventHandler(this.btnClearQueue_Click);
             // 
-            // btnClose
+            // downloadQueue1
             // 
-            this.btnClose.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnClose.Location = new System.Drawing.Point(731, 0);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(150, 43);
-            this.btnClose.TabIndex = 1;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // flpDownloads
-            // 
-            this.flpDownloads.AutoScroll = true;
-            this.flpDownloads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flpDownloads.Location = new System.Drawing.Point(0, 0);
-            this.flpDownloads.Name = "flpDownloads";
-            this.flpDownloads.Size = new System.Drawing.Size(881, 458);
-            this.flpDownloads.TabIndex = 0;
+            this.downloadQueue1.Location = new System.Drawing.Point(144, 105);
+            this.downloadQueue1.Name = "downloadQueue1";
+            this.downloadQueue1.Size = new System.Drawing.Size(533, 365);
+            this.downloadQueue1.TabIndex = 0;
             // 
             // DownloadMonitor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(881, 505);
+            this.ClientSize = new System.Drawing.Size(661, 410);
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DownloadMonitor";
             this.Text = "Download Monitor";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DownloadMonitor_FormClosing);
             this.Load += new System.EventHandler(this.DownloadMonitor_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -114,7 +114,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button btnClearQueue;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.FlowLayoutPanel flpDownloads;
+        private DownloadQueue downloadQueue1;
 
     }
 }
