@@ -156,6 +156,12 @@ namespace wallbase
             return 60;
         }
 
+        public int GetMaxImageCount(int userMax)
+        {
+            if (SA == "user/collection" || SA == "user/favorites" || userMax == 0) return int.MaxValue;
+            else return userMax;
+        }
+
         public class SearchArea
         {
             public string Name { get; private set; }

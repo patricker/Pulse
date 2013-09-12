@@ -73,6 +73,12 @@ namespace Pulse.Base
                     {
                         _cachedThumb = PictureManager.ShrinkImage(Url, 0, 150);
                     }
+                    else
+                    {
+                        _cachedThumb = PictureManager.ShrinkImage(Image.FromStream(
+                            new WebClient().OpenRead(Url)), 0, 150);
+
+                    }
                 }
             }
 

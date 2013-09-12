@@ -26,6 +26,7 @@ namespace PulseMassDownloader
 
             txtDownloadPath.Text = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
+            SetPausePlayStatus(DownloadManager.Current.Active);
         }
 
         private void providerComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -62,7 +63,7 @@ namespace PulseMassDownloader
         {
             PictureSearch ps = new PictureSearch();
             ps.SearchProvider = new ActiveProviderInfo(providerComboBox1.SelectedItem.ToString()) { Active = true, ProviderConfig = _current.SaveConfiguration() };
-            ps.MaxPictureCount = 100;
+            ps.MaxPictureCount = (int)numericUpDown1.Value;
 
             ps.SaveFolder = txtDownloadPath.Text;
 
@@ -74,6 +75,33 @@ namespace PulseMassDownloader
 
             DownloadManager.Current.SaveFolder = txtDownloadPath.Text;
             DownloadManager.Current.PreFetchFiles(pb);
+        }
+
+        private void btnClearQueue_Click(object sender, EventArgs e)
+        {
+            downloadQueue1.ClearQueue();
+        }
+
+        private void btnPausePlay_Click(object sender, EventArgs e)
+        {
+            bool newStatus = !DownloadManager.Current.Active;
+            DownloadManager.Current.Active = newStatus;
+
+            SetPausePlayStatus(newStatus);
+        }
+
+        private void SetPausePlayStatus(bool status)
+        {
+            if (status)
+            {
+                btnPausePlay.Text = "Pause Downloads";
+                btnPausePlay.Image = Pulse.Forms.UI.Properties.Resources.StatusAnnotations_Pause_16xLG;
+            }
+            else
+            {
+                btnPausePlay.Text = "Resume Downloads";
+                btnPausePlay.Image = Pulse.Forms.UI.Properties.Resources.PlayHS;
+            }
         }
     }
 }

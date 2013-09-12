@@ -120,4 +120,25 @@
   <metadata name="fbd.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnClearQueue.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        wAAADsABataJCQAAAP9JREFUOE9jAIHv3787fHz5/P/DQ3v+f/v2jSQMNuDr168NZ/qa/i9U4/1/sCQF
+        RcGRPbvAYk/v3fkfGRn538nJCY7hBgBdkPDs/Kn/y4xlwIYcaywGS17YueX/Gget/6fnTv6fkpKCohnF
+        ABAAcV7fufl/o68l3BCQgddWzIe7BhuGaocYAMKgsIC5ZFuUO4YGdAzVjukCkNNBNC7no3gBGIj7b29d
+        C7cZFpAg54PEbh/Zjz8MQM4GaUTWDMOgwAW5CkQji8Mw2AAg4z1IIygq0RUQwmADvnz5YgDi4PIrLgw3
+        AARAHGyK8GEMA8jBUO1UMgCbM/Fh6htAOv72HwANMrXhfARkwAAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btnPausePlay.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        vwAADr8BOAVTJAAAAP9JREFUOE9jAIHv3787fHz5/P/DQ3v+f/v2jSQMNuDr168NZ/qa/i9U4/1/sCQF
+        RcGRPbvAYk/v3fkfGRn538nJCY7hBgBdkPDs/Kn/y4xlwIYcaywGS17YueX/Gget/6fnTv6fkpKCohnF
+        ABAAcV7fufl/o68l3BCQgddWzIe7BhuGaocYAMKgsIC5ZFuUO4YGdAzVjukCkNNBNC7no3gBGIj7b29d
+        C7cZFpAg54PEbh/Zjz8MQM4GaUTWDMOgwAW5CkQji8Mw2AAg4z1IIygq0RUQwmADvnz5YgDi4PIrLgw3
+        AARAHGyK8GEMA8jBUO1UMgCbM/Fh6htAOv72HwANMrXhfARkwAAAAABJRU5ErkJggg==
+</value>
+  </data>
 </root>

@@ -84,68 +84,73 @@ namespace Pulse.Base
             {
                 using (Image img = Bitmap.FromStream(fs))
                 {
-                    double origRatio = (double)Math.Min(img.Width, img.Height) / (double)Math.Max(img.Width, img.Height);
-
-                    //---Calculate thumbnail sizes---
-                    double destRatio = 0;
-
-                    //if both width and height are 0 then use defaults (Screen resolution)
-                    if (destWidth == 0 & destHeight == 0)
-                    {
-                        var scResolution = PrimaryScreenResolution;
-                        destWidth = scResolution.First;
-                        destHeight = scResolution.Second;
-
-                    }
-                    else if (destWidth > 0 & destHeight > 0)
-                    {
-                        //do nothing, we have both sizes already
-                    }
-                    else if (destWidth > 0)
-                    {
-                        destHeight = (int)Math.Floor((double)img.Height * (destWidth / img.Width));
-                    }
-                    else if (destHeight > 0)
-                    {
-                        destWidth = (int)Math.Floor((double)img.Width * ((double)destHeight / (double)img.Height));
-                    }
-
-                    destRatio = (double)Math.Min(destWidth, destHeight) / (double)Math.Max(destWidth, destHeight);
-
-                    //calculate source image sizes (rectangle) to get pixel data from        
-                    int sourceWidth = img.Width;
-                    int sourceHeight = img.Height;
-
-                    int sourceX = 0;
-                    int sourceY = 0;
-
-                    double cmpx = (double)img.Width / (double)destWidth;
-                    double cmpy = (double)img.Height / (double)destHeight;
-
-                    //selection is based on the smallest dimension
-                    if (cmpx > cmpy)
-                    {
-                        sourceWidth = (int)((double)img.Width / cmpx * cmpy);
-                        sourceX = (int)(((double)img.Width - ((double)img.Width / cmpx * cmpy)) / 2);
-                    }
-                    else if (cmpy > cmpx)
-                    {
-                        sourceHeight = (int)((double)img.Height / cmpy * cmpx);
-                        sourceY = (int)(((double)img.Height - ((double)img.Height / cmpy * cmpx)) / 2);
-                    }
-
-                    //---create the new image---
-                    Bitmap bmpThumb = new Bitmap(destWidth, destHeight);
-                    var g = Graphics.FromImage(bmpThumb);
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-                    g.SmoothingMode = SmoothingMode.AntiAlias;
-
-                    g.DrawImage(img, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
-
-                    return bmpThumb;
+                    return ShrinkImage(img, destWidth, destHeight);
                 }
             }
+        }
+
+        public static Image ShrinkImage(Image img, int destWidth, int destHeight)
+        {
+            double origRatio = (double)Math.Min(img.Width, img.Height) / (double)Math.Max(img.Width, img.Height);
+
+            //---Calculate thumbnail sizes---
+            double destRatio = 0;
+
+            //if both width and height are 0 then use defaults (Screen resolution)
+            if (destWidth == 0 & destHeight == 0)
+            {
+                var scResolution = PrimaryScreenResolution;
+                destWidth = scResolution.First;
+                destHeight = scResolution.Second;
+
+            }
+            else if (destWidth > 0 & destHeight > 0)
+            {
+                //do nothing, we have both sizes already
+            }
+            else if (destWidth > 0)
+            {
+                destHeight = (int)Math.Floor((double)img.Height * (destWidth / img.Width));
+            }
+            else if (destHeight > 0)
+            {
+                destWidth = (int)Math.Floor((double)img.Width * ((double)destHeight / (double)img.Height));
+            }
+
+            destRatio = (double)Math.Min(destWidth, destHeight) / (double)Math.Max(destWidth, destHeight);
+
+            //calculate source image sizes (rectangle) to get pixel data from        
+            int sourceWidth = img.Width;
+            int sourceHeight = img.Height;
+
+            int sourceX = 0;
+            int sourceY = 0;
+
+            double cmpx = (double)img.Width / (double)destWidth;
+            double cmpy = (double)img.Height / (double)destHeight;
+
+            //selection is based on the smallest dimension
+            if (cmpx > cmpy)
+            {
+                sourceWidth = (int)((double)img.Width / cmpx * cmpy);
+                sourceX = (int)(((double)img.Width - ((double)img.Width / cmpx * cmpy)) / 2);
+            }
+            else if (cmpy > cmpx)
+            {
+                sourceHeight = (int)((double)img.Height / cmpy * cmpx);
+                sourceY = (int)(((double)img.Height - ((double)img.Height / cmpy * cmpx)) / 2);
+            }
+
+            //---create the new image---
+            Bitmap bmpThumb = new Bitmap(destWidth, destHeight);
+            var g = Graphics.FromImage(bmpThumb);
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            g.DrawImage(img, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
+
+            return bmpThumb;
         }
 
         //From: http://stackoverflow.com/questions/2352804/how-do-i-prevent-clipping-when-rotating-an-image-in-c
