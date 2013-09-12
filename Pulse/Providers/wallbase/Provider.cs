@@ -36,7 +36,7 @@ namespace wallbase
             WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
                                     
             //if max picture count is 0, then no maximum, else specified max
-            var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
+            var maxPictureCount = wiss.GetMaxImageCount(ps.MaxPictureCount);
             int pageSize = wiss.GetPageSize();
             int pageIndex = ps.PageToRetrieve; //set page to retreive if one is specified
             var imgFoundCount = 0;
@@ -239,31 +239,38 @@ namespace wallbase
             {
                 using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
-                    //need to extract the cross-site request forgery token from the page
-                    //<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""
-                    var csrfRegex = new Regex(@"<input type=""hidden"" name=""csrf"" value=""(?<csrf>.*)"">");
-                    var refWallbase64Regex = new Regex(@"<input type=""hidden"" name=""ref"" value=""(?<ref>.*)"">");
+                    try
+                    {
+                        //need to extract the cross-site request forgery token from the page
+                        //<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""
+                        var csrfRegex = new Regex(@"<input type=""hidden"" name=""csrf"" value=""(?<csrf>.*)"">");
+                        var refWallbase64Regex = new Regex(@"<input type=""hidden"" name=""ref"" value=""(?<ref>.*)"">");
 
-                    string loginPage = _client.DownloadString("http://wallbase.cc/user/login");
-                    Match lpM = csrfRegex.Match(loginPage);
-                    Match lpWallbaseInbase64 = refWallbase64Regex.Match(loginPage);
+                        string loginPage = _client.DownloadString("http://wallbase.cc/user/login");
+                        Match lpM = csrfRegex.Match(loginPage);
+                        Match lpWallbaseInbase64 = refWallbase64Regex.Match(loginPage);
 
-                    if (!lpM.Success) return;
+                        if (!lpM.Success) return;
 
-                    var loginData = new NameValueCollection();
-                    loginData.Add("csrf", lpM.Groups["csrf"].Value);
-                    loginData.Add("ref", lpWallbaseInbase64.Groups["ref"].Value);
+                        var loginData = new NameValueCollection();
+                        loginData.Add("csrf", lpM.Groups["csrf"].Value);
+                        loginData.Add("ref", lpWallbaseInbase64.Groups["ref"].Value);
 
-                    loginData.Add("username", username);
-                    loginData.Add("password", password);
+                        loginData.Add("username", username);
+                        loginData.Add("password", password);
 
-                    _client.Referrer = "http://wallbase.cc/user/login";
-                    _client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+                        _client.Referrer = "http://wallbase.cc/user/login";
+                        _client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 
-                    byte[] result = _client.UploadValues(@"http://wallbase.cc/user/do_login", "POST", loginData);
+                        byte[] result = _client.UploadValues(@"http://wallbase.cc/user/do_login", "POST", loginData);
 
-                    //we do not need the response, all we need are the cookies
-                    string response = System.Text.Encoding.UTF8.GetString(result);
+                        //we do not need the response, all we need are the cookies
+                        string response = System.Text.Encoding.UTF8.GetString(result);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new WallbaseAccessDeniedException("Wallbase authentication failed. Please verify your username and password.", ex);
+                    }
                 }
             }
         }

@@ -30,7 +30,7 @@ namespace Pulse.Base
         }
         public Exception LastError { get; private set; }
         public int Priority { get; set; }
-        public int FailureCount { get; private set; }
+        public int FailureCount { get { return _failureCount; } private set { _failureCount = value; } }
 
         private HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient();
         private int _failureCount = 0;

@@ -24,6 +24,8 @@ namespace Pulse.Base
         /// </summary>
         public string SaveFolder { get; set; }
 
+        public bool Active { get { return _queuePollingTimer.Enabled; } set { _queuePollingTimer.Enabled = value; } }
+
         public event PictureDownload.PictureDownloadEvent QueueIsEmpty;
         
         //Events for Download Manager UI
@@ -144,7 +146,7 @@ namespace Pulse.Base
                 //get pictures that are queued up to go
                 var queued = (from c in queueSnapshot
                                where c.Status == PictureDownload.DownloadStatus.Stopped ||
-                               c.Status == PictureDownload.DownloadStatus.Error && c.FailureCount < _failureRetries
+                               (c.Status == PictureDownload.DownloadStatus.Error && c.FailureCount < _failureRetries)
                                orderby c.Priority ascending
                                select c);
 
@@ -234,9 +236,9 @@ namespace Pulse.Base
         {
             if (pb == null || pb.AllPictures.Count == 0) return;
 
-            foreach (PictureList pl in pb.AllPictures)
+            foreach (PictureList pl in pb.AllPictures.ToList())
             {
-                foreach (Picture pic in pl.Pictures)
+                foreach (Picture pic in pl.Pictures.ToList())
                 {
                     GetPicture(pic, true);
                 }

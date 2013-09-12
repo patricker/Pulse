@@ -13,6 +13,9 @@ namespace Pulse.Base
 
         public bool Active { get; set; }
 
+        [DisplayName("Label")]
+        public string ProviderLabel { get; set; }
+
         [DisplayName("Name")]
         public string ProviderName { get; set; }
 
