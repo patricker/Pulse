@@ -112,6 +112,12 @@
   <ItemGroup>
     <None Include="Resources\Icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Providers\WinAPI\WinAPI.csproj">
+      <Project>{b60087e5-76fe-462f-bdc2-bf25bb01f7e6}</Project>
+      <Name>WinAPI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

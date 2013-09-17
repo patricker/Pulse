@@ -57,6 +57,7 @@ namespace PulseForm
 
             cbRunOnWindowsStartup.Checked = Settings.CurrentSettings.RunOnWindowsStartup;
             cbCheckForNewVersions.Checked = Settings.CurrentSettings.CheckForNewPulseVersions;
+            cbDisableInFullScreen.Checked = Settings.CurrentSettings.SkipChangeIfFullScreen;
             //frequency
 
             //LanguageComboBox.Items.Add(new ComboBoxItem() { Content = CultureInfo.GetCultureInfo("en-US").NativeName });
@@ -208,6 +209,8 @@ namespace PulseForm
 
             //check for new versions on startup?
             Settings.CurrentSettings.CheckForNewPulseVersions = cbCheckForNewVersions.Checked;
+
+            Settings.CurrentSettings.SkipChangeIfFullScreen = cbDisableInFullScreen.Checked;
             
             //save inputs
             foreach (ActiveProviderInfo api in InputProviderInfos)

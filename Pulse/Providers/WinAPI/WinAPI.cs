@@ -486,6 +486,43 @@ namespace Pulse.Base.WinAPI
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int SendMessageTimeout(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam, uint fuFlags, uint uTimeout, out IntPtr result);
+
+        //most code for detecting
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        static extern int GetSystemMetrics(int smIndex);
+
+        public const int SM_CXSCREEN = 0;
+        public const int SM_CYSCREEN = 1;
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowRect(IntPtr hWnd, out W32RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct W32RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+        //Code came from http://stackoverflow.com/a/495389/328968
+        public static bool IsForegroundWwindowFullScreen()
+        {
+            int scrX = GetSystemMetrics(SM_CXSCREEN),
+                scrY = GetSystemMetrics(SM_CYSCREEN);
+
+            IntPtr handle = GetForegroundWindow();
+            if (handle == IntPtr.Zero) return false;
+
+            W32RECT wRect;
+            if (!GetWindowRect(handle, out wRect)) return false;
+
+            return scrX == (wRect.Right - wRect.Left) && scrY == (wRect.Bottom - wRect.Top);
+        }
         #endregion
 
     }
