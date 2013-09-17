@@ -50,6 +50,7 @@ namespace Pulse.Base
         public int MaxPreviousPictureDepth { get; set; }
         public string CachePath { get; set; }
         public bool CheckForNewPulseVersions { get; set; }
+        public bool SkipChangeIfFullScreen { get; set; }
 
         public string Language { get; set; }
         
@@ -78,6 +79,7 @@ namespace Pulse.Base
             ProviderSettings = new SerializableDictionary<Guid, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
             RunOnWindowsStartup = false;
+            SkipChangeIfFullScreen = false;
 
             BannedImages = new List<string>();
 

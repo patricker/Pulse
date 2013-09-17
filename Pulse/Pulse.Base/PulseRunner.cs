@@ -349,6 +349,12 @@ namespace Pulse.Base
             Log.Logger.Write("DownloadNextPicture called from 'TimerTick'",
                 Log.LoggerLevels.Verbose);
 
+            if (Settings.CurrentSettings.SkipChangeIfFullScreen && WinAPI.WinAPI.IsForegroundWwindowFullScreen())
+            {
+                Log.Logger.Write("DownloadNextPicture Skipped because window is in full screen mode", Log.LoggerLevels.Verbose);
+                return;
+            }
+
             //stop the timer
             wallpaperChangerTimer.Stop();
 
