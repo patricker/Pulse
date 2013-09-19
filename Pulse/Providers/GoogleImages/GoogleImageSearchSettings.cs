@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
-using System.Windows;
 using Pulse.Base;
 using System.ComponentModel;
 
 namespace GoogleImages
 {
     
-    public class GoogleImageSearchSettings : Pulse.Base.XmlSerializable<GoogleImageSearchSettings>
+    public class GoogleImageSearchSettings : XmlSerializable<GoogleImageSearchSettings>
     {
         public string Query { get; set; }
 
@@ -104,19 +101,16 @@ namespace GoogleImages
 
                 public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
                 {
-                    return GetColors().Where(x => x.Name == value.ToString()).Select(x => x.Value).First();
+                    return GetColors().Where(x => value != null && x.Name == value.ToString()).Select(x => x.Value).First();
                 }
 
                 public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
                 {
                     if (value == null)
                     {
-                        return base.ConvertTo(context, culture, value, destinationType);
+                        return base.ConvertTo(context, culture, null, destinationType);
                     }
-                    else
-                    {
-                        return GetColors().Where(x => x.Value == value.ToString()).Select(x => x.Name).First();
-                    }
+                    return GetColors().Where(x => x.Value == value.ToString()).Select(x => x.Name).First();
                 }
 
                 public override System.ComponentModel.TypeConverter.StandardValuesCollection

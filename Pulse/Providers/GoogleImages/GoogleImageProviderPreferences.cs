@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace GoogleImages
 {
     public partial class GoogleImageProviderPreferences : UserControl, Pulse.Base.IProviderConfigurationEditor
     {
-        GoogleImageSearchSettings giss;
+        GoogleImageSearchSettings _giss;
 
         public GoogleImageProviderPreferences()
         {
@@ -29,29 +23,21 @@ namespace GoogleImages
         public void LoadConfiguration(string config)
         {
             //fresh config
-            if (string.IsNullOrEmpty(config))
-            {
-                giss = new GoogleImageSearchSettings();
-            }
-            //deserialize
-            else
-            {
-                giss = GoogleImageSearchSettings.LoadFromXML(config);
-            }
+            _giss = string.IsNullOrEmpty(config) ? new GoogleImageSearchSettings() : GoogleImageSearchSettings.LoadFromXML(config);
 
-            comboBox1.SelectedValue = giss.Color;
-            txtHeight.Text = giss.ImageHeight.ToString();
-            txtWidth.Text = giss.ImageWidth.ToString();
+            comboBox1.SelectedValue = _giss.Color;
+            txtHeight.Text = _giss.ImageHeight.ToString();
+            txtWidth.Text = _giss.ImageWidth.ToString();
         }
 
         public string SaveConfiguration()
         {
             //I should find out if we can do two-way binding on these properties to make this cleaner...
-            giss.Color = comboBox1.SelectedValue != null ? comboBox1.SelectedValue.ToString() : "";
-            giss.ImageWidth = Convert.ToInt32(txtWidth.Text);
-            giss.ImageHeight = Convert.ToInt32(txtHeight.Text);
+            _giss.Color = comboBox1.SelectedValue != null ? comboBox1.SelectedValue.ToString() : "";
+            _giss.ImageWidth = Convert.ToInt32(txtWidth.Text);
+            _giss.ImageHeight = Convert.ToInt32(txtHeight.Text);
 
-            var s = giss.Save();
+            var s = _giss.Save();
 
             return s;
         }
@@ -61,9 +47,9 @@ namespace GoogleImages
 
         public void HostMe(object parent)
         {
-            Control c = parent as Control;
+            var c = parent as Control;
 
-            c.Controls.Add(this);
+            if (c != null) c.Controls.Add(this);
         }
     }
 }
