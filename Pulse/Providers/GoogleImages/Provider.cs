@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Pulse.Base;
 using Pulse.Base.Providers;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.ComponentModel;
 using System.Net;
 
 namespace GoogleImages
@@ -17,9 +13,9 @@ namespace GoogleImages
     [ProviderIcon(typeof(Properties.Resources),"googleImages")]
     public class Provider : IInputProvider
     {
-        private Regex imagesRegex2 = new Regex(@"imgurl=(?<imgurlgrp>http.*?)&amp;.*?imgrefurl=(?<imgrefgrp>http.*?)&amp;.*?src=[""'](?<thumbURL>.*?)[""'].*?>");//"(imgurl=)(?<imgurl>http.*?)[^&>]*([>&]{1})");
-        private string baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}{1}&start={2}";
-        private CookieContainer _cookies = new CookieContainer();
+        private readonly Regex _imagesRegex2 = new Regex(@"imgurl=(?<imgurlgrp>http.*?)&amp;.*?imgrefurl=(?<imgrefgrp>http.*?)&amp;.*?src=[""'](?<thumbURL>.*?)[""'].*?>");//"(imgurl=)(?<imgurl>http.*?)[^&>]*([>&]{1})");
+        private const string baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}{1}&start={2}";
+        private readonly CookieContainer _cookies = new CookieContainer();
 
         public Provider()
         {
@@ -39,16 +35,14 @@ namespace GoogleImages
             var result = new PictureList() { FetchDate = DateTime.Now };
 
             //load provider search settings
-            GoogleImageSearchSettings giss = GoogleImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
-
-            //to help not have so many null checks, if no search settings provided then use default ones
-            if (giss == null) giss=new GoogleImageSearchSettings();
+            GoogleImageSearchSettings giss = GoogleImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig) ??
+                                             new GoogleImageSearchSettings();
 
             //if search is empty, return now since we can't search without it
             if (string.IsNullOrEmpty(giss.Query)) return result;
 
             var pageIndex = ps.PageToRetrieve; //set page to retrieve if one specified
-            var imgFoundCount =0;
+            var imgFoundCount = 0;
             
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
@@ -59,7 +53,7 @@ namespace GoogleImages
             //handle sizeing
             if (giss.ImageHeight > 0 && giss.ImageWidth > 0)
             {
-                tbs += string.Format("isz:ex,iszw:{0},iszh:{1},", giss.ImageWidth.ToString(), giss.ImageHeight.ToString());
+                tbs += string.Format("isz:ex,iszw:{0},iszh:{1},", giss.ImageWidth, giss.ImageHeight);
             }
 
             //handle colors
@@ -77,15 +71,15 @@ namespace GoogleImages
             do
             {
                 //build URL from query, dimensions and page index
-                var url = string.Format(baseURL, giss.Query, tbs, (pageIndex * 20).ToString());
+                var url = string.Format(baseURL, giss.Query, tbs, (pageIndex * 20));
 
                 var response = string.Empty;
-                using (HttpUtility.CookieAwareWebClient client = new HttpUtility.CookieAwareWebClient(_cookies))
+                using (var client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
                     response = client.DownloadString(url);
                 }
 
-                var images = imagesRegex2.Matches(response);
+                var images = _imagesRegex2.Matches(response);
 
                 //track number of images found for paging purposes
                 imgFoundCount = images.Count;
@@ -100,9 +94,9 @@ namespace GoogleImages
                     var id = System.IO.Path.GetFileNameWithoutExtension(purl);
                     if (id.Length > 50) id = id.Substring(0, 50);
                     //because google images come from so many sites it's not uncommon to have duplicate file names. (we fix this)
-                    id = string.Format("{0}_{1}", id, purl.GetHashCode().ToString());
+                    id = string.Format("{0}_{1}", id, purl.GetHashCode());
 
-                    Picture p = new Picture() { Url = purl, Id = id };
+                    var p = new Picture() { Url = purl, Id = id };
                     p.Properties.Add(Picture.StandardProperties.Thumbnail, thumbnail);
                     p.Properties.Add(Picture.StandardProperties.Referrer, referrer);
 
@@ -129,7 +123,7 @@ namespace GoogleImages
 
         private void SetSafeSearchSetting(GoogleImageSearchSettings.GoogleSafeSearchOptions gsso)
         {
-            using (HttpUtility.CookieAwareWebClient client = new HttpUtility.CookieAwareWebClient(_cookies))
+            using (var client = new HttpUtility.CookieAwareWebClient(_cookies))
             {
                 //First we need to access the preferences page so we can get the special ID
                 var response = client.DownloadString("http://images.google.com/preferences?hl=en");
