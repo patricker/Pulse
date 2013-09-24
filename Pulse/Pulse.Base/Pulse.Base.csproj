@@ -91,7 +91,6 @@
     <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Status.cs" />
-    <Compile Include="Translator.cs" />
     <Compile Include="XmlSerializable.cs" />
   </ItemGroup>
   <ItemGroup>

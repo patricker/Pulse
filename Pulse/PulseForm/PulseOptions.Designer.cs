@@ -47,6 +47,7 @@
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.cbDisableInFullScreen = new System.Windows.Forms.CheckBox();
             this.nudMaxPictureCount = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.btnBannedImageReview = new System.Windows.Forms.Button();
@@ -74,7 +75,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.cbDisableInFullScreen = new System.Windows.Forms.CheckBox();
             this.cbProviders = new Pulse.Forms.UI.ProviderComboBox();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
@@ -107,7 +107,7 @@
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.ImageList = this.ilTabs;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(587, 274);
@@ -121,9 +121,9 @@
             this.tpGeneral.Controls.Add(this.groupBox1);
             this.tpGeneral.ImageIndex = 0;
             this.tpGeneral.Location = new System.Drawing.Point(4, 23);
-            this.tpGeneral.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpGeneral.Margin = new System.Windows.Forms.Padding(2);
             this.tpGeneral.Name = "tpGeneral";
-            this.tpGeneral.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpGeneral.Padding = new System.Windows.Forms.Padding(2);
             this.tpGeneral.Size = new System.Drawing.Size(579, 247);
             this.tpGeneral.TabIndex = 0;
             this.tpGeneral.Text = "General";
@@ -134,9 +134,9 @@
             this.groupBox3.Controls.Add(this.panel4);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(6, 157);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox3.Size = new System.Drawing.Size(279, 84);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
@@ -151,7 +151,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel4.Location = new System.Drawing.Point(2, 24);
-            this.panel4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(275, 58);
             this.panel4.TabIndex = 0;
@@ -161,7 +161,7 @@
             this.btnClearNow.Image = ((System.Drawing.Image)(resources.GetObject("btnClearNow.Image")));
             this.btnClearNow.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnClearNow.Location = new System.Drawing.Point(5, 29);
-            this.btnClearNow.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnClearNow.Margin = new System.Windows.Forms.Padding(2);
             this.btnClearNow.Name = "btnClearNow";
             this.btnClearNow.Size = new System.Drawing.Size(87, 21);
             this.btnClearNow.TabIndex = 3;
@@ -182,7 +182,7 @@
             // nudTempAge
             // 
             this.nudTempAge.Location = new System.Drawing.Point(156, 8);
-            this.nudTempAge.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudTempAge.Margin = new System.Windows.Forms.Padding(2);
             this.nudTempAge.Name = "nudTempAge";
             this.nudTempAge.Size = new System.Drawing.Size(43, 20);
             this.nudTempAge.TabIndex = 1;
@@ -197,7 +197,7 @@
             // 
             this.cbDeleteOldFiles.AutoSize = true;
             this.cbDeleteOldFiles.Location = new System.Drawing.Point(5, 9);
-            this.cbDeleteOldFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbDeleteOldFiles.Margin = new System.Windows.Forms.Padding(2);
             this.cbDeleteOldFiles.Name = "cbDeleteOldFiles";
             this.cbDeleteOldFiles.Size = new System.Drawing.Size(150, 17);
             this.cbDeleteOldFiles.TabIndex = 0;
@@ -210,9 +210,9 @@
             this.groupBox2.Controls.Add(this.panel3);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(5, 4);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(280, 149);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
@@ -229,21 +229,23 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel3.Location = new System.Drawing.Point(2, 24);
-            this.panel3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(276, 123);
             this.panel3.TabIndex = 4;
             // 
             // lbActiveInputProviders
             // 
+            this.lbActiveInputProviders.CheckBoxes = true;
             this.lbActiveInputProviders.Location = new System.Drawing.Point(7, 24);
-            this.lbActiveInputProviders.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lbActiveInputProviders.Margin = new System.Windows.Forms.Padding(2);
             this.lbActiveInputProviders.MultiSelect = false;
             this.lbActiveInputProviders.Name = "lbActiveInputProviders";
             this.lbActiveInputProviders.Size = new System.Drawing.Size(168, 97);
             this.lbActiveInputProviders.TabIndex = 14;
             this.lbActiveInputProviders.UseCompatibleStateImageBehavior = false;
             this.lbActiveInputProviders.View = System.Windows.Forms.View.SmallIcon;
+            this.lbActiveInputProviders.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.LbActiveInputProvidersItemCheck);
             this.lbActiveInputProviders.SelectedIndexChanged += new System.EventHandler(this.lbActiveInputProviders_SelectedIndexChanged_1);
             // 
             // btnRemoveInputProvider
@@ -252,7 +254,7 @@
             this.btnRemoveInputProvider.Image = ((System.Drawing.Image)(resources.GetObject("btnRemoveInputProvider.Image")));
             this.btnRemoveInputProvider.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnRemoveInputProvider.Location = new System.Drawing.Point(178, 77);
-            this.btnRemoveInputProvider.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRemoveInputProvider.Margin = new System.Windows.Forms.Padding(2);
             this.btnRemoveInputProvider.Name = "btnRemoveInputProvider";
             this.btnRemoveInputProvider.Size = new System.Drawing.Size(96, 21);
             this.btnRemoveInputProvider.TabIndex = 7;
@@ -266,7 +268,7 @@
             this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
             this.btnPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPreview.Location = new System.Drawing.Point(178, 53);
-            this.btnPreview.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnPreview.Margin = new System.Windows.Forms.Padding(2);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(96, 21);
             this.btnPreview.TabIndex = 6;
@@ -280,7 +282,7 @@
             this.btnAddInput.Image = ((System.Drawing.Image)(resources.GetObject("btnAddInput.Image")));
             this.btnAddInput.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAddInput.Location = new System.Drawing.Point(178, 3);
-            this.btnAddInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAddInput.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddInput.Name = "btnAddInput";
             this.btnAddInput.Size = new System.Drawing.Size(96, 21);
             this.btnAddInput.TabIndex = 5;
@@ -294,7 +296,7 @@
             this.ProviderSettings.Image = ((System.Drawing.Image)(resources.GetObject("ProviderSettings.Image")));
             this.ProviderSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ProviderSettings.Location = new System.Drawing.Point(178, 28);
-            this.ProviderSettings.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ProviderSettings.Margin = new System.Windows.Forms.Padding(2);
             this.ProviderSettings.Name = "ProviderSettings";
             this.ProviderSettings.Size = new System.Drawing.Size(96, 21);
             this.ProviderSettings.TabIndex = 3;
@@ -307,9 +309,9 @@
             this.groupBox1.Controls.Add(this.panel2);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(290, 4);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(279, 239);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
@@ -332,15 +334,26 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel2.Location = new System.Drawing.Point(2, 24);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(275, 213);
             this.panel2.TabIndex = 11;
             // 
+            // cbDisableInFullScreen
+            // 
+            this.cbDisableInFullScreen.AutoSize = true;
+            this.cbDisableInFullScreen.Location = new System.Drawing.Point(2, 192);
+            this.cbDisableInFullScreen.Name = "cbDisableInFullScreen";
+            this.cbDisableInFullScreen.Size = new System.Drawing.Size(161, 17);
+            this.cbDisableInFullScreen.TabIndex = 17;
+            this.cbDisableInFullScreen.Text = "Disable if App. in Full Screen";
+            this.cbDisableInFullScreen.UseVisualStyleBackColor = true;
+            this.cbDisableInFullScreen.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
+            // 
             // nudMaxPictureCount
             // 
             this.nudMaxPictureCount.Location = new System.Drawing.Point(131, 80);
-            this.nudMaxPictureCount.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nudMaxPictureCount.Margin = new System.Windows.Forms.Padding(2);
             this.nudMaxPictureCount.Maximum = new decimal(new int[] {
             9999999,
             0,
@@ -374,7 +387,7 @@
             // btnBannedImageReview
             // 
             this.btnBannedImageReview.Location = new System.Drawing.Point(2, 110);
-            this.btnBannedImageReview.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnBannedImageReview.Margin = new System.Windows.Forms.Padding(2);
             this.btnBannedImageReview.Name = "btnBannedImageReview";
             this.btnBannedImageReview.Size = new System.Drawing.Size(136, 21);
             this.btnBannedImageReview.TabIndex = 14;
@@ -388,7 +401,7 @@
             this.cbCheckForNewVersions.Image = ((System.Drawing.Image)(resources.GetObject("cbCheckForNewVersions.Image")));
             this.cbCheckForNewVersions.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbCheckForNewVersions.Location = new System.Drawing.Point(2, 171);
-            this.cbCheckForNewVersions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbCheckForNewVersions.Margin = new System.Windows.Forms.Padding(2);
             this.cbCheckForNewVersions.Name = "cbCheckForNewVersions";
             this.cbCheckForNewVersions.Size = new System.Drawing.Size(203, 17);
             this.cbCheckForNewVersions.TabIndex = 13;
@@ -401,7 +414,7 @@
             // 
             this.cbRunOnWindowsStartup.AutoSize = true;
             this.cbRunOnWindowsStartup.Location = new System.Drawing.Point(2, 150);
-            this.cbRunOnWindowsStartup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbRunOnWindowsStartup.Margin = new System.Windows.Forms.Padding(2);
             this.cbRunOnWindowsStartup.Name = "cbRunOnWindowsStartup";
             this.cbRunOnWindowsStartup.Size = new System.Drawing.Size(145, 17);
             this.cbRunOnWindowsStartup.TabIndex = 12;
@@ -412,7 +425,7 @@
             // udInterval
             // 
             this.udInterval.Location = new System.Drawing.Point(91, 41);
-            this.udInterval.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.udInterval.Margin = new System.Windows.Forms.Padding(2);
             this.udInterval.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -439,7 +452,7 @@
             this.cbDownloadAutomatically.Image = ((System.Drawing.Image)(resources.GetObject("cbDownloadAutomatically.Image")));
             this.cbDownloadAutomatically.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbDownloadAutomatically.Location = new System.Drawing.Point(2, 23);
-            this.cbDownloadAutomatically.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbDownloadAutomatically.Margin = new System.Windows.Forms.Padding(2);
             this.cbDownloadAutomatically.Name = "cbDownloadAutomatically";
             this.cbDownloadAutomatically.Size = new System.Drawing.Size(159, 17);
             this.cbDownloadAutomatically.TabIndex = 5;
@@ -454,7 +467,7 @@
             this.cbPrefetch.Image = ((System.Drawing.Image)(resources.GetObject("cbPrefetch.Image")));
             this.cbPrefetch.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbPrefetch.Location = new System.Drawing.Point(2, 63);
-            this.cbPrefetch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbPrefetch.Margin = new System.Windows.Forms.Padding(2);
             this.cbPrefetch.Name = "cbPrefetch";
             this.cbPrefetch.Size = new System.Drawing.Size(125, 17);
             this.cbPrefetch.TabIndex = 10;
@@ -479,7 +492,7 @@
             this.cbAutoChangeonStartup.Image = ((System.Drawing.Image)(resources.GetObject("cbAutoChangeonStartup.Image")));
             this.cbAutoChangeonStartup.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbAutoChangeonStartup.Location = new System.Drawing.Point(2, 2);
-            this.cbAutoChangeonStartup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbAutoChangeonStartup.Margin = new System.Windows.Forms.Padding(2);
             this.cbAutoChangeonStartup.Name = "cbAutoChangeonStartup";
             this.cbAutoChangeonStartup.Size = new System.Drawing.Size(167, 17);
             this.cbAutoChangeonStartup.TabIndex = 6;
@@ -493,7 +506,7 @@
             this.cbUpdateFrequencyUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbUpdateFrequencyUnit.FormattingEnabled = true;
             this.cbUpdateFrequencyUnit.Location = new System.Drawing.Point(138, 41);
-            this.cbUpdateFrequencyUnit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbUpdateFrequencyUnit.Margin = new System.Windows.Forms.Padding(2);
             this.cbUpdateFrequencyUnit.Name = "cbUpdateFrequencyUnit";
             this.cbUpdateFrequencyUnit.Size = new System.Drawing.Size(82, 21);
             this.cbUpdateFrequencyUnit.TabIndex = 9;
@@ -505,9 +518,9 @@
             this.tpOutputs.Controls.Add(this.dgvOutputProviders);
             this.tpOutputs.ImageIndex = 2;
             this.tpOutputs.Location = new System.Drawing.Point(4, 23);
-            this.tpOutputs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpOutputs.Margin = new System.Windows.Forms.Padding(2);
             this.tpOutputs.Name = "tpOutputs";
-            this.tpOutputs.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpOutputs.Padding = new System.Windows.Forms.Padding(2);
             this.tpOutputs.Size = new System.Drawing.Size(579, 247);
             this.tpOutputs.TabIndex = 1;
             this.tpOutputs.Text = "Outputs";
@@ -523,7 +536,7 @@
             this.oppSettings});
             this.dgvOutputProviders.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvOutputProviders.Location = new System.Drawing.Point(2, 2);
-            this.dgvOutputProviders.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvOutputProviders.Margin = new System.Windows.Forms.Padding(2);
             this.dgvOutputProviders.MultiSelect = false;
             this.dgvOutputProviders.Name = "dgvOutputProviders";
             this.dgvOutputProviders.RowHeadersVisible = false;
@@ -551,7 +564,7 @@
             this.tpAbout.Controls.Add(this.BuildTag);
             this.tpAbout.ImageIndex = 1;
             this.tpAbout.Location = new System.Drawing.Point(4, 23);
-            this.tpAbout.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tpAbout.Margin = new System.Windows.Forms.Padding(2);
             this.tpAbout.Name = "tpAbout";
             this.tpAbout.Size = new System.Drawing.Size(579, 247);
             this.tpAbout.TabIndex = 2;
@@ -574,7 +587,7 @@
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(14, 62);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(16, 16);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -597,7 +610,7 @@
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(14, 46);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(16, 16);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -647,7 +660,7 @@
             this.ApplyButton.Image = ((System.Drawing.Image)(resources.GetObject("ApplyButton.Image")));
             this.ApplyButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ApplyButton.Location = new System.Drawing.Point(224, 15);
-            this.ApplyButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ApplyButton.Margin = new System.Windows.Forms.Padding(2);
             this.ApplyButton.Name = "ApplyButton";
             this.ApplyButton.Size = new System.Drawing.Size(65, 23);
             this.ApplyButton.TabIndex = 1;
@@ -660,7 +673,7 @@
             this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
             this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button3.Location = new System.Drawing.Point(297, 15);
-            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(65, 23);
             this.button3.TabIndex = 3;
@@ -674,7 +687,7 @@
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.IsSplitterFixed = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -697,21 +710,10 @@
             this.panel1.Controls.Add(this.button3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(587, 45);
             this.panel1.TabIndex = 4;
-            // 
-            // cbDisableInFullScreen
-            // 
-            this.cbDisableInFullScreen.AutoSize = true;
-            this.cbDisableInFullScreen.Location = new System.Drawing.Point(2, 192);
-            this.cbDisableInFullScreen.Name = "cbDisableInFullScreen";
-            this.cbDisableInFullScreen.Size = new System.Drawing.Size(161, 17);
-            this.cbDisableInFullScreen.TabIndex = 17;
-            this.cbDisableInFullScreen.Text = "Disable if App. in Full Screen";
-            this.cbDisableInFullScreen.UseVisualStyleBackColor = true;
-            this.cbDisableInFullScreen.CheckedChanged += new System.EventHandler(this.CheckBoxClick);
             // 
             // cbProviders
             // 
@@ -732,7 +734,7 @@
             this.ClientSize = new System.Drawing.Size(587, 322);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "frmPulseOptions";
             this.Text = "Pulse Options";
             this.Load += new System.EventHandler(this.frmPulseOptions_Load);

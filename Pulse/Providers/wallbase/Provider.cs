@@ -239,6 +239,21 @@ namespace wallbase
             {
                 using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
+                    //check if the user is already logged in (doh!)
+                    try
+                    {
+                        var loginReg = @"<span class=""name"".*?" + username + "</span>";
+                        string homepage = _client.DownloadString("http://wallbase.cc");
+                        if (Regex.Match(homepage, loginReg, RegexOptions.IgnoreCase).Success)
+                        {
+                            return;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Logger.Write(string.Format("There was an error trying to check for a pre-existing wallbase auth, ignoring it.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+                    }
+
                     try
                     {
                         //need to extract the cross-site request forgery token from the page

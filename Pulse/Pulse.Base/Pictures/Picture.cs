@@ -26,6 +26,11 @@ namespace Pulse.Base
         public string LocalPath { get; set; }
 
         /// <summary>
+        /// Used for tracking which provider instance returned this picture
+        /// </summary>
+        public Guid ProviderInstance { get; set; }
+
+        /// <summary>
         /// may be used for storing other properties of the file such as dimensions, thumbnail url, etc...
         /// </summary>
         public SerializableDictionary<string, string> Properties { get; set; }
@@ -83,6 +88,16 @@ namespace Pulse.Base
             }
 
             return _cachedThumb;
+        }
+
+        public ActiveProviderInfo ActiveProviderInfo
+        {
+            get {
+                var a = Settings.CurrentSettings.ProviderSettings.Where(api => api.Key == ProviderInstance);
+                if (a.Any()) return a.First().Value;
+
+                return null;
+            }
         }
 
         public static class StandardProperties

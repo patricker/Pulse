@@ -78,6 +78,7 @@ namespace Pulse.Base
         public ActiveProviderInfo(string name) : this()
         {
             ProviderName = name;
+            ProviderLabel = name;
         }
 
         public int GetComparisonHashCode()

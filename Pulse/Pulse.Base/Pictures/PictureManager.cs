@@ -303,8 +303,12 @@ namespace Pulse.Base
             //cache the picture list to file
             if (!loadedFromFile)
             {
+                //make sure the API GuID has been injected into all pictures
+                Pictures.Pictures.ForEach(x => x.ProviderInstance = ps.SearchProvider.ProviderInstanceID);
+
+                //save it
                 Pictures.Save(fPath);
-            } 
+            }
 
             //return whatever list of pictures was found
             return Pictures;

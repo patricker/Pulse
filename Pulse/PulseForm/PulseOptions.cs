@@ -153,6 +153,7 @@ namespace PulseForm
 
                 ListViewItem lvi = new ListViewItem(c.ProviderName, c.ProviderName);
                 lvi.SubItems.Add(c.ProviderInstanceID.ToString());
+                lvi.Checked = c.Active;
                 lbActiveInputProviders.Items.Add(lvi);
             }
         }
@@ -215,6 +216,8 @@ namespace PulseForm
             //save inputs
             foreach (ActiveProviderInfo api in InputProviderInfos)
             {
+                var index = InputProviderInfos.IndexOf(api);
+                api.Active = lbActiveInputProviders.Items[index].Checked;
                 Settings.CurrentSettings.ProviderSettings[api.ProviderInstanceID] = api;
             }
             //remove removed inputs
@@ -487,6 +490,11 @@ namespace PulseForm
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://pulse.codeplex.com/workitem/list/basic");
+        }
+
+        private void LbActiveInputProvidersItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            ApplyButton.Enabled = true;
         }
 
     }
