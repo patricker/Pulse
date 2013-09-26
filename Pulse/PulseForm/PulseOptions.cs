@@ -310,6 +310,20 @@ namespace PulseForm
             BindProviderListView();
         }
 
+        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lbActiveInputProviders.SelectedItems.Count > 0)
+            {
+                ListViewItem lvi = lbActiveInputProviders.SelectedItems[0];
+                ActiveProviderInfo api = InputProviderInfos.Where(x => x.ProviderInstanceID == new Guid(lvi.SubItems[1].Text)).SingleOrDefault();
+
+                ActiveProviderInfo apiDup = new ActiveProviderInfo(api.ProviderName) { Active=true, ProviderConfig=api.ProviderConfig };
+                InputProviderInfos.Add(apiDup);
+
+                BindProviderListView();
+            }
+        }
+
         private void HandleProviderSettingsEnableAndLoad()
         {
             bool result = false;
@@ -322,11 +336,18 @@ namespace PulseForm
 
                 btnPreview.Enabled = api != null;
                 btnRemoveInputProvider.Enabled = api != null;
+                ctxProviders.Enabled = api != null;
 
                 if (api != null)
                 {
                     result = ProviderManager.Instance.HasConfigurationWindow(api.ProviderName) != null;
                 }
+            }
+            else
+            {
+                btnPreview.Enabled = false;
+                btnRemoveInputProvider.Enabled = false;
+                ctxProviders.Enabled = false;
             }
 
             //enable or disable settings button depending on settings availability
@@ -496,6 +517,5 @@ namespace PulseForm
         {
             ApplyButton.Enabled = true;
         }
-
     }
 }
