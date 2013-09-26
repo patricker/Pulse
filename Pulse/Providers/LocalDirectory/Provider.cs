@@ -23,7 +23,7 @@ namespace LocalDirectory
 
             foreach (string ext in lds.Extensions.Split(new char[] { ';' }))
             {
-                files.AddRange(Directory.GetFiles(lds.Directory, "*." + ext, SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(lds.Directory, "*." + ext, lds.IncludeSubdirectories?SearchOption.AllDirectories:SearchOption.TopDirectoryOnly));
             }
 
             //distinct list (just in case)
