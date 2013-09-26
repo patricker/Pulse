@@ -99,7 +99,7 @@ namespace PulseForm
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         private void openCacheFolderToolStripMenuItem_Click(object sender, EventArgs e)

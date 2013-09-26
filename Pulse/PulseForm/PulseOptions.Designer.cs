@@ -41,6 +41,8 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.lbActiveInputProviders = new System.Windows.Forms.ListView();
+            this.ctxProviders = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnRemoveInputProvider = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAddInput = new System.Windows.Forms.Button();
@@ -76,8 +78,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.ctxProviders = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -85,6 +85,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudTempAge)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.ctxProviders.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxPictureCount)).BeginInit();
@@ -99,7 +100,6 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.ctxProviders.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -241,6 +241,7 @@
             // 
             this.lbActiveInputProviders.CheckBoxes = true;
             this.lbActiveInputProviders.ContextMenuStrip = this.ctxProviders;
+            this.lbActiveInputProviders.LabelEdit = true;
             this.lbActiveInputProviders.Location = new System.Drawing.Point(7, 24);
             this.lbActiveInputProviders.Margin = new System.Windows.Forms.Padding(2);
             this.lbActiveInputProviders.MultiSelect = false;
@@ -249,8 +250,24 @@
             this.lbActiveInputProviders.TabIndex = 14;
             this.lbActiveInputProviders.UseCompatibleStateImageBehavior = false;
             this.lbActiveInputProviders.View = System.Windows.Forms.View.SmallIcon;
+            this.lbActiveInputProviders.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.lbActiveInputProviders_AfterLabelEdit);
             this.lbActiveInputProviders.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.LbActiveInputProvidersItemCheck);
             this.lbActiveInputProviders.SelectedIndexChanged += new System.EventHandler(this.lbActiveInputProviders_SelectedIndexChanged_1);
+            // 
+            // ctxProviders
+            // 
+            this.ctxProviders.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.duplicateToolStripMenuItem});
+            this.ctxProviders.Name = "ctxProviders";
+            this.ctxProviders.ShowImageMargin = false;
+            this.ctxProviders.Size = new System.Drawing.Size(100, 26);
+            // 
+            // duplicateToolStripMenuItem
+            // 
+            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+            this.duplicateToolStripMenuItem.Text = "Duplicate";
+            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
             // btnRemoveInputProvider
             // 
@@ -731,21 +748,6 @@
             this.panel1.Size = new System.Drawing.Size(587, 45);
             this.panel1.TabIndex = 4;
             // 
-            // ctxProviders
-            // 
-            this.ctxProviders.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.duplicateToolStripMenuItem});
-            this.ctxProviders.Name = "ctxProviders";
-            this.ctxProviders.ShowImageMargin = false;
-            this.ctxProviders.Size = new System.Drawing.Size(100, 26);
-            // 
-            // duplicateToolStripMenuItem
-            // 
-            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
-            this.duplicateToolStripMenuItem.Text = "Duplicate";
-            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
-            // 
             // frmPulseOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -765,6 +767,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudTempAge)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
+            this.ctxProviders.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -781,7 +784,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.ctxProviders.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -91,7 +91,8 @@ namespace PulseForm
                         Active = api.Active,
                         AsyncOK = api.AsyncOK,
                         ExecutionOrder = api.ExecutionOrder,
-                        ProviderConfig = api.ProviderConfig
+                        ProviderConfig = api.ProviderConfig,
+                        ProviderLabel = api.ProviderLabel
                     }
                 );
 
@@ -151,7 +152,7 @@ namespace PulseForm
                 if (!imgList.Images.ContainsKey(c.ProviderName))
                     imgList.Images.Add(c.ProviderName, ProviderManager.Instance.GetProviderIcon(c.ProviderName));
 
-                ListViewItem lvi = new ListViewItem(c.ProviderName, c.ProviderName);
+                ListViewItem lvi = new ListViewItem(c.ProviderLabel, c.ProviderName);
                 lvi.SubItems.Add(c.ProviderInstanceID.ToString());
                 lvi.Checked = c.Active;
                 lbActiveInputProviders.Items.Add(lvi);
@@ -319,6 +320,21 @@ namespace PulseForm
 
                 ActiveProviderInfo apiDup = new ActiveProviderInfo(api.ProviderName) { Active=true, ProviderConfig=api.ProviderConfig };
                 InputProviderInfos.Add(apiDup);
+
+                BindProviderListView();
+            }
+        }
+
+        private void lbActiveInputProviders_AfterLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            if (lbActiveInputProviders.SelectedItems.Count > 0)
+            {
+                ListViewItem lvi = lbActiveInputProviders.SelectedItems[0];
+                ActiveProviderInfo api = InputProviderInfos.Where(x => x.ProviderInstanceID == new Guid(lvi.SubItems[1].Text)).SingleOrDefault();
+
+                api.ProviderLabel = e.Label;
+
+                this.ApplyButton.Enabled = true;
 
                 BindProviderListView();
             }
