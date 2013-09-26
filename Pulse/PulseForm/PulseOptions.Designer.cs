@@ -44,6 +44,7 @@
             this.btnRemoveInputProvider = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAddInput = new System.Windows.Forms.Button();
+            this.cbProviders = new Pulse.Forms.UI.ProviderComboBox();
             this.ProviderSettings = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -75,7 +76,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.cbProviders = new Pulse.Forms.UI.ProviderComboBox();
+            this.ctxProviders = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -97,6 +99,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.ctxProviders.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -237,6 +240,7 @@
             // lbActiveInputProviders
             // 
             this.lbActiveInputProviders.CheckBoxes = true;
+            this.lbActiveInputProviders.ContextMenuStrip = this.ctxProviders;
             this.lbActiveInputProviders.Location = new System.Drawing.Point(7, 24);
             this.lbActiveInputProviders.Margin = new System.Windows.Forms.Padding(2);
             this.lbActiveInputProviders.MultiSelect = false;
@@ -289,6 +293,18 @@
             this.btnAddInput.Text = "Add";
             this.btnAddInput.UseVisualStyleBackColor = true;
             this.btnAddInput.Click += new System.EventHandler(this.btnAddInput_Click);
+            // 
+            // cbProviders
+            // 
+            this.cbProviders.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbProviders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbProviders.FormattingEnabled = true;
+            this.cbProviders.Location = new System.Drawing.Point(7, 3);
+            this.cbProviders.Margin = new System.Windows.Forms.Padding(2);
+            this.cbProviders.Name = "cbProviders";
+            this.cbProviders.Size = new System.Drawing.Size(168, 21);
+            this.cbProviders.TabIndex = 2;
+            this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
             // 
             // ProviderSettings
             // 
@@ -715,17 +731,20 @@
             this.panel1.Size = new System.Drawing.Size(587, 45);
             this.panel1.TabIndex = 4;
             // 
-            // cbProviders
+            // ctxProviders
             // 
-            this.cbProviders.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.cbProviders.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbProviders.FormattingEnabled = true;
-            this.cbProviders.Location = new System.Drawing.Point(7, 3);
-            this.cbProviders.Margin = new System.Windows.Forms.Padding(2);
-            this.cbProviders.Name = "cbProviders";
-            this.cbProviders.Size = new System.Drawing.Size(168, 21);
-            this.cbProviders.TabIndex = 2;
-            this.cbProviders.SelectedIndexChanged += new System.EventHandler(this.cbProviders_SelectedIndexChanged);
+            this.ctxProviders.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.duplicateToolStripMenuItem});
+            this.ctxProviders.Name = "ctxProviders";
+            this.ctxProviders.ShowImageMargin = false;
+            this.ctxProviders.Size = new System.Drawing.Size(100, 26);
+            // 
+            // duplicateToolStripMenuItem
+            // 
+            this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.duplicateToolStripMenuItem.Text = "Duplicate";
+            this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
             // frmPulseOptions
             // 
@@ -762,6 +781,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.ctxProviders.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -814,5 +834,7 @@
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.CheckBox cbDisableInFullScreen;
+        private System.Windows.Forms.ContextMenuStrip ctxProviders;
+        private System.Windows.Forms.ToolStripMenuItem duplicateToolStripMenuItem;
     }
 }
