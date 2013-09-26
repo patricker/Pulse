@@ -34,6 +34,7 @@ namespace PulseForm
         List<ActiveProviderInfo> _OutputProviderInfos = new List<ActiveProviderInfo>();
         List<ActiveProviderInfo> _InputProviderInfos = new List<ActiveProviderInfo>();
         List<Guid> _ProvidersToRemove = new List<Guid>();
+        string _cachePath = string.Empty;
 
         public frmPulseOptions()
         {
@@ -47,7 +48,7 @@ namespace PulseForm
             var fileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
             BuildTag.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-
+            _cachePath = Settings.CurrentSettings.CachePath;
             cbDownloadAutomatically.Checked = Settings.CurrentSettings.ChangeOnTimer;
             cbAutoChangeonStartup.Checked = Settings.CurrentSettings.DownloadOnAppStartup;
             udInterval.Value = Settings.CurrentSettings.RefreshInterval;
@@ -180,7 +181,12 @@ namespace PulseForm
         }
 
         private void ApplySettings()
-        {            
+        {
+            if (Settings.CurrentSettings.CachePath != _cachePath)
+            {
+                Settings.CurrentSettings.CachePath = _cachePath;
+                MessageBox.Show("You have changed the Cache folder.  Please restart Pulse for this change to take effect.", "Pulse", MessageBoxButtons.OK);
+            }
             Settings.CurrentSettings.ChangeOnTimer = cbDownloadAutomatically.Checked;
             Settings.CurrentSettings.DownloadOnAppStartup = cbAutoChangeonStartup.Checked;
             Settings.CurrentSettings.ClearOldPics = cbDeleteOldFiles.Checked;
@@ -532,6 +538,19 @@ namespace PulseForm
         private void LbActiveInputProvidersItemCheck(object sender, ItemCheckEventArgs e)
         {
             ApplyButton.Enabled = true;
+        }
+
+        private void btnChangeCachePath_Click(object sender, EventArgs e)
+        {
+            fbdCachePath.SelectedPath = _cachePath;
+            if (fbdCachePath.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (_cachePath != fbdCachePath.SelectedPath)
+                {
+                    _cachePath = fbdCachePath.SelectedPath;
+                    ApplyButton.Enabled = true;
+                }
+            }
         }
     }
 }

@@ -78,6 +78,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.fbdCachePath = new System.Windows.Forms.FolderBrowserDialog();
+            this.btnChangeCachePath = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -147,6 +149,7 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnChangeCachePath);
             this.panel4.Controls.Add(this.btnClearNow);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Controls.Add(this.nudTempAge);
@@ -166,7 +169,7 @@
             this.btnClearNow.Location = new System.Drawing.Point(5, 29);
             this.btnClearNow.Margin = new System.Windows.Forms.Padding(2);
             this.btnClearNow.Name = "btnClearNow";
-            this.btnClearNow.Size = new System.Drawing.Size(87, 21);
+            this.btnClearNow.Size = new System.Drawing.Size(98, 21);
             this.btnClearNow.TabIndex = 3;
             this.btnClearNow.Text = "Clear Now";
             this.btnClearNow.UseVisualStyleBackColor = true;
@@ -692,10 +695,10 @@
             this.ApplyButton.Enabled = false;
             this.ApplyButton.Image = ((System.Drawing.Image)(resources.GetObject("ApplyButton.Image")));
             this.ApplyButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ApplyButton.Location = new System.Drawing.Point(224, 15);
+            this.ApplyButton.Location = new System.Drawing.Point(218, 15);
             this.ApplyButton.Margin = new System.Windows.Forms.Padding(2);
             this.ApplyButton.Name = "ApplyButton";
-            this.ApplyButton.Size = new System.Drawing.Size(65, 23);
+            this.ApplyButton.Size = new System.Drawing.Size(71, 23);
             this.ApplyButton.TabIndex = 1;
             this.ApplyButton.Text = "Save";
             this.ApplyButton.UseVisualStyleBackColor = true;
@@ -708,7 +711,7 @@
             this.button3.Location = new System.Drawing.Point(297, 15);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(65, 23);
+            this.button3.Size = new System.Drawing.Size(73, 23);
             this.button3.TabIndex = 3;
             this.button3.Text = "Cancel";
             this.button3.UseVisualStyleBackColor = true;
@@ -747,6 +750,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(587, 45);
             this.panel1.TabIndex = 4;
+            // 
+            // btnChangeCachePath
+            // 
+            this.btnChangeCachePath.Location = new System.Drawing.Point(108, 29);
+            this.btnChangeCachePath.Name = "btnChangeCachePath";
+            this.btnChangeCachePath.Size = new System.Drawing.Size(134, 21);
+            this.btnChangeCachePath.TabIndex = 4;
+            this.btnChangeCachePath.Text = "Change Cache Folder";
+            this.btnChangeCachePath.UseVisualStyleBackColor = true;
+            this.btnChangeCachePath.Click += new System.EventHandler(this.btnChangeCachePath_Click);
             // 
             // frmPulseOptions
             // 
@@ -838,5 +851,7 @@
         private System.Windows.Forms.CheckBox cbDisableInFullScreen;
         private System.Windows.Forms.ContextMenuStrip ctxProviders;
         private System.Windows.Forms.ToolStripMenuItem duplicateToolStripMenuItem;
+        private System.Windows.Forms.Button btnChangeCachePath;
+        private System.Windows.Forms.FolderBrowserDialog fbdCachePath;
     }
 }
