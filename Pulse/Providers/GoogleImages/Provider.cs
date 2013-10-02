@@ -66,7 +66,7 @@ namespace GoogleImages
             if (!string.IsNullOrEmpty(tbs)) tbs = ("&tbs=" + tbs).Trim(new char[]{','});
 
             //do safe search setup (off/strict/moderate) this is part of the session and tracked via cookies
-            SetSafeSearchSetting(giss.GoogleSafeSearchOption);
+            //SetSafeSearchSetting(giss.GoogleSafeSearchOption);
 
             do
             {
@@ -133,13 +133,10 @@ namespace GoogleImages
                 //options are "on", "images", "off"
                 var safeUIOption = "";
                 switch(gsso) {
-                    case GoogleImageSearchSettings.GoogleSafeSearchOptions.Moderate:
-                        safeUIOption = "images";
-                        break;
                     case GoogleImageSearchSettings.GoogleSafeSearchOptions.Off:
                         safeUIOption = "off";
                         break;
-                    case GoogleImageSearchSettings.GoogleSafeSearchOptions.Strict:
+                    case GoogleImageSearchSettings.GoogleSafeSearchOptions.On:
                         safeUIOption = "on";
                         break;
                 }
