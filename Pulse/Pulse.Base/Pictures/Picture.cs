@@ -44,7 +44,8 @@ namespace Pulse.Base
 
         public string CalculateLocalPath(string baseFolder)
         {
-            return Path.Combine(baseFolder, Id + Path.GetExtension(Url));
+            string ext = Path.GetExtension(new Uri(Url).AbsolutePath);
+            return Path.Combine(baseFolder, Id + (!string.IsNullOrEmpty(ext)?ext:".jpg"));
         }
 
         /// <summary>

@@ -32,7 +32,7 @@ namespace GoogleImages
         public GoogleImageSearchSettings(){
            ImageWidth = PictureManager.PrimaryScreenResolution.First;
            ImageHeight = PictureManager.PrimaryScreenResolution.Second;
-           GoogleSafeSearchOption = GoogleSafeSearchOptions.Moderate;
+           GoogleSafeSearchOption = GoogleSafeSearchOptions.On;
         }
 
         public class GoogleImageColors
@@ -124,8 +124,7 @@ namespace GoogleImages
         public enum GoogleSafeSearchOptions
         {
             Off,
-            Moderate,
-            Strict
+            On
         }
     }
 }
