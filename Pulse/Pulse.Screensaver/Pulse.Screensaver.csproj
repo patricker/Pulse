@@ -82,10 +82,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Providers\wallbase\wallbase.csproj">
-      <Project>{921f5326-5b28-462d-8220-3d3507438c27}</Project>
-      <Name>wallbase</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Pulse.Base\Pulse.Base.csproj">
       <Project>{53b10354-56c0-4440-bbb2-f1f0c330e120}</Project>
       <Name>Pulse.Base</Name>
