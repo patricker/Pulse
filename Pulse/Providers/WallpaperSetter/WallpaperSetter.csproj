@@ -58,10 +58,12 @@
     <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj">
       <Project>{53B10354-56C0-4440-BBB2-F1F0C330E120}</Project>
       <Name>Pulse.Base</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WinAPI\WinAPI.csproj">
       <Project>{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}</Project>
       <Name>WinAPI</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
