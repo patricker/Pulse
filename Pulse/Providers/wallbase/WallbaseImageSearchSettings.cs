@@ -14,9 +14,11 @@ namespace wallbase
 {
     public class WallbaseImageSearchSettings : Pulse.Base.XmlSerializable<WallbaseImageSearchSettings>
     {
-        private const string Url = "http://wallbase.cc/{0}/index/{1}?section={2}&board={3}&q={4}&res_opt={5}&res={6}&aspect={7}&purity={8}&thpp={9}&ts={10}&color={11}&order_mode={12}&order={13}";
+        //                          
+        private const string Url = "http://alpha.wallhaven.cc/wallpaper/search?q={0}&categories={1}&purity={2}&resolutions={3}&sorting={4}&order={5}&page={6}";
 
         public string Query { get; set; }
+        public string WallbaseSearchLabel { get; set; }
 
         //authentication info
         public string Username { get; set; }
@@ -109,9 +111,9 @@ namespace wallbase
 
         public string BuildCategoryString()
         {
-            return (WG ? "2" : "") +
-                (W ? "1" : "") +
-                (HR ? "3":"");
+            return (WG ? "1" : "0") +
+                (W ? "1" : "0") +
+                (HR ? "1":"0");
         }
 
         public string BuildResolutionString()
@@ -129,7 +131,8 @@ namespace wallbase
             if (SA == "search" || SA == "toplist" || SA == "random")
             {
                 //new URL includes {0} placeholder for page number
-                areaURL = string.Format(Url, SA, "{0}", "wallpapers", BuildCategoryString(), Query, SO, resolutionString, AR, BuildPurityString(), pageSize, TopTimespan, GetColor(), OBD, OB);
+                areaURL = string.Format(Url, Query, BuildCategoryString(), BuildPurityString(), resolutionString, OB, OBD, "{0}");
+                //areaURL = string.Format(Url, SA, "{0}", "wallpapers", BuildCategoryString(), Query, SO, resolutionString, AR, BuildPurityString(), pageSize, TopTimespan, GetColor(), OBD, OB);
             }
             else if (SA == "user/collection")
             {

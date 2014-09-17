@@ -85,6 +85,12 @@
   <ItemGroup>
     <None Include="Resources\wallbasefav.gif" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wallhaven.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

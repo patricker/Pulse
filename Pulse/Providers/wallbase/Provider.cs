@@ -14,10 +14,10 @@ using System.Collections.Specialized;
 
 namespace wallbase
 {
-    [System.ComponentModel.Description("Wallbase")]
+    [System.ComponentModel.Description("Wallhaven")]
     [ProviderConfigurationUserControl(typeof(WallbaseProviderPrefs))]
     [ProviderConfigurationClass(typeof(WallbaseImageSearchSettings))]
-    [ProviderIcon(typeof(Properties.Resources), "wallbasefav")]
+    [ProviderIcon(typeof(Properties.Resources), "wallhaven")]
     public class Provider : IInputProvider
     {
         private int resultCount;
@@ -38,7 +38,8 @@ namespace wallbase
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = wiss.GetMaxImageCount(ps.MaxPictureCount);
             int pageSize = wiss.GetPageSize();
-            int pageIndex = ps.PageToRetrieve; //set page to retreive if one is specified
+            int pageIndex = (ps.PageToRetrieve<=0?1:ps.PageToRetrieve); //set page to retreive if one is specified
+
             var imgFoundCount = 0;
 
             //authenticate to wallbase
@@ -51,7 +52,7 @@ namespace wallbase
             do
             {
                 //calculate page index.  Random does not use pages, so for random just refresh with same url
-                string strPageNum = (pageIndex * pageSize).ToString();
+                string strPageNum = pageIndex.ToString();
 
                 string pageURL = areaURL.Contains("{0}") ? string.Format(areaURL, strPageNum) : areaURL;
                 //string content = HttpPost(pageURL, postParams);
@@ -109,82 +110,45 @@ namespace wallbase
         {
             var result = new PictureList() { FetchDate = DateTime.Now };
 
-            ManualResetEvent mreThread = new ManualResetEvent(false);
-
-            ThreadStart threadStarter = () =>
+            try
             {
-                //download in parallel
-                var processCounter = 0;
-
-                try
-                {
-                    while (processCounter < wallResults.Count)
-                    {
-                        var toProcess = wallResults.Skip(processCounter).Take(60).ToList();
-                        processCounter += toProcess.Count;
-
-                        ManualResetEvent[] manualEvents = new ManualResetEvent[toProcess.Count];
-
-                        // Queue the work items that create and write to the files.
-                        for (int i = 0; i < toProcess.Count; i++)
+                System.Threading.Tasks.TaskFactory tf = new System.Threading.Tasks.TaskFactory();
+                
+                wallResults
+                    .AsParallel()
+                    .WithDegreeOfParallelism(10)
+                    .ForAll(delegate(Picture p){
+                        try
                         {
-                            manualEvents[i] = new ManualResetEvent(false);
+                            //save original URL as referrer
+                            p.Properties.Add(Picture.StandardProperties.Referrer, p.Url);
+                            p.Properties.Add(Picture.StandardProperties.BanImageKey, Path.GetFileName(p.Url));
+                            p.Properties.Add(Picture.StandardProperties.ProviderLabel, "Wallhaven");
+                            //get actual image URL if this is not a preview
+                            if (!previewOnly)
+                                p.Url = GetDirectPictureUrl(p.Url);
+                            p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
 
-                            ThreadPool.QueueUserWorkItem(new WaitCallback(delegate(object state)
+                            if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
                             {
-                                object[] states = (object[])state;
-
-                                ManualResetEvent mre = (ManualResetEvent)states[0];
-                                Picture p = (Picture)states[1];
-
-                                try
-                                {
-                                    //save original URL as referrer
-                                    p.Properties.Add(Picture.StandardProperties.Referrer, p.Url);
-                                    p.Properties.Add(Picture.StandardProperties.BanImageKey, Path.GetFileName(p.Url));
-
-                                    //get actual image URL if this is not a preview
-                                    if(!previewOnly)
-                                        p.Url = GetDirectPictureUrl(p.Url);
-                                    p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
-
-                                    if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
-                                    {
-                                        result.Pictures.Add(p);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Logger.Write(string.Format("Error downloading picture object from '{0}'. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
-                                }
-                                finally
-                                {
-                                    mre.Set();
-                                }
-
-                            }), new object[] { manualEvents[i], toProcess[i] });
+                                result.Pictures.Add(p);
+                            }
                         }
-
-                        //wait for all items to finish
-                        //one minute timeout
-                        WaitHandle.WaitAll(manualEvents, 60 * 1000);
-                    }
-                }
-                catch(Exception ex) {
-                    Log.Logger.Write(string.Format("Error during multi-threaded wallbase.cc image get.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
-
-                }
-                finally
-                {
-                    mreThread.Set();
-                }
-            };
-
-            var thread = new Thread(threadStarter);
-            thread.SetApartmentState(ApartmentState.MTA);
-            thread.Start();
-
-            mreThread.WaitOne();
+                        catch (Exception ex)
+                        {
+                            Log.Logger.Write(string.Format("Error downloading picture object from '{0}'. Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+                        }
+                        finally
+                        {
+                        }
+                    });
+            }
+            catch(Exception ex) {
+                Log.Logger.Write(string.Format("Error during multi-threaded wallbase.cc image get.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+            }
+            finally
+            {
+            }
 
             return result;
         }
@@ -192,7 +156,8 @@ namespace wallbase
         //find links to pages with wallpaper only with matching resolution
         private List<Picture> ParsePictures(string content)
         {
-            var picsRegex = new Regex("<a href=\"(?<link>http://wallbase.cc/wallpaper/.*?)\".*?>.*?<img.*?data-original=\"(?<img>.*?)\".*?</a>", RegexOptions.Singleline);
+            //<img alt="loading" class="lazyload loaded" data-src="http://alpha.wallhaven.cc/wallpapers/thumb/small/th-22047.jpg" src="http://alpha.wallhaven.cc/wallpapers/thumb/small/th-22047.jpg"><a class="preview" href="http://alpha.wallhaven.cc/wallpaper/4010"></a>
+            var picsRegex = new Regex("<a class=\"preview\" href=\"(?<link>http://alpha.wallhaven.cc/wallpaper/.*?)\".*?></a>", RegexOptions.Singleline);
             var picsMatches = picsRegex.Matches(content);
 
             var result = new List<Picture>();
@@ -201,7 +166,7 @@ namespace wallbase
                 var pic = new Picture();
 
                 pic.Url = picsMatches[i].Groups["link"].Value;
-                pic.Properties.Add(Picture.StandardProperties.Thumbnail, picsMatches[i].Groups["img"].Value);
+                //pic.Properties.Add(Picture.StandardProperties.Thumbnail, picsMatches[i].Groups["img"].Value);
 
                 result.Add(pic);
             }
@@ -216,8 +181,8 @@ namespace wallbase
 
                 var content = cawc.DownloadString(pageUrl);
                 if (string.IsNullOrEmpty(content)) return string.Empty;
-
-                var regex = new Regex(@"<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""");
+                //<img id="wallpaper" src="http://alpha.wallhaven.cc/wallpapers/full/wallhaven-4010.jpg" alt="" draggable="false" data-wallpaper-id="4010" data-wallpaper-width="1920" data-wallpaper-height="1200" class="fill-horizontal" style="margin-top: 0px; margin-bottom: 0px;">
+                var regex = new Regex(@"<img.*src=""(?<img>.*(wallpapers.*\.(jpg|png)))""", RegexOptions.Singleline);
                 //var regex = new Regex(@"\+B\('(?<img>.*?)'\)");
                 var m = regex.Match(content);
                 if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
