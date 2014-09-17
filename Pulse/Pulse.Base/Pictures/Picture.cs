@@ -106,6 +106,7 @@ namespace Pulse.Base
             public static readonly string Thumbnail = "thumb";
             public static readonly string Referrer = "referrer";
             public static readonly string BanImageKey = "banImageKey";
+            public static readonly string ProviderLabel = "providerLabel";
         }
     }
 }

@@ -13,7 +13,7 @@ namespace GoogleImages
     [ProviderIcon(typeof(Properties.Resources),"googleImages")]
     public class Provider : IInputProvider
     {
-        private readonly Regex _imagesRegex2 = new Regex(@"imgurl=(?<imgurlgrp>http.*?)&amp;.*?imgrefurl=(?<imgrefgrp>http.*?)&amp;.*?src=[""'](?<thumbURL>.*?)[""'].*?>");//"(imgurl=)(?<imgurl>http.*?)[^&>]*([>&]{1})");
+        private readonly Regex _imagesRegex2 = new Regex(@"imgurl=(?<imgurlgrp>http.*?)&amp;.*?imgrefurl=(?<imgrefgrp>http.*?)&amp;.*?src=[""'](?<thumbURL>.*?)[""'].*?>",RegexOptions.Singleline);//"(imgurl=)(?<imgurl>http.*?)[^&>]*([>&]{1})");
         private const string baseURL = "http://images.google.com/search?tbm=isch&hl=en&source=hp&biw=&bih=&gbv=1&q={0}{1}&start={2}";
         private readonly CookieContainer _cookies = new CookieContainer();
 
