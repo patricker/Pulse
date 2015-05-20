@@ -62,8 +62,6 @@ namespace wallbase
             txtCollectionID.Text = wiss.CollectionID;
             txtFavoritesID.Text = wiss.FavoriteID;
 
-            cbTopTimespan.SelectedValue = wiss.TopTimespan;
-
             if (wiss.Color != System.Drawing.Color.Empty)
             {
                 pnlColor.BackColor = wiss.Color;
@@ -94,8 +92,6 @@ namespace wallbase
             wiss.ImageWidth = string.IsNullOrEmpty(txtWidth.Text) ? 0 : Convert.ToInt32(txtWidth.Text);
             wiss.ImageHeight = string.IsNullOrEmpty(txtHeight.Text) ? 0 : Convert.ToInt32(txtHeight.Text);
             wiss.AR = cbAspectRatio.SelectedValue==null?"":cbAspectRatio.SelectedValue.ToString();
-
-            wiss.TopTimespan = cbTopTimespan.SelectedValue.ToString();
             
             wiss.CollectionID = txtCollectionID.Text;
             wiss.FavoriteID = txtFavoritesID.Text;
@@ -142,7 +138,7 @@ namespace wallbase
             if (val == "search")
                 tabControl1.SelectedTab = tpSearch;
             else if (val == "toplist")
-                tabControl1.SelectedTab = tpTop;
+                tabControl1.SelectedTab = tpSearch;
             else if (val == "user/favorites")
                 tabControl1.SelectedTab = tpFavorites;
             else if (val == "user/collection")
