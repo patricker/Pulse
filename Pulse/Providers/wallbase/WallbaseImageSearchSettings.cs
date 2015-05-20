@@ -74,10 +74,7 @@ namespace wallbase
         //order by
         public string OB { get; set; }
         public string OBD { get; set; }
-
-        //top timespan
-        public string TopTimespan { get; set; }
-
+        
         public WallbaseImageSearchSettings()
         {
             Query = "nature";
@@ -96,8 +93,6 @@ namespace wallbase
 
             OB = "relevance";
             OBD = "desc";
-
-            TopTimespan = "3d";
 
             Color = System.Drawing.Color.Empty;
         }
@@ -136,11 +131,11 @@ namespace wallbase
             }
             else if (SA == "user/collection")
             {
-                areaURL += string.Format("http://wallbase.cc/collection/{0}/{1}", CollectionID, "{0}");
+                areaURL += string.Format("http://alpha.wallhaven.cc/user/Aheres/favorites/{0}", CollectionID, "{0}");
             }
             else if (SA == "user/favorites")
             {
-                areaURL += string.Format("http://wallbase.cc/favorites/{0}/{1}", FavoriteID, "{0}");
+                areaURL += string.Format("http://alpha.wallhaven.cc/favorites/{0}", FavoriteID, "{0}");
             }
 
             return areaURL;

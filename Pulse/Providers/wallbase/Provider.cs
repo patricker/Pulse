@@ -1,4 +1,5 @@
 ﻿using System;
+using CsQuery;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace wallbase
     [System.ComponentModel.Description("Wallhaven")]
     [ProviderConfigurationUserControl(typeof(WallbaseProviderPrefs))]
     [ProviderConfigurationClass(typeof(WallbaseImageSearchSettings))]
-    [ProviderIcon(typeof(Properties.Resources), "wallhaven")]
+    [ProviderIcon(typeof(wallhaven.Properties.Resources), "wallhaven")]
     public class Provider : IInputProvider
     {
         private int resultCount;
@@ -156,17 +157,20 @@ namespace wallbase
         //find links to pages with wallpaper only with matching resolution
         private List<Picture> ParsePictures(string content)
         {
-            //<img alt="loading" class="lazyload loaded" data-src="http://alpha.wallhaven.cc/wallpapers/thumb/small/th-22047.jpg" src="http://alpha.wallhaven.cc/wallpapers/thumb/small/th-22047.jpg"><a class="preview" href="http://alpha.wallhaven.cc/wallpaper/4010"></a>
-            var picsRegex = new Regex("<a class=\"preview\" href=\"(?<link>http://alpha.wallhaven.cc/wallpaper/.*?)\".*?></a>", RegexOptions.Singleline);
-            var picsMatches = picsRegex.Matches(content);
+            var dom = CQ.CreateDocument(content);
+
+            var previews = dom["figure.thumb"];
 
             var result = new List<Picture>();
-            for (var i = 0; i < picsMatches.Count; i++)
+            for (var i = 0; i < previews.Length; i++)
             {
                 var pic = new Picture();
+                var cq = previews[i].Cq();
+                var url = cq["a.preview"][0];
+                pic.Url = url.GetAttribute("href");
 
-                pic.Url = picsMatches[i].Groups["link"].Value;
-                //pic.Properties.Add(Picture.StandardProperties.Thumbnail, picsMatches[i].Groups["img"].Value);
+                var thumb = cq["img.lazyload"][0];
+                pic.Properties.Add(Picture.StandardProperties.Thumbnail, thumb.GetAttribute("src"));
 
                 result.Add(pic);
             }
@@ -178,19 +182,14 @@ namespace wallbase
         {
             using (HttpUtility.CookieAwareWebClient cawc = new HttpUtility.CookieAwareWebClient(_cookies))
             {
-
                 var content = cawc.DownloadString(pageUrl);
                 if (string.IsNullOrEmpty(content)) return string.Empty;
-                //<img id="wallpaper" src="http://alpha.wallhaven.cc/wallpapers/full/wallhaven-4010.jpg" alt="" draggable="false" data-wallpaper-id="4010" data-wallpaper-width="1920" data-wallpaper-height="1200" class="fill-horizontal" style="margin-top: 0px; margin-bottom: 0px;">
-                var regex = new Regex(@"<img.*src=""(?<img>.*(wallpapers.*\.(jpg|png)))""", RegexOptions.Singleline);
-                //var regex = new Regex(@"\+B\('(?<img>.*?)'\)");
-                var m = regex.Match(content);
-                if (m.Groups["img"].Success && !string.IsNullOrEmpty(m.Groups["img"].Value))
+                var dom = CQ.CreateDocument(content);
+                var wall = dom["img.wallpaper"];
+
+                if (wall.Length > 0)
                 {
-                    return m.Groups["img"].Value;
-                    //byte[] decoded = Convert.FromBase64String(m.Groups["img"].Value);
-                    //string final = Encoding.Default.GetString(decoded);
-                    //return final;
+                    return wall[0].GetAttribute("src");
                 }
 
                 return string.Empty;
@@ -204,52 +203,42 @@ namespace wallbase
             {
                 using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
                 {
+                    string homepage = _client.DownloadString("http://alpha.wallhaven.cc/");
+                    var dom = CQ.CreateDocument(homepage);
+
                     //check if the user is already logged in (doh!)
                     try
                     {
-                        var loginReg = @"<span class=""name"".*?" + username + "</span>";
-                        string homepage = _client.DownloadString("http://wallbase.cc");
-                        if (Regex.Match(homepage, loginReg, RegexOptions.IgnoreCase).Success)
-                        {
-                            return;
-                        }
+                        var loginReg = dom["span.username"];
+
+                        if (loginReg.Length > 0) return;
                     }
                     catch(Exception ex)
                     {
-                        Log.Logger.Write(string.Format("There was an error trying to check for a pre-existing wallbase auth, ignoring it.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
+                        Log.Logger.Write(string.Format("There was an error trying to check for a pre-existing wallhaven auth, ignoring it.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
                     }
 
                     try
                     {
-                        //need to extract the cross-site request forgery token from the page
-                        //<img.*src=""(?<img>.*(wallpaper.*\.(jpg|png)))""
-                        var csrfRegex = new Regex(@"<input type=""hidden"" name=""csrf"" value=""(?<csrf>.*)"">");
-                        var refWallbase64Regex = new Regex(@"<input type=""hidden"" name=""ref"" value=""(?<ref>.*)"">");
-
-                        string loginPage = _client.DownloadString("http://wallbase.cc/user/login");
-                        Match lpM = csrfRegex.Match(loginPage);
-                        Match lpWallbaseInbase64 = refWallbase64Regex.Match(loginPage);
-
-                        if (!lpM.Success) return;
-
+                        var token = dom["input[name='_token']"].Val<string>();
+                        
                         var loginData = new NameValueCollection();
-                        loginData.Add("csrf", lpM.Groups["csrf"].Value);
-                        loginData.Add("ref", lpWallbaseInbase64.Groups["ref"].Value);
+                        loginData.Add("_token", token);
 
                         loginData.Add("username", username);
                         loginData.Add("password", password);
 
-                        _client.Referrer = "http://wallbase.cc/user/login";
+                        _client.Referrer = "http://alpha.wallhaven.cc/";
                         _client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 
-                        byte[] result = _client.UploadValues(@"http://wallbase.cc/user/do_login", "POST", loginData);
+                        byte[] result = _client.UploadValues(@"http://alpha.wallhaven.cc/auth/login", "POST", loginData);
 
                         //we do not need the response, all we need are the cookies
                         string response = System.Text.Encoding.UTF8.GetString(result);
                     }
                     catch (Exception ex)
                     {
-                        throw new WallbaseAccessDeniedException("Wallbase authentication failed. Please verify your username and password.", ex);
+                        throw new WallbaseAccessDeniedException("Wallhaven authentication failed. Please verify your username and password.", ex);
                     }
                 }
             }
