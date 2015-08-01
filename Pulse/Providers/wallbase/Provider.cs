@@ -170,7 +170,7 @@ namespace wallbase
                 pic.Url = url.GetAttribute("href");
 
                 var thumb = cq["img.lazyload"][0];
-                pic.Properties.Add(Picture.StandardProperties.Thumbnail, thumb.GetAttribute("src"));
+                pic.Properties.Add(Picture.StandardProperties.Thumbnail, thumb.GetAttribute("data-src"));
 
                 result.Add(pic);
             }
@@ -185,11 +185,11 @@ namespace wallbase
                 var content = cawc.DownloadString(pageUrl);
                 if (string.IsNullOrEmpty(content)) return string.Empty;
                 var dom = CQ.CreateDocument(content);
-                var wall = dom["img.wallpaper"];
+                var wall = dom["#wallpaper"];
 
                 if (wall.Length > 0)
                 {
-                    return wall[0].GetAttribute("src");
+                    return "http:" + wall[0].GetAttribute("src");
                 }
 
                 return string.Empty;

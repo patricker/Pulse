@@ -21,7 +21,7 @@ namespace wallbase
             cbImageSizeType.DataSource = WallbaseImageSearchSettings.SizingOption.GetDirectionList();
             cbOrderBy.DataSource = WallbaseImageSearchSettings.OrderBy.GetOrderByList();
             cbOrderByDirection.DataSource = WallbaseImageSearchSettings.OrderByDirection.GetDirectionList();
-            cbTopTimespan.DataSource = WallbaseImageSearchSettings.TopTimeSpan.GetTimespanList();
+            //cbTopTimespan.DataSource = WallbaseImageSearchSettings.TopTimeSpan.GetTimespanList();
             cbAspectRatio.DataSource = WallbaseImageSearchSettings.AspectRatio.GetAspectRatioList();
         }
 
