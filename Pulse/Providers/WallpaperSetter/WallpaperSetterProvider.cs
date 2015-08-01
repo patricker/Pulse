@@ -48,7 +48,7 @@ namespace WallpaperSetter
                 }
             }
            
-            Desktop.SetWallpaperUsingActiveDesktop(p.LocalPath);            
+            Desktop.SetWallpaperUsingSystemParameterInfo(p.LocalPath);            
         }
         
         public void Initialize(object args) { }
