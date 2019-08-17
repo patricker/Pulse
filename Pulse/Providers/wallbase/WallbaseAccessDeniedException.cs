@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace wallbase
+namespace wallhaven
 {
     public class WallbaseAccessDeniedException : Exception
     {

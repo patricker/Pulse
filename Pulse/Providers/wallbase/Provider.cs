@@ -1,5 +1,4 @@
 ﻿using System;
-using CsQuery;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -12,21 +11,23 @@ using Pulse.Base.Providers;
 using System.Threading;
 using System.IO;
 using System.Collections.Specialized;
+using wallhaven;
+using Newtonsoft.Json;
 
-namespace wallbase
+namespace wallhaven
 {
     [System.ComponentModel.Description("Wallhaven")]
     [ProviderConfigurationUserControl(typeof(WallbaseProviderPrefs))]
-    [ProviderConfigurationClass(typeof(WallbaseImageSearchSettings))]
+    [ProviderConfigurationClass(typeof(WallhavenImageSearchSettings))]
     [ProviderIcon(typeof(wallhaven.Properties.Resources), "wallhaven")]
     public class Provider : IInputProvider
     {
         private int resultCount;
-        private CookieContainer _cookies = new CookieContainer();
+        private string _rootURL = "https://wallhaven.cc/api/v1/";
 
         public void Initialize(object args)
         {
-            System.Net.ServicePointManager.Expect100Continue = false;
+
         }
 
         public void Activate(object args) { }
@@ -34,45 +35,31 @@ namespace wallbase
 
         public PictureList GetPictures(PictureSearch ps)
         {
-            WallbaseImageSearchSettings wiss = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ? new WallbaseImageSearchSettings() : WallbaseImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
+            WallhavenImageSearchSettings wiss = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ? new WallhavenImageSearchSettings() : WallhavenImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
                                     
             //if max picture count is 0, then no maximum, else specified max
             var maxPictureCount = wiss.GetMaxImageCount(ps.MaxPictureCount);
-            int pageSize = wiss.GetPageSize();
             int pageIndex = (ps.PageToRetrieve<=0?1:ps.PageToRetrieve); //set page to retreive if one is specified
 
             var imgFoundCount = 0;
-
-            //authenticate to wallbase
-            Authenticate(wiss.Username, wiss.Password);
             
             var wallResults = new List<Picture>();
 
-            string areaURL = wiss.BuildURL();
+            string areaURL = _rootURL + wiss.BuildURL();
 
             do
             {
-                //calculate page index.  Random does not use pages, so for random just refresh with same url
+                //get page index.
                 string strPageNum = pageIndex.ToString();
 
                 string pageURL = areaURL.Contains("{0}") ? string.Format(areaURL, strPageNum) : areaURL;
-                //string content = HttpPost(pageURL, postParams);
                 string content = string.Empty;
 
-                using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
+                using (HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient())
                 {
                     try
                     {
-                        //if random then don't post values
-                        //if (wiss.SA == "random")
-                        //{
-                            content = _client.DownloadString(pageURL);
-                        //}
-                        //else
-                        //{
-                        //    byte[] reqResult = _client.UploadValues(pageURL, wiss.GetPostParams());
-                        //    content = System.Text.Encoding.Default.GetString(reqResult);
-                        //}
+                        content = _client.DownloadString(pageURL);
                     }
                     catch (Exception ex)
                     {
@@ -83,7 +70,7 @@ namespace wallbase
                 if (string.IsNullOrEmpty(content))
                     break;
 
-                //parse html and get count
+                //deserialize JSON and get count
                 var pics = ParsePictures(content);
                 imgFoundCount = pics.Count();
 
@@ -125,9 +112,6 @@ namespace wallbase
                             p.Properties.Add(Picture.StandardProperties.Referrer, p.Url);
                             p.Properties.Add(Picture.StandardProperties.BanImageKey, Path.GetFileName(p.Url));
                             p.Properties.Add(Picture.StandardProperties.ProviderLabel, "Wallhaven");
-                            //get actual image URL if this is not a preview
-                            if (!previewOnly)
-                                p.Url = GetDirectPictureUrl(p.Url);
                             p.Id = System.IO.Path.GetFileNameWithoutExtension(p.Url);
 
                             if (!string.IsNullOrEmpty(p.Url) && !string.IsNullOrEmpty(p.Id))
@@ -157,91 +141,22 @@ namespace wallbase
         //find links to pages with wallpaper only with matching resolution
         private List<Picture> ParsePictures(string content)
         {
-            var dom = CQ.CreateDocument(content);
+            WallhavenResponse response = JsonConvert.DeserializeObject<WallhavenResponse>(content);
+            var picList = new List<Picture>();
 
-            var previews = dom["figure.thumb"];
-
-            var result = new List<Picture>();
-            for (var i = 0; i < previews.Length; i++)
+            foreach (var whp in response.data)
             {
-                var pic = new Picture();
-                var cq = previews[i].Cq();
-                var url = cq["a.preview"][0];
-                pic.Url = url.GetAttribute("href");
-
-                var thumb = cq["img.lazyload"][0];
-                pic.Properties.Add(Picture.StandardProperties.Thumbnail, thumb.GetAttribute("data-src"));
-
-                result.Add(pic);
-            }
-            resultCount = result.Count;
-            return result;
-        }
-
-        private string GetDirectPictureUrl(string pageUrl)
-        {
-            using (HttpUtility.CookieAwareWebClient cawc = new HttpUtility.CookieAwareWebClient(_cookies))
-            {
-                var content = cawc.DownloadString(pageUrl);
-                if (string.IsNullOrEmpty(content)) return string.Empty;
-                var dom = CQ.CreateDocument(content);
-                var wall = dom["#wallpaper"];
-
-                if (wall.Length > 0)
+                var p = new Picture()
                 {
-                    return "http:" + wall[0].GetAttribute("src");
-                }
+                    Url = whp.path
+                };
 
-                return string.Empty;
+                p.Properties.Add(Picture.StandardProperties.Thumbnail, whp.thumbs.small);
+
+                picList.Add(p);
             }
-        }
-        
-        private void Authenticate(string username, string password)
-        {
-            //if we have a username/password and we aren't already authenticated then authenticate
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-            {
-                using(HttpUtility.CookieAwareWebClient _client = new HttpUtility.CookieAwareWebClient(_cookies))
-                {
-                    string homepage = _client.DownloadString("http://alpha.wallhaven.cc/");
-                    var dom = CQ.CreateDocument(homepage);
 
-                    //check if the user is already logged in (doh!)
-                    try
-                    {
-                        var loginReg = dom["span.username"];
-
-                        if (loginReg.Length > 0) return;
-                    }
-                    catch(Exception ex)
-                    {
-                        Log.Logger.Write(string.Format("There was an error trying to check for a pre-existing wallhaven auth, ignoring it.  Exception details: {0}", ex.ToString()), Log.LoggerLevels.Errors);
-                    }
-
-                    try
-                    {
-                        var token = dom["input[name='_token']"].Val<string>();
-                        
-                        var loginData = new NameValueCollection();
-                        loginData.Add("_token", token);
-
-                        loginData.Add("username", username);
-                        loginData.Add("password", password);
-
-                        _client.Referrer = "http://alpha.wallhaven.cc/";
-                        _client.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-
-                        byte[] result = _client.UploadValues(@"http://alpha.wallhaven.cc/auth/login", "POST", loginData);
-
-                        //we do not need the response, all we need are the cookies
-                        string response = System.Text.Encoding.UTF8.GetString(result);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new WallbaseAccessDeniedException("Wallhaven authentication failed. Please verify your username and password.", ex);
-                    }
-                }
-            }
+            return picList;
         }
     }
 }

@@ -5,47 +5,50 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
-namespace wallbase
+namespace wallhaven
 {
     public partial class WallbaseProviderPrefs : UserControl, Pulse.Base.IProviderConfigurationEditor
     {
 
-        WallbaseImageSearchSettings wiss = null;
+        WallhavenImageSearchSettings wiss = null;
 
         public WallbaseProviderPrefs()
         {
             InitializeComponent();
 
-            cbArea.DataSource = WallbaseImageSearchSettings.SearchArea.GetSearchAreas();
-            cbImageSizeType.DataSource = WallbaseImageSearchSettings.SizingOption.GetDirectionList();
-            cbOrderBy.DataSource = WallbaseImageSearchSettings.OrderBy.GetOrderByList();
-            cbOrderByDirection.DataSource = WallbaseImageSearchSettings.OrderByDirection.GetDirectionList();
-            //cbTopTimespan.DataSource = WallbaseImageSearchSettings.TopTimeSpan.GetTimespanList();
-            cbAspectRatio.DataSource = WallbaseImageSearchSettings.AspectRatio.GetAspectRatioList();
+            cbArea.DataSource = WallhavenImageSearchSettings.SearchArea.GetSearchAreas();
+            cbImageSizeType.DataSource = WallhavenImageSearchSettings.SizingOption.GetSizingList();
+            cbColor.DataSource = WallhavenImageSearchSettings.ColorList.GetColors();
+            cbOrderBy.DataSource = WallhavenImageSearchSettings.OrderBy.GetOrderByList();
+            cbOrderByDirection.DataSource = WallhavenImageSearchSettings.OrderByDirection.GetDirectionList();
+            cbTopRange.DataSource = WallhavenImageSearchSettings.TopTimeSpan.GetTimespanList();
+            cbAspectRatio.DataSource = WallhavenImageSearchSettings.AspectRatio.GetAspectRatioList();
         }
 
         public void LoadConfiguration(string config)
         {
             try
             {   if(!string.IsNullOrEmpty(config))
-                    wiss = WallbaseImageSearchSettings.LoadFromXML(config);
+                    wiss = WallhavenImageSearchSettings.LoadFromXML(config);
             }
             catch { }
 
             if (wiss == null)
-                wiss = new WallbaseImageSearchSettings();
+                wiss = new WallhavenImageSearchSettings();
 
-            txtUserID.Text = wiss.Username;
-            txtPassword.Text = wiss.Password;
+            txtAPIKey.Text = wiss.APIKey;
 
             txtSearch.Text = wiss.Query;
 
-            cbArea.SelectedValue = wiss.SA;
+            cbArea.SelectedValue = wiss.SearchType;
 
-            cbWG.Checked = wiss.WG;
-            cbW.Checked = wiss.W;
-            cbHR.Checked = wiss.HR;
+            cbTopRange.SelectedValue = wiss.TopRange;
+
+            cbWG.Checked = wiss.General;
+            cbW.Checked = wiss.Anime;
+            cbHR.Checked = wiss.People;
 
             cbSFW.Checked = wiss.SFW;
             cbSketchy.Checked = wiss.SKETCHY;
@@ -62,29 +65,26 @@ namespace wallbase
             txtCollectionID.Text = wiss.CollectionID;
             txtFavoritesID.Text = wiss.FavoriteID;
 
-            if (wiss.Color != System.Drawing.Color.Empty)
-            {
-                pnlColor.BackColor = wiss.Color;
-                cdPicker.Color = wiss.Color;
-            }
+            cbColor.SelectedText = wiss.Color;
         }
 
         public string SaveConfiguration()
         {
-            wiss.Username = txtUserID.Text;
-            wiss.Password = txtPassword.Text;
+            wiss.APIKey = txtAPIKey.Text;
 
             wiss.Query = txtSearch.Text;
 
-            wiss.WG = cbWG.Checked;
-            wiss.W = cbW.Checked;
-            wiss.HR = cbHR.Checked;
+            wiss.TopRange = cbTopRange.SelectedValue.ToString();
+
+            wiss.General = cbWG.Checked;
+            wiss.Anime = cbW.Checked;
+            wiss.People = cbHR.Checked;
 
             wiss.SFW = cbSFW.Checked;
             wiss.SKETCHY = cbSketchy.Checked;
             wiss.NSFW = cbNSFW.Checked;
 
-            wiss.SA = cbArea.SelectedValue.ToString();
+            wiss.SearchType = cbArea.SelectedValue.ToString();
             wiss.SO = cbImageSizeType.SelectedValue.ToString();
             wiss.OB = cbOrderBy.SelectedValue==null?"":cbOrderBy.SelectedValue.ToString();
             wiss.OBD = cbOrderByDirection.SelectedValue==null?"":cbOrderByDirection.SelectedValue.ToString();
@@ -97,22 +97,6 @@ namespace wallbase
             wiss.FavoriteID = txtFavoritesID.Text;
 
             return wiss.Save();
-        }
-
-        private void lbPickColor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (cdPicker.ShowDialog() == DialogResult.OK)
-            {
-                pnlColor.BackColor = cdPicker.Color;
-                wiss.Color = cdPicker.Color;
-            }
-        }
-
-        private void lbClearColor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            pnlColor.BackColor = SystemColors.Control;
-            wiss.Color = System.Drawing.Color.Empty;
-
         }
 
         private void WallbaseProviderPrefs_Load(object sender, EventArgs e)
@@ -139,10 +123,43 @@ namespace wallbase
                 tabControl1.SelectedTab = tpSearch;
             else if (val == "toplist")
                 tabControl1.SelectedTab = tpSearch;
-            else if (val == "user/favorites")
+            else if (val == "favorites")
                 tabControl1.SelectedTab = tpFavorites;
-            else if (val == "user/collection")
+            else if (val == "collection")
                 tabControl1.SelectedTab = tpCollections;
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://wallhaven.cc/settings/account");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Unable to open Wallhaven Account Settings");
+            }
+        }
+
+        private void cbColor_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            // Get the item text    
+            string hex = ((ComboBox)sender).Items[e.Index].ToString();
+
+            if(hex == "NONE")
+            {
+                using (Pen red = new Pen(Color.Red, 3))
+                {
+                    e.Graphics.DrawLine(red,
+                        new Point(e.Bounds.Left, e.Bounds.Top),
+                        new Point(e.Bounds.Right, e.Bounds.Bottom));
+                }
+            } else {
+                using (Brush pen = new SolidBrush(ColorTranslator.FromHtml("#" + hex)))
+                {
+                    e.Graphics.FillRectangle(pen, e.Bounds);
+                }
+            }
         }
     }
 }

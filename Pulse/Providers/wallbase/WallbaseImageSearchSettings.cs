@@ -10,38 +10,28 @@ using System.Net;
 using Pulse.Base;
 using System.Collections.Specialized;
 
-namespace wallbase
+namespace wallhaven
 {
-    public class WallbaseImageSearchSettings : Pulse.Base.XmlSerializable<WallbaseImageSearchSettings>
-    {
-        //                          
-        private const string Url = "http://alpha.wallhaven.cc/search?q={0}&categories={1}&purity={2}&resolutions={3}&sorting={4}&order={5}&page={6}";
-
+    public class WallhavenImageSearchSettings : XmlSerializable<WallhavenImageSearchSettings>
+    {                       
         public string Query { get; set; }
         public string WallbaseSearchLabel { get; set; }
 
         //authentication info
-        public string Username { get; set; }
-        [XmlIgnore()]
-        public string Password { get; set; }
-        
-        [XmlElement("Password")]
-        public string xmlPassword {
-            get { return Pulse.Base.GeneralHelper.Protect(Password); }
-            set {
-                //don't mess with empty passwords
-                if (string.IsNullOrEmpty(value)) return;
-                //if there is a password try to unprotect it
-                Password = Pulse.Base.GeneralHelper.Unprotect(value); } 
-        }
+        public string APIKey { get; set; }
 
         //search location
-        public string SA { get; set; }
+        public string SearchType { get; set; }
+
+        public string TopRange { get; set; }
 
         //categories
-        public bool WG { get; set; }
-        public bool W { get; set; }
-        public bool HR { get; set; }
+        /// <summary>General</summary>
+        public bool General { get; set; }
+        /// <summary>Anime</summary>
+        public bool Anime { get; set; }
+        /// <summary>People</summary>
+        public bool People { get; set; }
 
         //Purity
         public bool SFW { get; set; }
@@ -49,15 +39,7 @@ namespace wallbase
         public bool NSFW { get; set; }
 
         //color, used for color searches (color searching is only available with "Search" type
-        [XmlIgnore()]
-        public System.Drawing.Color Color { get; set; }
-
-        [XmlElement("Color")]
-        public string ClrHtml
-        {
-            get { return ColorTranslator.ToHtml(Color); }
-            set { Color = ColorTranslator.FromHtml(value); }
-        }
+        public string Color { get; set; }
 
         //collection ID for collection searches
         public string CollectionID { get; set; }
@@ -71,18 +53,23 @@ namespace wallbase
         public int ImageHeight { get; set; }
         public string AR { get; set; }
 
-        //order by
+        /// <summary>
+        /// Order By
+        /// </summary>
         public string OB { get; set; }
+        /// <summary>
+        ///  Order By Direction
+        /// </summary>
         public string OBD { get; set; }
         
-        public WallbaseImageSearchSettings()
+        public WallhavenImageSearchSettings()
         {
             Query = "nature";
 
-            SA = "search";
+            SearchType = "search";
 
-            WG = true;
-            W = true;
+            General = true;
+            Anime = true;
 
             SFW = true;
 
@@ -94,7 +81,9 @@ namespace wallbase
             OB = "relevance";
             OBD = "desc";
 
-            Color = System.Drawing.Color.Empty;
+            Color = "";
+
+            TopRange = "1M";
         }
 
         public string BuildPurityString()
@@ -106,9 +95,9 @@ namespace wallbase
 
         public string BuildCategoryString()
         {
-            return (WG ? "1" : "0") +
-                (W ? "1" : "0") +
-                (HR ? "1":"0");
+            return (General ? "1" : "0") +
+                (Anime ? "1" : "0") +
+                (People ? "1":"0");
         }
 
         public string BuildResolutionString()
@@ -116,48 +105,80 @@ namespace wallbase
             return ImageHeight > 0 && ImageWidth > 0 ? ImageWidth.ToString() + "x" + ImageHeight.ToString() : "";
         }
 
-        public string BuildURL()
+        public Dictionary<string, string> BuildURLDictionary()
         {
-            string areaURL = string.Empty;
+            var parms = new Dictionary<string, string>();
 
             var resolutionString = BuildResolutionString();
-            var pageSize = GetPageSize();
 
-            if (SA == "search" || SA == "toplist" || SA == "random")
+            if (SearchType == "search" || SearchType == "random" || SearchType == "latest" || SearchType == "toplist")
             {
-                //new URL includes {0} placeholder for page number
-                areaURL = string.Format(Url, Query, BuildCategoryString(), BuildPurityString(), resolutionString, OB, OBD, "{0}");
-                //areaURL = string.Format(Url, SA, "{0}", "wallpapers", BuildCategoryString(), Query, SO, resolutionString, AR, BuildPurityString(), pageSize, TopTimespan, GetColor(), OBD, OB);
+                if (!string.IsNullOrEmpty(Query)) parms.Add("q", Query);
+
+                parms.Add("categories", BuildCategoryString());
+                parms.Add("purity", BuildPurityString());
+
+                if (!string.IsNullOrEmpty(resolutionString)) parms.Add("resolutions", resolutionString);
+
+                // Don't sort TopList
+                if (SearchType == "toplist")
+                {
+                    parms.Add("sorting", "toplist");
+                    if (!string.IsNullOrEmpty(TopRange)) parms.Add("topRange", TopRange);
+                    if (!string.IsNullOrEmpty(OBD)) parms.Add("order", OBD);
+                }
+                else if (SearchType == "random") parms.Add("sorting", "random");
+                else if (SearchType == "latest") parms.Add("sorting", "latest");
+                else
+                {
+                    if (!string.IsNullOrEmpty(OB)) parms.Add("sorting", OB);
+                    if (!string.IsNullOrEmpty(OBD)) parms.Add("order", OBD);
+                }
+
+                if (!string.IsNullOrEmpty(Color)) parms.Add("colors", Color);
+
+                // If user is logged in, add user API Key
+                if (!string.IsNullOrEmpty(APIKey)) parms.Add("apikey", APIKey);
+
+                // Include a placeholder for page#
+                parms.Add("page","{0}");
             }
-            else if (SA == "user/collection")
-            {
-                areaURL += string.Format("http://alpha.wallhaven.cc/user/Aheres/favorites/{0}", CollectionID, "{0}");
-            }
-            else if (SA == "user/favorites")
-            {
-                areaURL += string.Format("http://alpha.wallhaven.cc/favorites/{0}", FavoriteID, "{0}");
-            }
+
+            return parms;
+        }
+
+        public string BuildURL()
+        {
+            string areaURL = "search?";
+
+            var paramDict = BuildURLDictionary();
+
+            //new URL includes {0} placeholder for page number
+            areaURL += String.Join("&", paramDict.Select(x => x.Key + "=" + x.Value));
 
             return areaURL;
         }
 
-        public string GetColor()
-        {
-            return (Color == Color.Empty) ? "" : ClrHtml.Replace("#","");
-        }
-
-        public int GetPageSize()
-        {
-            //override page size, since user collections dont' seem to be changeable from 32
-            if (SA == "user/collection" || SA == "user/favorites") return 32;
-            //if not user collection then max size
-            return 60;
-        }
-
         public int GetMaxImageCount(int userMax)
         {
-            if (SA == "user/collection" || SA == "user/favorites" || userMax == 0) return int.MaxValue;
+            if (userMax == 0) return int.MaxValue;
             else return userMax;
+        }
+
+        public class ColorList
+        {
+            public static List<string> GetColors()
+            {
+                string colors = "NONE 660000 990000 cc0000 cc3333 ea4c88 " +
+                    "993399 663399 333399 0066cc 0099cc " +
+                    "66cccc 77cc33 669900 336600 666600 " +
+                    "999900 cccc33 ffff00 ffcc33 ff9900 " +
+                    "ff6600 cc6633 996633 663300 000000 " +
+                    "999999 cccccc ffffff 424153";
+                List<string> colorList = colors.Split(new char[] { ' ' }).ToList();
+                
+                return colorList;
+            }
         }
 
         public class SearchArea
@@ -170,10 +191,11 @@ namespace wallbase
                 List<SearchArea> sa = new List<SearchArea>();
 
                 sa.Add(new SearchArea() { Name = "Search", Value = "search" });
-                sa.Add(new SearchArea() { Name = "Top List", Value = "toplist" });
+                sa.Add(new SearchArea() { Name = "Latest", Value = "latest" });
                 sa.Add(new SearchArea() { Name = "Random", Value = "random" });
-                sa.Add(new SearchArea() { Name = "Collection", Value = "user/collection" });
-                sa.Add(new SearchArea() { Name = "Favorite", Value = "user/favorites" });
+                sa.Add(new SearchArea() { Name = "Toplist", Value = "toplist" });
+                //sa.Add(new SearchArea() { Name = "Collection", Value = "collection" });
+                //sa.Add(new SearchArea() { Name = "Favorite", Value = "favorites" });
                 return sa;
             }
         }
@@ -188,10 +210,9 @@ namespace wallbase
                 List<OrderBy> sa = new List<OrderBy>();
 
                 sa.Add(new OrderBy() { Name = "Relevancy", Value = "relevance" });
-                sa.Add(new OrderBy() { Name = "Date", Value = "date" });
+                sa.Add(new OrderBy() { Name = "Date", Value = "date_added" });
                 sa.Add(new OrderBy() { Name = "Views", Value = "views" });
-                sa.Add(new OrderBy() { Name = "Favorites", Value = "favs" });
-                sa.Add(new OrderBy() { Name = "Random", Value = "random" });
+                sa.Add(new OrderBy() { Name = "Favorites", Value = "favorites" });
 
                 return sa;
             }
@@ -218,12 +239,12 @@ namespace wallbase
             public string Name { get; private set; }
             public string Value { get; private set; }
 
-            public static List<SizingOption> GetDirectionList()
+            public static List<SizingOption> GetSizingList()
             {
                 List<SizingOption> sa = new List<SizingOption>();
 
-                sa.Add(new SizingOption() { Name = "Exactly", Value = "eqeq" });
-                sa.Add(new SizingOption() { Name = "At Least", Value = "gteq" });
+                sa.Add(new SizingOption() { Name = "Exactly", Value = "resolutions" });
+                sa.Add(new SizingOption() { Name = "At Least", Value = "atleast" });
 
                 return sa;
             }
@@ -241,11 +262,10 @@ namespace wallbase
                 tts.Add(new TopTimeSpan() { Name = "1 day (24h)", Value = "1d" });
                 tts.Add(new TopTimeSpan() { Name = "3 days", Value = "3d" });
                 tts.Add(new TopTimeSpan() { Name = "1 week", Value = "1w" });
-                tts.Add(new TopTimeSpan() { Name = "2 weeks", Value = "2w" });
-                tts.Add(new TopTimeSpan() { Name = "1 month", Value = "1m" });
-                tts.Add(new TopTimeSpan() { Name = "2 months", Value = "2m" });
-                tts.Add(new TopTimeSpan() { Name = "3 months", Value = "3m" });
-                tts.Add(new TopTimeSpan() { Name = "All time", Value = "1" });
+                tts.Add(new TopTimeSpan() { Name = "1 month", Value = "1M" });
+                tts.Add(new TopTimeSpan() { Name = "3 months", Value = "3M" });
+                tts.Add(new TopTimeSpan() { Name = "6 months", Value = "6M" });
+                tts.Add(new TopTimeSpan() { Name = "1 year", Value = "1y" });
 
                 return tts;
             }
@@ -261,15 +281,20 @@ namespace wallbase
                 List<AspectRatio> tts = new List<AspectRatio>();
 
                 tts.Add(new AspectRatio() { Name = "All", Value = "" });
-                tts.Add(new AspectRatio() { Name = "4:3", Value = "1.33" });
-                tts.Add(new AspectRatio() { Name = "5:4", Value = "1.25" });
-                tts.Add(new AspectRatio() { Name = "16:9", Value = "1.77" });
-                tts.Add(new AspectRatio() { Name = "16:10", Value = "1.60" });
-                tts.Add(new AspectRatio() { Name = "Netbook", Value = "1.70" });
-                tts.Add(new AspectRatio() { Name = "Dual", Value = "2.50" });
-                tts.Add(new AspectRatio() { Name = "Dual wide", Value = "3.20" });
-                tts.Add(new AspectRatio() { Name = "Widescreen", Value = "1.01" });
-                tts.Add(new AspectRatio() { Name = "Portrait", Value = "0.99" });
+                tts.Add(new AspectRatio() { Name = "16:9", Value = "16:9" });
+                tts.Add(new AspectRatio() { Name = "16:10", Value = "16:10" });
+
+                tts.Add(new AspectRatio() { Name = "21:9", Value = "21:9" });
+                tts.Add(new AspectRatio() { Name = "32:9", Value = "32:9" });
+                tts.Add(new AspectRatio() { Name = "48:9", Value = "48:9" });
+
+                tts.Add(new AspectRatio() { Name = "9:16", Value = "9:16" });
+                tts.Add(new AspectRatio() { Name = "10:16", Value = "10:16" });
+                tts.Add(new AspectRatio() { Name = "9:18", Value = "9:18" });
+
+                tts.Add(new AspectRatio() { Name = "1:1", Value = "1:1" });
+                tts.Add(new AspectRatio() { Name = "4:3", Value = "4:3" });
+                tts.Add(new AspectRatio() { Name = "5:4", Value = "5:4" });
 
                 return tts;
             }

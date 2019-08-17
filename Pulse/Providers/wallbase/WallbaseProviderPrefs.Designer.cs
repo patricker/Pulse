@@ -1,4 +1,4 @@
-﻿namespace wallbase
+﻿namespace wallhaven
 {
     partial class WallbaseProviderPrefs
     {
@@ -28,12 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.cbArea = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtUserID = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.txtAPIKey = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cbHR = new System.Windows.Forms.CheckBox();
@@ -52,13 +51,12 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tpAuthenticate = new System.Windows.Forms.TabPage();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.tpSearch = new System.Windows.Forms.TabPage();
+            this.cbColor = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.txtSearch = new System.Windows.Forms.TextBox();
-            this.lbClearColor = new System.Windows.Forms.LinkLabel();
-            this.lbPickColor = new System.Windows.Forms.LinkLabel();
-            this.pnlColor = new System.Windows.Forms.Panel();
             this.label8 = new System.Windows.Forms.Label();
             this.cbOrderByDirection = new System.Windows.Forms.ComboBox();
             this.cbOrderBy = new System.Windows.Forms.ComboBox();
@@ -70,6 +68,10 @@
             this.txtFavoritesID = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.cdPicker = new System.Windows.Forms.ColorDialog();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tpToplist = new System.Windows.Forms.TabPage();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cbTopRange = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -78,6 +80,7 @@
             this.tpSearch.SuspendLayout();
             this.tpCollections.SuspendLayout();
             this.tpFavorites.SuspendLayout();
+            this.tpToplist.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -86,16 +89,16 @@
             this.label1.Location = new System.Drawing.Point(3, 9);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.Size = new System.Drawing.Size(69, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Image Area: ";
+            this.label1.Text = "Search Area:";
             // 
             // cbArea
             // 
             this.cbArea.DisplayMember = "Name";
             this.cbArea.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbArea.FormattingEnabled = true;
-            this.cbArea.Location = new System.Drawing.Point(74, 9);
+            this.cbArea.Location = new System.Drawing.Point(74, 6);
             this.cbArea.Margin = new System.Windows.Forms.Padding(2);
             this.cbArea.Name = "cbArea";
             this.cbArea.Size = new System.Drawing.Size(108, 21);
@@ -109,36 +112,17 @@
             this.label2.Location = new System.Drawing.Point(6, 38);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.Size = new System.Drawing.Size(51, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Login: ";
+            this.label2.Text = "API Key: ";
             // 
-            // txtUserID
+            // txtAPIKey
             // 
-            this.txtUserID.Location = new System.Drawing.Point(44, 38);
-            this.txtUserID.Margin = new System.Windows.Forms.Padding(2);
-            this.txtUserID.Name = "txtUserID";
-            this.txtUserID.Size = new System.Drawing.Size(68, 20);
-            this.txtUserID.TabIndex = 3;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 62);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Pass: ";
-            // 
-            // txtPassword
-            // 
-            this.txtPassword.Location = new System.Drawing.Point(44, 59);
-            this.txtPassword.Margin = new System.Windows.Forms.Padding(2);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(68, 20);
-            this.txtPassword.TabIndex = 5;
-            this.txtPassword.UseSystemPasswordChar = true;
+            this.txtAPIKey.Location = new System.Drawing.Point(61, 35);
+            this.txtAPIKey.Margin = new System.Windows.Forms.Padding(2);
+            this.txtAPIKey.Name = "txtAPIKey";
+            this.txtAPIKey.Size = new System.Drawing.Size(238, 20);
+            this.txtAPIKey.TabIndex = 3;
             // 
             // label4
             // 
@@ -158,7 +142,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(121, 40);
+            this.groupBox1.Size = new System.Drawing.Size(70, 77);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Categories";
@@ -166,23 +150,23 @@
             // cbHR
             // 
             this.cbHR.AutoSize = true;
-            this.cbHR.Location = new System.Drawing.Point(78, 18);
+            this.cbHR.Location = new System.Drawing.Point(5, 56);
             this.cbHR.Margin = new System.Windows.Forms.Padding(2);
             this.cbHR.Name = "cbHR";
-            this.cbHR.Size = new System.Drawing.Size(42, 17);
+            this.cbHR.Size = new System.Drawing.Size(59, 17);
             this.cbHR.TabIndex = 9;
-            this.cbHR.Text = "HR";
+            this.cbHR.Text = "People";
             this.cbHR.UseVisualStyleBackColor = true;
             // 
             // cbW
             // 
             this.cbW.AutoSize = true;
-            this.cbW.Location = new System.Drawing.Point(45, 18);
+            this.cbW.Location = new System.Drawing.Point(5, 39);
             this.cbW.Margin = new System.Windows.Forms.Padding(2);
             this.cbW.Name = "cbW";
-            this.cbW.Size = new System.Drawing.Size(37, 17);
+            this.cbW.Size = new System.Drawing.Size(55, 17);
             this.cbW.TabIndex = 10;
-            this.cbW.Text = "W";
+            this.cbW.Text = "Anime";
             this.cbW.UseVisualStyleBackColor = true;
             // 
             // cbWG
@@ -191,9 +175,9 @@
             this.cbWG.Location = new System.Drawing.Point(5, 18);
             this.cbWG.Margin = new System.Windows.Forms.Padding(2);
             this.cbWG.Name = "cbWG";
-            this.cbWG.Size = new System.Drawing.Size(45, 17);
+            this.cbWG.Size = new System.Drawing.Size(63, 17);
             this.cbWG.TabIndex = 11;
-            this.cbWG.Text = "WG";
+            this.cbWG.Text = "General";
             this.cbWG.UseVisualStyleBackColor = true;
             // 
             // groupBox2
@@ -201,11 +185,11 @@
             this.groupBox2.Controls.Add(this.cbNSFW);
             this.groupBox2.Controls.Add(this.cbSketchy);
             this.groupBox2.Controls.Add(this.cbSFW);
-            this.groupBox2.Location = new System.Drawing.Point(124, 35);
+            this.groupBox2.Location = new System.Drawing.Point(84, 35);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(191, 40);
+            this.groupBox2.Size = new System.Drawing.Size(191, 77);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Purity";
@@ -213,7 +197,7 @@
             // cbNSFW
             // 
             this.cbNSFW.AutoSize = true;
-            this.cbNSFW.Location = new System.Drawing.Point(132, 18);
+            this.cbNSFW.Location = new System.Drawing.Point(5, 52);
             this.cbNSFW.Margin = new System.Windows.Forms.Padding(2);
             this.cbNSFW.Name = "cbNSFW";
             this.cbNSFW.Size = new System.Drawing.Size(58, 17);
@@ -224,7 +208,7 @@
             // cbSketchy
             // 
             this.cbSketchy.AutoSize = true;
-            this.cbSketchy.Location = new System.Drawing.Point(56, 18);
+            this.cbSketchy.Location = new System.Drawing.Point(5, 34);
             this.cbSketchy.Margin = new System.Windows.Forms.Padding(2);
             this.cbSketchy.Name = "cbSketchy";
             this.cbSketchy.Size = new System.Drawing.Size(76, 17);
@@ -251,7 +235,7 @@
             this.groupBox3.Controls.Add(this.txtWidth);
             this.groupBox3.Controls.Add(this.cbImageSizeType);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(3, 79);
+            this.groupBox3.Location = new System.Drawing.Point(3, 121);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -324,9 +308,10 @@
             // 
             this.tabControl1.Controls.Add(this.tpAuthenticate);
             this.tabControl1.Controls.Add(this.tpSearch);
+            this.tabControl1.Controls.Add(this.tpToplist);
             this.tabControl1.Controls.Add(this.tpCollections);
             this.tabControl1.Controls.Add(this.tpFavorites);
-            this.tabControl1.Location = new System.Drawing.Point(3, 167);
+            this.tabControl1.Location = new System.Drawing.Point(3, 198);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -335,11 +320,10 @@
             // 
             // tpAuthenticate
             // 
+            this.tpAuthenticate.Controls.Add(this.linkLabel1);
             this.tpAuthenticate.Controls.Add(this.label4);
             this.tpAuthenticate.Controls.Add(this.label2);
-            this.tpAuthenticate.Controls.Add(this.txtUserID);
-            this.tpAuthenticate.Controls.Add(this.label3);
-            this.tpAuthenticate.Controls.Add(this.txtPassword);
+            this.tpAuthenticate.Controls.Add(this.txtAPIKey);
             this.tpAuthenticate.Location = new System.Drawing.Point(4, 22);
             this.tpAuthenticate.Margin = new System.Windows.Forms.Padding(2);
             this.tpAuthenticate.Name = "tpAuthenticate";
@@ -348,14 +332,23 @@
             this.tpAuthenticate.Text = "Authentication";
             this.tpAuthenticate.UseVisualStyleBackColor = true;
             // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(9, 75);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(82, 13);
+            this.linkLabel1.TabIndex = 7;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Get My API Key";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
             // tpSearch
             // 
+            this.tpSearch.Controls.Add(this.cbColor);
             this.tpSearch.Controls.Add(this.label12);
             this.tpSearch.Controls.Add(this.label11);
             this.tpSearch.Controls.Add(this.txtSearch);
-            this.tpSearch.Controls.Add(this.lbClearColor);
-            this.tpSearch.Controls.Add(this.lbPickColor);
-            this.tpSearch.Controls.Add(this.pnlColor);
             this.tpSearch.Controls.Add(this.label8);
             this.tpSearch.Controls.Add(this.cbOrderByDirection);
             this.tpSearch.Controls.Add(this.cbOrderBy);
@@ -368,6 +361,16 @@
             this.tpSearch.TabIndex = 0;
             this.tpSearch.Text = "Search";
             this.tpSearch.UseVisualStyleBackColor = true;
+            // 
+            // cbColor
+            // 
+            this.cbColor.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbColor.FormattingEnabled = true;
+            this.cbColor.Location = new System.Drawing.Point(58, 82);
+            this.cbColor.Name = "cbColor";
+            this.cbColor.Size = new System.Drawing.Size(145, 21);
+            this.cbColor.TabIndex = 14;
+            this.cbColor.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cbColor_DrawItem);
             // 
             // label12
             // 
@@ -398,42 +401,6 @@
             this.txtSearch.Size = new System.Drawing.Size(145, 20);
             this.txtSearch.TabIndex = 11;
             // 
-            // lbClearColor
-            // 
-            this.lbClearColor.AutoSize = true;
-            this.lbClearColor.Location = new System.Drawing.Point(144, 89);
-            this.lbClearColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lbClearColor.Name = "lbClearColor";
-            this.lbClearColor.Size = new System.Drawing.Size(58, 13);
-            this.lbClearColor.TabIndex = 6;
-            this.lbClearColor.TabStop = true;
-            this.lbClearColor.Text = "Clear Color";
-            this.lbClearColor.Visible = false;
-            this.lbClearColor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbClearColor_LinkClicked);
-            // 
-            // lbPickColor
-            // 
-            this.lbPickColor.AutoSize = true;
-            this.lbPickColor.Location = new System.Drawing.Point(84, 89);
-            this.lbPickColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lbPickColor.Name = "lbPickColor";
-            this.lbPickColor.Size = new System.Drawing.Size(55, 13);
-            this.lbPickColor.TabIndex = 5;
-            this.lbPickColor.TabStop = true;
-            this.lbPickColor.Text = "Pick Color";
-            this.lbPickColor.Visible = false;
-            this.lbPickColor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbPickColor_LinkClicked);
-            // 
-            // pnlColor
-            // 
-            this.pnlColor.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pnlColor.Location = new System.Drawing.Point(58, 83);
-            this.pnlColor.Margin = new System.Windows.Forms.Padding(2);
-            this.pnlColor.Name = "pnlColor";
-            this.pnlColor.Size = new System.Drawing.Size(22, 19);
-            this.pnlColor.TabIndex = 4;
-            this.pnlColor.Visible = false;
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -443,7 +410,6 @@
             this.label8.Size = new System.Drawing.Size(37, 13);
             this.label8.TabIndex = 3;
             this.label8.Text = "Color: ";
-            this.label8.Visible = false;
             // 
             // cbOrderByDirection
             // 
@@ -545,6 +511,42 @@
             this.cdPicker.AnyColor = true;
             this.cdPicker.FullOpen = true;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // tpToplist
+            // 
+            this.tpToplist.Controls.Add(this.cbTopRange);
+            this.tpToplist.Controls.Add(this.label3);
+            this.tpToplist.Location = new System.Drawing.Point(4, 22);
+            this.tpToplist.Name = "tpToplist";
+            this.tpToplist.Padding = new System.Windows.Forms.Padding(3);
+            this.tpToplist.Size = new System.Drawing.Size(308, 110);
+            this.tpToplist.TabIndex = 4;
+            this.tpToplist.Text = "Toplist";
+            this.tpToplist.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 7);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(67, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Top Range: ";
+            // 
+            // cbTopRange
+            // 
+            this.cbTopRange.DisplayMember = "Value";
+            this.cbTopRange.FormattingEnabled = true;
+            this.cbTopRange.Location = new System.Drawing.Point(82, 4);
+            this.cbTopRange.Name = "cbTopRange";
+            this.cbTopRange.Size = new System.Drawing.Size(200, 21);
+            this.cbTopRange.TabIndex = 1;
+            this.cbTopRange.ValueMember = "Value";
+            // 
             // WallbaseProviderPrefs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -557,7 +559,7 @@
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "WallbaseProviderPrefs";
-            this.Size = new System.Drawing.Size(364, 317);
+            this.Size = new System.Drawing.Size(364, 342);
             this.Load += new System.EventHandler(this.WallbaseProviderPrefs_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -574,6 +576,8 @@
             this.tpCollections.PerformLayout();
             this.tpFavorites.ResumeLayout(false);
             this.tpFavorites.PerformLayout();
+            this.tpToplist.ResumeLayout(false);
+            this.tpToplist.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -584,9 +588,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbArea;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtUserID;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.TextBox txtAPIKey;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox cbHR;
@@ -608,11 +610,8 @@
         private System.Windows.Forms.ComboBox cbOrderBy;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TabPage tpCollections;
-        private System.Windows.Forms.Panel pnlColor;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ColorDialog cdPicker;
-        private System.Windows.Forms.LinkLabel lbClearColor;
-        private System.Windows.Forms.LinkLabel lbPickColor;
         private System.Windows.Forms.TextBox txtCollectionID;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TabPage tpFavorites;
@@ -623,5 +622,11 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cbAspectRatio;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ComboBox cbColor;
+        private System.Windows.Forms.TabPage tpToplist;
+        private System.Windows.Forms.ComboBox cbTopRange;
+        private System.Windows.Forms.Label label3;
     }
 }
