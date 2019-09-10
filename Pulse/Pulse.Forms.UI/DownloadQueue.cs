@@ -26,6 +26,12 @@ namespace Pulse.Forms.UI
         {
             this.ParentForm.FormClosing += DownloadMonitor_FormClosing;
 
+            // capture current queue and add to list
+            foreach (var pd in DownloadManager.Current.Queue)
+            {
+                Current_PictureAddedToQueue(pd);
+            }
+
             DownloadManager.Current.PictureAddedToQueue += Current_PictureAddedToQueue;
             DownloadManager.Current.PictureRemovedFromQueue += Current_PictureRemovedFromQueue;
 

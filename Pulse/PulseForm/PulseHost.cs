@@ -31,7 +31,7 @@ namespace PulseForm
             //create and initialize the runner
             Runner = new PulseRunner();
             //listen for new version available events
-            Runner.NewVersionAvailable += Runner_NewVersionAvailable;
+            // Runner.NewVersionAvailable += Runner_NewVersionAvailable;
             Runner.BatchChanged += Runner_PictureChanged;
             Runner.TimerStarted += Runner_TimerStarted;
             Runner.TimerStopped += Runner_TimerStopped;

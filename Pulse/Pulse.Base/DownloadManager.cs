@@ -24,6 +24,8 @@ namespace Pulse.Base
         /// </summary>
         public string SaveFolder { get; set; }
 
+        public DownloadQueue Queue { get { return _downloadQueue; } }
+
         public bool Active { get { return _queuePollingTimer.Enabled; } set { _queuePollingTimer.Enabled = value; } }
 
         public event PictureDownload.PictureDownloadEvent QueueIsEmpty;

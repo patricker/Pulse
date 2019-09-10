@@ -6,7 +6,6 @@ using System.Timers;
 using System.IO;
 using System.Threading;
 using System.Resources;
-using CodePlexNewReleaseChecker;
 using System.Threading.Tasks;
 
 namespace Pulse.Base
@@ -14,7 +13,6 @@ namespace Pulse.Base
     public class PulseRunner : IDisposable
     {
         public event Pulse.Base.Status.StatusChanged StatusChanged;
-        public event Action<CodePlexNewReleaseChecker.Release> NewVersionAvailable;
         public event Action<PictureBatch> BatchChanging;
         public event Action<PictureBatch> BatchChanged;
         public event Action TimerStarted;
@@ -48,7 +46,8 @@ namespace Pulse.Base
             Log.Logger.Write(string.Format("Check for new Pulse Versions set to '{0}'", Settings.CurrentSettings.CheckForNewPulseVersions.ToString()), Log.LoggerLevels.Verbose);
             if (Settings.CurrentSettings.CheckForNewPulseVersions)
             {
-                CheckForNewVersion();
+                //CheckForNewVersion();
+                Log.Logger.Write("New version check support is not currently supported", Log.LoggerLevels.Information);
             }
 
             Log.Logger.Write(string.Format("Clear old pics flag set to '{0}'", Settings.CurrentSettings.ClearOldPics.ToString()), Log.LoggerLevels.Verbose);
@@ -79,7 +78,7 @@ namespace Pulse.Base
             }
         }
 
-        public void CheckForNewVersion()
+        /*public void CheckForNewVersion()
         {
             //NewVersionAvailable
             try
@@ -108,7 +107,7 @@ namespace Pulse.Base
             {
                 Log.Logger.Write(string.Format("Error checking for new Pulse Versions: {0}", ex.ToString()), Log.LoggerLevels.Warnings);
             }
-        }
+        }*/
 
         public void StartTimer()
         {

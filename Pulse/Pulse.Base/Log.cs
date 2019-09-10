@@ -55,7 +55,7 @@ namespace Pulse.Base
 
         private Log() {
             FolderSetup();
-            LoggerLevel = LoggerLevels.Warnings;
+            LoggerLevel = LoggerLevels.Verbose;
 
             //write out Log Startup information
 

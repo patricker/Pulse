@@ -73,7 +73,7 @@ namespace wallhaven
 
             SFW = true;
 
-            SO = "gteq";
+            SO = "atleast";
             ImageWidth = PictureManager.PrimaryScreenResolution.First;
             ImageHeight = PictureManager.PrimaryScreenResolution.Second;
             AR = "";
@@ -135,7 +135,7 @@ namespace wallhaven
                     if (!string.IsNullOrEmpty(OBD)) parms.Add("order", OBD);
                 }
 
-                if (!string.IsNullOrEmpty(Color)) parms.Add("colors", Color);
+                if (!string.IsNullOrEmpty(Color) && Color != "NONE") parms.Add("colors", Color);
 
                 // If user is logged in, add user API Key
                 if (!string.IsNullOrEmpty(APIKey)) parms.Add("apikey", APIKey);

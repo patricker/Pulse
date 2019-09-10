@@ -96,6 +96,8 @@ namespace wallhaven
             wiss.CollectionID = txtCollectionID.Text;
             wiss.FavoriteID = txtFavoritesID.Text;
 
+            wiss.Color = cbColor.SelectedValue.ToString();
+
             return wiss.Save();
         }
 

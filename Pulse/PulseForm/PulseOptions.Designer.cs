@@ -34,6 +34,7 @@
             this.tpGeneral = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnChangeCachePath = new System.Windows.Forms.Button();
             this.btnClearNow = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.nudTempAge = new System.Windows.Forms.NumericUpDown();
@@ -79,7 +80,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel1 = new System.Windows.Forms.Panel();
             this.fbdCachePath = new System.Windows.Forms.FolderBrowserDialog();
-            this.btnChangeCachePath = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -161,6 +161,16 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(275, 58);
             this.panel4.TabIndex = 0;
+            // 
+            // btnChangeCachePath
+            // 
+            this.btnChangeCachePath.Location = new System.Drawing.Point(108, 29);
+            this.btnChangeCachePath.Name = "btnChangeCachePath";
+            this.btnChangeCachePath.Size = new System.Drawing.Size(134, 21);
+            this.btnChangeCachePath.TabIndex = 4;
+            this.btnChangeCachePath.Text = "Change Cache Folder";
+            this.btnChangeCachePath.UseVisualStyleBackColor = true;
+            this.btnChangeCachePath.Click += new System.EventHandler(this.btnChangeCachePath_Click);
             // 
             // btnClearNow
             // 
@@ -434,6 +444,7 @@
             // cbCheckForNewVersions
             // 
             this.cbCheckForNewVersions.AutoSize = true;
+            this.cbCheckForNewVersions.Enabled = false;
             this.cbCheckForNewVersions.Image = ((System.Drawing.Image)(resources.GetObject("cbCheckForNewVersions.Image")));
             this.cbCheckForNewVersions.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.cbCheckForNewVersions.Location = new System.Drawing.Point(2, 171);
@@ -750,16 +761,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(587, 45);
             this.panel1.TabIndex = 4;
-            // 
-            // btnChangeCachePath
-            // 
-            this.btnChangeCachePath.Location = new System.Drawing.Point(108, 29);
-            this.btnChangeCachePath.Name = "btnChangeCachePath";
-            this.btnChangeCachePath.Size = new System.Drawing.Size(134, 21);
-            this.btnChangeCachePath.TabIndex = 4;
-            this.btnChangeCachePath.Text = "Change Cache Folder";
-            this.btnChangeCachePath.UseVisualStyleBackColor = true;
-            this.btnChangeCachePath.Click += new System.EventHandler(this.btnChangeCachePath_Click);
             // 
             // frmPulseOptions
             // 

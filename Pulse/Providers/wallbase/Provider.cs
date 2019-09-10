@@ -59,6 +59,7 @@ namespace wallhaven
                 {
                     try
                     {
+                        Log.Logger.Write(String.Format("Downloading rest results from {0}", pageURL), Log.LoggerLevels.Verbose);
                         content = _client.DownloadString(pageURL);
                     }
                     catch (Exception ex)

@@ -1,0 +1,25 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Pulse/Providers/Piler/obj
+/Pulse/Providers/NationalGeographicWallpapers/obj
+/Pulse/Providers/NASAAPOD/obj
+/Pulse/Providers/MediaRSS/obj
+/Pulse/Providers/LogonBackground/obj/x86
+/Pulse/Providers/LocalDirectory/obj
+/Pulse/Providers/GoogleImages/obj
+/Pulse/Providers/AeroGlassChanger/obj
+/Pulse/Providers/wallbase/obj
+/Pulse/Providers/WallpaperSetter/obj
+/Pulse/Pulse.Base/obj
+/Pulse/Pulse.Base/bin/Debug
+/Pulse/Providers/WinAPI/obj
+/Pulse/Providers/WinAPI/bin/Debug
+/Pulse/Pulse.Forms.UI/obj
+/Pulse/Pulse.Forms.UI/bin/Debug
+/Pulse/PulseForm/obj/x86
+/Pulse/Pulse.Screensaver/obj
+/Pulse/tests/wallhaven_tests/obj/Debug
+/Pulse/tests/wallhaven_tests/bin/Debug
+/Pulse/PulseMassDownloader/obj
