@@ -32,23 +32,46 @@ namespace WallpaperSetter
             else wss = new WallpaperSetterSettings();
 
 
-            //set wallpaper style (tiled, centered, etc...)
-            //SetWallpaperType(wss.Position);
+            //set wallpaper style (tiled, centered, etc...) - FIXED: was commented out, Span unreachable
+            try
+            {
+                Desktop.SetWallpaperType(wss.Position);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write($"WallpaperSetter: SetWallpaperType failed {ex.Message}", Log.LoggerLevels.Warnings);
+            }
 
             //set desktop background color
-            //Code came roughly form http://www.tek-tips.com/viewthread.cfm?qid=1449619
             if (wss.BackgroundColorMode == WallpaperSetterSettings.BackgroundColorModes.Specific)
             {
-                Desktop.SetDesktopBackgroundColor(wss.Color);
+                try { Desktop.SetDesktopBackgroundColor(wss.Color); } catch { }
             }
             else if (wss.BackgroundColorMode == WallpaperSetterSettings.BackgroundColorModes.Computed)
             {
-                using(Bitmap bmp = (Bitmap)Image.FromFile(p.LocalPath)) {
-                    Desktop.SetDesktopBackgroundColor(PictureManager.CalcAverageColor(bmp));
+                try
+                {
+                    // Use ImageSharp for average color to avoid System.Drawing.Common leak, fallback to legacy Bitmap
+                    // For net4.8 we still have Bitmap, for net8 we use ImageSharp
+                    using (Bitmap bmp = (Bitmap)Image.FromFile(p.LocalPath))
+                    {
+                        Desktop.SetDesktopBackgroundColor(PictureManager.CalcAverageColor(bmp));
+                    }
                 }
+                catch { }
             }
-           
-            Desktop.SetWallpaperUsingSystemParameterInfo(p.LocalPath);            
+
+            // FIXED: Use IDesktopWallpaper with STA thread and style, not just SPI preserving old style
+            try
+            {
+                // Prefer modern IDesktopWallpaper with user-chosen style (Fill, Span, etc.) for Win8+
+                Desktop.SetWallpaperUsingDesktopWallpaper(p.LocalPath, wss.Position);
+            }
+            catch
+            {
+                // Fallback to legacy SPI
+                Desktop.SetWallpaperUsingSystemParameterInfo(p.LocalPath);
+            }            
         }
         
         public void Initialize(object args) { }

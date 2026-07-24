@@ -1,0 +1,29 @@
+# Build outputs
+bin/
+obj/
+packages/
+TestResults/
+publish/
+*.user
+*.suo
+.vs/
+*.nupkg
+*.snupkg
+
+# Settings and cache (user data, not repo)
+settings.conf
+Cache/
+Logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Secrets
+*.pfx
+*.key
+
+# Modern single-file publish extraction
+*.temp/

@@ -101,10 +101,24 @@ namespace PulseForm
             //bsInput.DataSource = InputProviderInfos;
             BindProviderListView();
             
-            //load into combo box
+            //load into combo box - hide retired providers
+            var filteredProviders = inputProviders
+                .Where(kvp => !kvp.Value.IsDefined(typeof(ObsoleteAttribute), false))
+                .Select(kvp => kvp.Key)
+                .ToList();
+            // Fallback: if all filtered (e.g., only retired), show all to avoid empty list
+            if (filteredProviders.Count == 0)
+                filteredProviders = (from c in inputProviders select c.Key).ToList();
+
             BindingSource bs = new BindingSource();
-            bs.DataSource = (from c in inputProviders select c.Key).ToList();
+            bs.DataSource = filteredProviders;
             cbProviders.DataSource = bs;
+
+            // Default to Bing for first-run casual user
+            if (cbProviders.Items.Contains("Bing Wallpaper (daily, no key needed)") && cbProviders.SelectedIndex < 0)
+            {
+                cbProviders.SelectedItem = "Bing Wallpaper (daily, no key needed)";
+            }
 
             //output providers
             foreach (var op in ProviderManager.Instance.GetProvidersByType<IOutputProvider>())

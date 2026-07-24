@@ -136,33 +136,43 @@ namespace Pulse.Base.WinAPI
 
         public static void SetWallpaperUsingDesktopWallpaper(string path, WallpaperStyle style = WallpaperStyle.Fill)
         {
-            try
+            // FIXED: Wrap COM in STA thread (was MTA timer thread causing RPC_E_WRONG_THREAD)
+            Exception threadEx = null;
+            var t = new Thread(() =>
             {
-                var dw = (IDesktopWallpaper)new DesktopWallpaperClass();
-
-                // Map our style to IDesktopWallpaper position
-                DesktopWallpaperPosition pos = DesktopWallpaperPosition.DWPOS_FILL;
-                switch (style)
+                try
                 {
-                    case WallpaperStyle.Tile: pos = DesktopWallpaperPosition.DWPOS_TILE; break;
-                    case WallpaperStyle.Center: pos = DesktopWallpaperPosition.DWPOS_CENTER; break;
-                    case WallpaperStyle.Stretch: pos = DesktopWallpaperPosition.DWPOS_STRETCH; break;
-                    case WallpaperStyle.Fit: pos = DesktopWallpaperPosition.DWPOS_FIT; break;
-                    case WallpaperStyle.Fill: pos = DesktopWallpaperPosition.DWPOS_FILL; break;
-                    case WallpaperStyle.Span: pos = DesktopWallpaperPosition.DWPOS_SPAN; break;
+                    var dw = (IDesktopWallpaper)new DesktopWallpaperClass();
+
+                    DesktopWallpaperPosition pos = DesktopWallpaperPosition.DWPOS_FILL;
+                    switch (style)
+                    {
+                        case WallpaperStyle.Tile: pos = DesktopWallpaperPosition.DWPOS_TILE; break;
+                        case WallpaperStyle.Center: pos = DesktopWallpaperPosition.DWPOS_CENTER; break;
+                        case WallpaperStyle.Stretch: pos = DesktopWallpaperPosition.DWPOS_STRETCH; break;
+                        case WallpaperStyle.Fit: pos = DesktopWallpaperPosition.DWPOS_FIT; break;
+                        case WallpaperStyle.Fill: pos = DesktopWallpaperPosition.DWPOS_FILL; break;
+                        case WallpaperStyle.Span: pos = DesktopWallpaperPosition.DWPOS_SPAN; break;
+                    }
+
+                    dw.SetPosition(pos);
+                    dw.SetWallpaper(null, path);
+                    Log.Logger.Write($"Desktop: Set wallpaper via IDesktopWallpaper: {path} style={style}", Log.LoggerLevels.Info);
+
+                    try { Marshal.ReleaseComObject(dw); } catch { }
                 }
+                catch (Exception ex)
+                {
+                    threadEx = ex;
+                }
+            });
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            t.Join(5000);
 
-                dw.SetPosition(pos);
-                // null monitorID = all monitors
-                dw.SetWallpaper(null, path);
-
-                Log.Logger.Write($"Desktop: Set wallpaper via IDesktopWallpaper: {path} style={style}", Log.LoggerLevels.Info);
-                return;
-            }
-            catch (Exception ex)
+            if (threadEx != null)
             {
-                Log.Logger.Write($"Desktop: IDesktopWallpaper failed ({ex.Message}), falling back to SystemParametersInfo", Log.LoggerLevels.Debug);
-                // fallback
+                Log.Logger.Write($"Desktop: IDesktopWallpaper failed ({threadEx.Message}), falling back to SystemParametersInfo", Log.LoggerLevels.Debug);
                 SetWallpaperUsingSystemParameterInfoInternal(path);
             }
         }

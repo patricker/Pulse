@@ -41,7 +41,9 @@ namespace Pulse.Base
 
         private string LogDirectory { 
             get {
-                return Path.Combine(CurrentFolder, "Logs");
+                // Use LocalAppData for multi-platform and to avoid Program Files write issues
+                string dataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Pulse");
+                return Path.Combine(dataPath, "Logs");
             } 
         }
 
@@ -49,6 +51,13 @@ namespace Pulse.Base
         {
             get
             {
+                // For backward compat, but prefer LocalAppData
+                try
+                {
+                    string dataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Pulse");
+                    if (Directory.Exists(dataPath)) return dataPath;
+                }
+                catch { }
                 return AppDomain.CurrentDomain.BaseDirectory;
             }
         }

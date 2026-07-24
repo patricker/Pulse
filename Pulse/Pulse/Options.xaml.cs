@@ -82,8 +82,10 @@ namespace Pulse
             //    ChangeLogonBgCheckBox.Visibility = System.Windows.Visibility.Collapsed;
             //ChangeLogonBgCheckBox.IsChecked = App.Settings.ChangeLogonBg;
 
-            //input providers
-            var inputProviders = ProviderManager.Instance.GetProvidersByType<IInputProvider>();
+            //input providers - hide retired (ObsoleteAttribute)
+            var inputProviders = ProviderManager.Instance.GetProvidersByType<IInputProvider>()
+                .Where(kvp => !kvp.Value.IsDefined(typeof(ObsoleteAttribute), false))
+                .ToDictionary(k => k.Key, v => v.Value);
             if (inputProviders.Count > 0)
             {
                 foreach (var p in inputProviders)
@@ -94,6 +96,12 @@ namespace Pulse
 
                 //handle settings button enable/disable and loading string from config if it exists
                 HandleProviderSettingsEnableAndLoad();
+            }
+
+            // Default to Bing if available and no provider selected (first-run for casual user)
+            if (ProvidersBox.SelectedValue == null && ProvidersBox.Items.Contains("Bing Wallpaper (daily, no key needed)"))
+            {
+                ProvidersBox.SelectedValue = "Bing Wallpaper (daily, no key needed)";
             }
 
             //output providers

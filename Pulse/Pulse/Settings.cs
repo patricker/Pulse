@@ -12,15 +12,20 @@ namespace Pulse
     {
         public Settings()
         {
-            Provider = "Wallbase";
+            // No migration - fresh defaults for multi-platform
+            // Default to Bing (no key, works everywhere) as primary (Maya casual persona)
+            Provider = "Bing Wallpaper (daily, no key needed)";
             Language = CultureInfo.CurrentUICulture.Name;
             DownloadAutomatically = true;
-            RefreshInterval = 20;
-            ClearOldPics = false;
-            ClearInterval = 3;
+            RefreshInterval = 30;
+            ClearOldPics = true;
+            ClearInterval = 2;
             PreFetch = false;
-            MaxPictureDownloadCount = 100;
-            CachePath = Path.Combine(App.Path, "Cache");
+            MaxPictureDownloadCount = 25;
+            // Use LocalAppData for multi-platform, not App.Path
+            string dataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Pulse");
+            try { Directory.CreateDirectory(dataPath); } catch { }
+            CachePath = Path.Combine(dataPath, "Cache");
             ProviderSettings = new SerializableDictionary<string, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
 

@@ -89,17 +89,79 @@ namespace wallbase
                 cdPicker.Color = wiss.Color;
             }
 
-            // Update labels to reflect new API key auth
+            // FIX: Unhide color search (was Visible=false in Designer, blocking designer persona)
+            try
+            {
+                pnlColor.Visible = true;
+                label8.Visible = true;
+                lbPickColor.Visible = true;
+                lbClearColor.Visible = true;
+                // Make color panel 44x44 minimum for a11y target size
+                pnlColor.Size = new System.Drawing.Size(44, 24);
+                pnlColor.BorderStyle = BorderStyle.FixedSingle;
+                pnlColor.Cursor = Cursors.Hand;
+                pnlColor.Click += (s, e) => lbPickColor_LinkClicked(s, new LinkLabelLinkClickedEventArgs(new LinkLabel.Link()));
+                // Accessible name for screen readers
+                pnlColor.AccessibleName = "Selected color filter, click to pick";
+                label8.AccessibleName = "Color filter";
+                lbPickColor.AccessibleName = "Pick color";
+                lbClearColor.AccessibleName = "Clear color";
+            }
+            catch { }
+
+            // Update labels to reflect new API key auth + eye toggle for security
             try
             {
                 label2.Text = "User:";
                 label3.Text = "API Key:";
-                label4.Text = "API Key optional. Needed for NSFW. Get key from wallhaven.cc/settings";
+                label4.Text = "API Key optional. Needed for NSFW. Get key from wallhaven.cc/settings (45 req/min)";
                 label4.AutoSize = false;
-                label4.Height = 35;
-                txtPassword.UseSystemPasswordChar = false; // API key readable
-                txtPassword.Width = 180;
+                label4.Height = 38;
+                // Default masked, with eye toggle
+                txtPassword.UseSystemPasswordChar = true;
+                txtPassword.Width = 160;
                 txtUserID.Width = 180;
+
+                // Add eye toggle checkbox if not already added
+                var eyeCb = this.Controls.Find("cbShowApiKey", true).FirstOrDefault() as CheckBox;
+                if (eyeCb == null)
+                {
+                    eyeCb = new CheckBox()
+                    {
+                        Name = "cbShowApiKey",
+                        Text = "Show",
+                        AutoSize = true,
+                        Location = new System.Drawing.Point(txtPassword.Right + 5, txtPassword.Top + 2),
+                        TabIndex = 100,
+                        AccessibleName = "Show API key"
+                    };
+                    eyeCb.CheckedChanged += (s, e) =>
+                    {
+                        txtPassword.UseSystemPasswordChar = !eyeCb.Checked;
+                    };
+                    // Find parent tab to add to
+                    tpAuthenticate.Controls.Add(eyeCb);
+                }
+
+                // Add Get Key link if not exists
+                var getKeyLink = this.Controls.Find("lbGetKey", true).FirstOrDefault() as LinkLabel;
+                if (getKeyLink == null)
+                {
+                    getKeyLink = new LinkLabel()
+                    {
+                        Name = "lbGetKey",
+                        Text = "Get Key...",
+                        AutoSize = true,
+                        Location = new System.Drawing.Point(txtPassword.Left, txtPassword.Bottom + 5),
+                        TabIndex = 101,
+                        AccessibleName = "Get Wallhaven API key opens browser"
+                    };
+                    getKeyLink.LinkClicked += (s, e) =>
+                    {
+                        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://wallhaven.cc/settings") { UseShellExecute = true }); } catch { }
+                    };
+                    tpAuthenticate.Controls.Add(getKeyLink);
+                }
             }
             catch { }
         }

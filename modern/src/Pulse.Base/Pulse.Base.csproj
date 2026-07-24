@@ -11,7 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
+    <!-- Single image library for all platforms: ImageSharp instead of System.Drawing.Common -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
@@ -24,7 +26,9 @@
 
   <ItemGroup>
     <Compile Include="ProviderManager.Modern.cs" />
-    <Compile Include="..\..\..\Pulse\Pulse.Base\**\*.cs" Link="Legacy\%(RecursiveDir)%(Filename)%(Extension)" Exclude="..\..\..\Pulse\Pulse.Base\Properties\*.cs" />
+    <Compile Include="PictureManager.ImageSharp.cs" />
+    <Compile Include="Picture.cs" />
+    <Compile Include="..\..\..\Pulse\Pulse.Base\**\*.cs" Link="Legacy\%(RecursiveDir)%(Filename)%(Extension)" Exclude="..\..\..\Pulse\Pulse.Base\Properties\*.cs;..\..\..\Pulse\Pulse.Base\Pictures\PictureManager.cs;..\..\..\Pulse\Pulse.Base\Pictures\Picture.cs" />
   </ItemGroup>
 
   <ItemGroup>

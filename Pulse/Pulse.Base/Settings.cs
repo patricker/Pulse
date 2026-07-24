@@ -19,14 +19,28 @@ namespace Pulse.Base
         }
 
         public static readonly string AppPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static readonly string DataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Pulse");
 
         public static Settings CurrentSettings 
         {
             get
             {
-                //load settings from file
                 if(_current==null)
-                    _current = Settings.LoadFromFile(Path.Combine(AppPath,"settings.conf")) ?? new Settings();
+                {
+                    // No migration needed per user request - fresh start uses DataPath
+                    // Try DataPath first (modern, multi-platform friendly), then AppPath for legacy compat if file exists
+                    string dataSettings = Path.Combine(DataPath, "settings.conf");
+                    string legacySettings = Path.Combine(AppPath, "settings.conf");
+
+                    if (File.Exists(dataSettings))
+                        _current = Settings.LoadFromFile(dataSettings);
+                    else if (File.Exists(legacySettings))
+                        _current = Settings.LoadFromFile(legacySettings); // still support old location if present, but don't copy
+                    else
+                        _current = null;
+
+                    _current ??= new Settings();
+                }
 
                 return _current;
             }
@@ -104,16 +118,18 @@ namespace Pulse.Base
         {
             Language = CultureInfo.CurrentUICulture.Name;
             ChangeOnTimer = true;
-            RefreshInterval = 20;
+            RefreshInterval = 30; // increased from 20 for battery/metered
             IntervalUnit = IntervalUnits.Minutes;
 
-            ClearOldPics = false;
-            ClearInterval = 3;
+            ClearOldPics = true; // was false, now true to prevent unbounded growth (perf persona)
+            ClearInterval = 2; // was 3, now 2 days
             PreFetch = false;
-            MaxPictureDownloadCount = 100;
+            MaxPictureDownloadCount = 25; // was 100, too heavy for HDD/metered (now 25)
             MaxPreviousPictureDepth = 5;
             CheckForNewPulseVersions = true;
-            CachePath = GetSafeCachePath(System.IO.Path.Combine(AppPath, "Cache"));
+            // Use LocalAppData as default for multi-platform and no migration needed
+            try { Directory.CreateDirectory(DataPath); } catch { }
+            CachePath = GetSafeCachePath(Path.Combine(DataPath, "Cache"));
             ProviderSettings = new SerializableDictionary<Guid, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
             RunOnWindowsStartup = false;
@@ -128,12 +144,17 @@ namespace Pulse.Base
 
             ProviderSettings.Add(apiWallpaper.ProviderInstanceID, apiWallpaper);
 
-            //set wallbase as default for inputs
-            ActiveProviderInfo apiWallbase = new ActiveProviderInfo("Wallbase");
+            //set default input providers - Bing (no key, cross-platform) + Wallhaven
+            // Old default was Wallbase which is dead, now Bing is primary for casual user (Maya persona)
+            ActiveProviderInfo apiBing = new ActiveProviderInfo("Bing Wallpaper (daily, no key needed)");
+            ProviderSettings.Add(apiBing.ProviderInstanceID, apiBing);
+            apiBing.Active = true;
+            apiBing.ExecutionOrder = 1;
 
+            ActiveProviderInfo apiWallbase = new ActiveProviderInfo("Wallhaven");
             ProviderSettings.Add(apiWallbase.ProviderInstanceID, apiWallbase);
-            apiWallbase.Active=true;
-            apiWallbase.ExecutionOrder =1;
+            apiWallbase.Active = false; // inactive by default, user can enable with API key
+            apiWallbase.ExecutionOrder = 2;
         }
 
         public string GetProviderSettings(Guid prov) {

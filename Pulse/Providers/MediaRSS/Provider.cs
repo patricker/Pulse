@@ -126,51 +126,6 @@ namespace MediaRSSProvider
                 Log.Logger.Write($"MediaRSS: Failed to parse feed {mrssiss.MediaRSSURL}: {ex}", Log.LoggerLevels.Errors);
             }
 
-            ////handle colors
-            //if (!string.IsNullOrEmpty(giss.Color))
-            //{
-            //    tbs += MediaRSSImageSearchSettings.MediaRSSImageColors.GetColorSearchString((from c in MediaRSSImageSearchSettings.MediaRSSImageColors.GetColors() where c.Value == giss.Color select c).Single()) + ",";
-            //}
-
-            ////if we have a filter string then add it and trim off trailing commas
-            //if (!string.IsNullOrEmpty(tbs)) tbs = ("&tbs=" + tbs).Trim(new char[]{','});
-
-            //do
-            //{
-            //    //build URL from query, dimensions and page index
-            //    var url = string.Format(baseURL, ps.SearchString, tbs, (pageIndex * 20).ToString());
-
-            //    var response = client.DownloadString(url);
-
-            //    var images = imagesRegex2.Matches(response);
-
-            //    //track number of images found for paging purposes
-            //    imgFoundCount = images.Count;
-
-            //    //convert images found into picture entries
-            //    foreach (Match item in images)
-            //    {
-            //        var purl = item.Groups[3].Value;
-            //        //get id and trim if necessary (ran into a few cases of rediculously long filenames)
-            //        var id = System.IO.Path.GetFileNameWithoutExtension(purl);
-            //        if (id.Length > 50) id = id.Substring(0, 50);
-
-            //        result.Pictures.Add(new Picture() { Url = purl, Id = id });
-            //    }
-
-            //    //if we have an image ban list check for them
-            //    // doing this in the provider instead of picture manager
-            //    // ensures that our count does not go down if we have a max
-            //    if (ps.BannedURLs != null && ps.BannedURLs.Count > 0)
-            //    {
-            //        result.Pictures = (from c in result.Pictures where !(ps.BannedURLs.Contains(c.Url)) select c).ToList();
-            //    }
-
-            //    //increment page index so we can get the next 20 images if they exist
-            //    pageIndex++;
-            //    // Max Picture count is defined in search settings passed in, check for it here too
-            //} while (imgFoundCount > 0 && result.Pictures.Count < maxPictureCount);
-
             return result;
         }
     }
