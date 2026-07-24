@@ -10,7 +10,10 @@ using Pulse.Base.Providers;
 
 namespace NationalGeographicWallpapers
 {
-    [System.ComponentModel.Description("National Geographic")]
+    // RETIRED 2026: ngm.nationalgeographic.com/wallpaper/download -> redirects to /magazine/ since ~2015.
+    // Site is now React SPA, no <option value=...xml>. Use Bing Wallpaper API or NASA APOD instead.
+    [Obsolete("NatGeo wallpaper XML endpoint dead since 2015. Site is React SPA now. Use Wallhaven/Bing/NASA.")]
+    [System.ComponentModel.Description("National Geographic (RETIRED - use Wallhaven/Bing)")]
     [ProviderIcon(typeof(Properties.Resources),"favicon_cb1274471343")]
     public class NationalGeographicProvider : Pulse.Base.IInputProvider
     {
@@ -18,35 +21,7 @@ namespace NationalGeographicWallpapers
         public Pulse.Base.PictureList GetPictures(Pulse.Base.PictureSearch ps)
         {
             PictureList pl = new PictureList() { FetchDate = DateTime.Now };
-
-            //general purpose downloader
-            WebClient wc = new WebClient();
-
-            //download pictures page
-            var content = wc.DownloadString(_baseURL + "/wallpaper/download");
-            //get paths to the xml files
-            var xmlPaths = ParseXMLPaths(content);
-
-            //download and parse each xml file
-            foreach (string xmlFile in xmlPaths)
-            {
-                try
-                {
-                    var pics = ParsePictures(xmlFile);
-
-                    //clear out banned images
-                    pics = (from c in pics where !ps.BannedURLs.Contains(c.Url) select c).ToList();
-
-                    pl.Pictures.AddRange(pics);
-                }
-                catch(Exception ex) {
-                    Log.Logger.Write(string.Format("Error loading/parsing National Geographic pictures from XML.  XML file URL: '{0}'. Exception details: {1}", _baseURL + xmlFile, ex.ToString()), Log.LoggerLevels.Errors);
-                }
-
-                if (pl.Pictures.Count >= (ps.MaxPictureCount > 0 ? ps.MaxPictureCount : int.MaxValue))
-                    break;
-            }
-
+            Log.Logger.Write("NationalGeographic provider is RETIRED. ngm.nationalgeographic.com/wallpaper/download died ~2015, now React SPA at /photo-of-the-day. Use Wallhaven, Bing HPImageArchive, or NASA APOD. Returning empty. See WIN10-11-PATH.md", Log.LoggerLevels.Warnings);
             return pl;
         }
 

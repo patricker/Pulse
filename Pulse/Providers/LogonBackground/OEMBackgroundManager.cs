@@ -38,82 +38,129 @@ namespace LogonBackground
 
         public void SetAccessRules()
         {
-            DirectorySecurity dirSec = Directory.GetAccessControl(_oobeBackground);
-            dirSec.AddAccessRule(new FileSystemAccessRule(Environment.UserDomainName + "\\" + Environment.UserName, FileSystemRights.FullControl, AccessControlType.Allow));
-            Directory.SetAccessControl(_oobeBackground, dirSec);
+            // SECURITY FIX: Don't grant FullControl to current user over System32 subtree (CRITICAL)
+            // Old code gave FullControl, allowing DLL hijack via LogonUI SYSTEM reading background
+            // For Win7 OEMBackground, SYSTEM needs Read, user needs Write only to backgrounds folder
+            // Minimal: grant current user Write + Read, not FullControl, and only on backgrounds folder
+            try
+            {
+                DirectorySecurity dirSec = Directory.GetAccessControl(_oobeBackground);
+                // Only ReadAndExecute + Write, not FullControl
+                dirSec.AddAccessRule(new FileSystemAccessRule(
+                    Environment.UserDomainName + "\\" + Environment.UserName,
+                    FileSystemRights.ReadAndExecute | FileSystemRights.Write,
+                    InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+                    PropagationFlags.None,
+                    AccessControlType.Allow));
+                Directory.SetAccessControl(_oobeBackground, dirSec);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write($"SetAccessRules failed: {ex.Message}", Log.LoggerLevels.Warnings);
+            }
         }
 
         public void CreateDirs()
         {
-            //make sure that file system redirection is disabled, otherwise the image shows up somewhere.
-            // thanks to (http://stackoverflow.com/questions/6617530/could-not-find-a-part-of-the-path-c-windows-system32-oobe-info-background) for this
-            IntPtr ptr = new IntPtr();
-            bool isWow64FsRedirectionDisabled = WinAPI.Wow64DisableWow64FsRedirection(ref ptr);
-
-            if (!Directory.Exists(_oobeInfo))
-                Directory.CreateDirectory(_oobeInfo);
-            if (!Directory.Exists(_oobeBackground))
-                Directory.CreateDirectory(_oobeBackground);
-            SetAccessRules();
+            IntPtr oldVal = IntPtr.Zero;
+            bool disabled = false;
+            try
+            {
+                disabled = WinAPI.Wow64DisableWow64FsRedirection(ref oldVal);
+                if (!Directory.Exists(_oobeInfo))
+                    Directory.CreateDirectory(_oobeInfo);
+                if (!Directory.Exists(_oobeBackground))
+                    Directory.CreateDirectory(_oobeBackground);
+                SetAccessRules();
+            }
+            finally
+            {
+                if (disabled)
+                {
+                    try { WinAPI.Wow64RevertWow64FsRedirection(oldVal); } catch { }
+                }
+            }
         }
 
         public void SetNewPicture(Picture p)
         {
-            //make sure that file system redirection is disabled, otherwise the image shows up somewhere else.
-            // thanks to (http://stackoverflow.com/questions/6617530/could-not-find-a-part-of-the-path-c-windows-system32-oobe-info-background) for this
-            IntPtr ptr = new IntPtr();
-            bool isWow64FsRedirectionDisabled = WinAPI.Wow64DisableWow64FsRedirection(ref ptr);
-
-            var fiOriginal = new FileInfo(p.LocalPath);
-            
-            if (fiOriginal.Exists && fiOriginal.Length > 0)
+            // Windows 10/11 path: try modern lock screen API first
+            if (Environment.OSVersion.Version.Major >= 10 || (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor >= 2))
             {
-                var outPutFile = Path.Combine(_oobeBackground, "backgroundDefault.jpg");
-
-                //delete any existing files
-                try { File.Delete(outPutFile); }
-                catch(Exception ex) {
-                    Log.Logger.Write(string.Format("Error deleting existing Logon Background located at '{0}'. Exception details: {1}",outPutFile, ex.ToString()), Log.LoggerLevels.Errors);                
-                }
-
-                //check if image resolution is a valid aspect ratio, if not try and fix it
-                using (FileStream fs = File.OpenRead(p.LocalPath))
+                bool modernSuccess = false;
+                try
                 {
-                    using (Image img = Image.FromStream(fs))
+                    modernSuccess = Pulse.Base.WinAPI.Desktop.SetLockScreenImage(p.LocalPath);
+                    if (modernSuccess)
                     {
-                        var strRatio = Math.Round((double)img.Width / (double)img.Height, 3).ToString();
-                        var aspectRatio = Convert.ToDouble(strRatio.Length <= 4 ? strRatio : strRatio.Substring(0, 4));
-
-                        //aspect ratio list came from link: http://social.technet.microsoft.com/Forums/en-US/w7itproui/thread/b52689fb-c733-4229-8a10-4aa32d527832/
-                        // this list may not be complete
-                        List<double> validRatios = new List<double>();
-                        validRatios.Add(1.25);
-                        validRatios.Add(1.33);
-                        validRatios.Add(1.60);
-                        validRatios.Add(1.67);
-                        validRatios.Add(1.77);
-
-                        //if not a valid aspect ratio, adjust image
-                        if (!validRatios.Contains(aspectRatio))
-                        {
-                            PictureManager.ShrinkImage(p.LocalPath, outPutFile, 0, 0, 90);
-                        }
-                        else
-                        {
-                            //save image to output file
-                            img.Save(outPutFile);
-                        }
+                        Log.Logger.Write($"OEMBackgroundManager: Set lock screen via modern API: {p.LocalPath}", Log.LoggerLevels.Info);
+                        return; // Success - no need for OEM path
+                    }
+                    else
+                    {
+                        Log.Logger.Write($"OEMBackgroundManager: Modern lock screen failed (needs admin for HKLM policy or net8 WinRT build). " +
+                                         $"On Win10/11, lock screen requires admin for machine policy OR net8 build with UserProfilePersonalizationSettings. " +
+                                         $"File: {p.LocalPath}. OEMBackground (oobe) is dead on Win8+ and will not be attempted.", Log.LoggerLevels.Warnings);
+                        return;
                     }
                 }
-                
-                //File.Copy(p.LocalPath, outPutFile, true);
-                var fiNewFile = new FileInfo(outPutFile);
-
-                //fix picture if it's to big
-                if (fiNewFile.Length / 1024 >= 245)
+                catch (Exception ex)
                 {
-                    //reduce quality until we are under 245kb
-                    PictureManager.ReduceQuality(outPutFile, outPutFile, 90);
+                    Log.Logger.Write($"OEMBackgroundManager: Modern lock screen attempt failed: {ex.Message}", Log.LoggerLevels.Warnings);
+                    return;
+                }
+            }
+
+            IntPtr oldVal2 = IntPtr.Zero;
+            bool disabled2 = false;
+            try
+            {
+                disabled2 = WinAPI.Wow64DisableWow64FsRedirection(ref oldVal2);
+
+                var fiOriginal = new FileInfo(p.LocalPath);
+
+                if (fiOriginal.Exists && fiOriginal.Length > 0)
+                {
+                    var outPutFile = Path.Combine(_oobeBackground, "backgroundDefault.jpg");
+
+                    try { File.Delete(outPutFile); }
+                    catch (Exception ex)
+                    {
+                        Log.Logger.Write($"Error deleting existing Logon Background at '{outPutFile}': {ex.Message}", Log.LoggerLevels.Errors);
+                    }
+
+                    using (FileStream fs = File.OpenRead(p.LocalPath))
+                    {
+                        using (Image img = Image.FromStream(fs))
+                        {
+                            // FIX: Use invariant culture and tolerance compare (old used ToString culture dependent)
+                            double ratio = (double)img.Width / (double)img.Height;
+                            double[] validRatios = { 1.25, 1.33, 1.60, 1.67, 1.77 };
+                            bool isValid = validRatios.Any(v => Math.Abs(v - ratio) < 0.02);
+
+                            if (!isValid)
+                            {
+                                PictureManager.ShrinkImage(p.LocalPath, outPutFile, 0, 0, 90);
+                            }
+                            else
+                            {
+                                img.Save(outPutFile);
+                            }
+                        }
+                    }
+
+                    var fiNewFile = new FileInfo(outPutFile);
+                    if (fiNewFile.Length / 1024 >= 245)
+                    {
+                        PictureManager.ReduceQuality(outPutFile, outPutFile, 90);
+                    }
+                }
+            }
+            finally
+            {
+                if (disabled2)
+                {
+                    try { WinAPI.Wow64RevertWow64FsRedirection(oldVal2); } catch { }
                 }
             }
         }

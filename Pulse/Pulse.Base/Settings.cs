@@ -62,6 +62,44 @@ namespace Pulse.Base
         //provider settings
         public SerializableDictionary<Guid, ActiveProviderInfo> ProviderSettings { get; set; }
 
+        public static string GetSafeCachePath(string proposedPath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(proposedPath))
+                    return Path.Combine(AppPath, "Cache");
+
+                string full = Path.GetFullPath(proposedPath);
+                string appPathFull = Path.GetFullPath(AppPath);
+                string localAppData = Path.GetFullPath(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+                string temp = Path.GetFullPath(Path.GetTempPath());
+
+                // Allow paths inside app dir, localappdata, or temp
+                if (full.StartsWith(appPathFull, StringComparison.OrdinalIgnoreCase) ||
+                    full.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase) ||
+                    full.StartsWith(temp, StringComparison.OrdinalIgnoreCase))
+                {
+                    return full;
+                }
+
+                // Block system paths like Windows\System32
+                string winDir = Path.GetFullPath(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
+                if (full.StartsWith(winDir, StringComparison.OrdinalIgnoreCase))
+                {
+                    Log.Logger.Write($"Settings: Blocked unsafe CachePath {proposedPath} inside Windows dir, using default", Log.LoggerLevels.Warnings);
+                    return Path.Combine(AppPath, "Cache");
+                }
+
+                // For any other absolute path outside allowed roots, still allow but log warning
+                // Could be user explicitly wants D:\Wallpapers - allow if not system
+                return full;
+            }
+            catch
+            {
+                return Path.Combine(AppPath, "Cache");
+            }
+        }
+
         public Settings()
         {
             Language = CultureInfo.CurrentUICulture.Name;
@@ -75,7 +113,7 @@ namespace Pulse.Base
             MaxPictureDownloadCount = 100;
             MaxPreviousPictureDepth = 5;
             CheckForNewPulseVersions = true;
-            CachePath = System.IO.Path.Combine(AppPath, "Cache");
+            CachePath = GetSafeCachePath(System.IO.Path.Combine(AppPath, "Cache"));
             ProviderSettings = new SerializableDictionary<Guid, ActiveProviderInfo>();
             DownloadOnAppStartup = false;
             RunOnWindowsStartup = false;

@@ -46,24 +46,64 @@ namespace Pulse.Base
 
         private Dictionary<string, Type> FindProviders()
         {
+#if NET8_0_OR_GREATER
+            // On .NET 8, use modern ALC-based loader if available
+            try
+            {
+                var modernMethod = GetType().GetMethod("FindProvidersModern", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (modernMethod != null)
+                {
+                    var modernResult = modernMethod.Invoke(this, null) as Dictionary<string, Type>;
+                    if (modernResult != null && modernResult.Count > 0)
+                        return modernResult;
+                }
+            }
+            catch { /* fallback to legacy */ }
+#endif
+
             var result = new Dictionary<string, Type>();
-            var workingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            // FIX: Use AppContext.BaseDirectory for single-file + Environment.ProcessPath for exe dir
+            string workingDirectory = AppContext.BaseDirectory;
+            try
+            {
+                string exeDir = Path.GetDirectoryName(Environment.ProcessPath ?? AppContext.BaseDirectory) ?? AppContext.BaseDirectory;
+                if (!string.IsNullOrEmpty(exeDir) && Directory.Exists(Path.Combine(exeDir, "Providers")))
+                    workingDirectory = exeDir;
+            }
+            catch { }
+
             var providersDirectory = Path.Combine(workingDirectory, "Providers");
 
-            //if no providers directory, return
-            if (!Directory.Exists(providersDirectory)) return result;
+            // Fallback to LocalAppData\Pulse\Providers
+            if (!Directory.Exists(providersDirectory))
+            {
+                try
+                {
+                    var alt = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Pulse", "Providers");
+                    if (Directory.Exists(alt)) providersDirectory = alt;
+                    else return result;
+                }
+                catch { return result; }
+            }
 
-            //get dll's in provider directory, if none found return empty results
             var files = from x in Directory.GetFiles(providersDirectory)
                         where x.EndsWith(".dll") || x.EndsWith(".exe")
                         select x;
 
             if (files.Count() == 0) return result;
 
-            //for each providers dll look through the classes for ones that implement the passed in type
             foreach (var f in files)
             {
-                var assembly = Assembly.LoadFrom(f);
+                Assembly assembly;
+                try
+                {
+                    assembly = Assembly.LoadFrom(f);
+                }
+                catch
+                {
+                    // Skip non-.NET dll or native dependency missing
+                    continue;
+                }
 
                 var providerType =
                     assembly.GetTypes().Where(type => typeof(IProvider).IsAssignableFrom(type));
@@ -75,17 +115,27 @@ namespace Pulse.Base
                     var attrPlatform = GetSupportedPlatformsForType(ipType); // ipType.GetCustomAttributes(typeof(Pulse.Base.ProviderPlatformAttribute), true);
                     
                     //if this provider has a list of supported platforms
+                    // Windows 10/11 fix: Without manifest, OS returns 6.2. With manifest, 10.0.
+                    // Old providers marked 6.1 (Win7) and 6.2 (Win8) should also run on 10.0+.
+                    // New logic: allow if OS major >= required major, and if major equal, minor >= required minor (or required 0 = any)
                     if (attrPlatform.Any())
                     {
+                        var currentOS = Environment.OSVersion;
                         var ppa = from ProviderPlatformAttribute ppaI in attrPlatform 
-                                  where ppaI.Platform == Environment.OSVersion.Platform
-                                        && (ppaI.MajorVersion == 0 || ppaI.MajorVersion == Environment.OSVersion.Version.Major)
-                                        && (ppaI.MinorVersion == 0 || ppaI.MinorVersion == Environment.OSVersion.Version.Minor)
+                                  where ppaI.Platform == currentOS.Platform
+                                        && (ppaI.MajorVersion == 0 || 
+                                            currentOS.Version.Major > ppaI.MajorVersion ||
+                                            (currentOS.Version.Major == ppaI.MajorVersion && 
+                                             (ppaI.MinorVersion == 0 || currentOS.Version.Minor >= ppaI.MinorVersion)))
                                   select ppaI;
 
                         // BUT none of the platforms are supported by this computer, then skip this provider
                         if (!ppa.Any())
                         {
+                            Log.Logger.Write(string.Format("Provider '{0}' skipped - requires platform {1} but current is {2} {3}.{4}", 
+                                strName, 
+                                string.Join(",", attrPlatform.Select(a => $"{a.Platform} {a.MajorVersion}.{a.MinorVersion}")),
+                                currentOS.Platform, currentOS.Version.Major, currentOS.Version.Minor), Log.LoggerLevels.Info);
                             continue;
                         }
                     }

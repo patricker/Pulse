@@ -143,40 +143,40 @@ namespace Pulse.Base
 
             //---create the new image---
             Bitmap bmpThumb = new Bitmap(destWidth, destHeight);
-            var g = Graphics.FromImage(bmpThumb);
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            g.DrawImage(img, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
-
+            using (var g = Graphics.FromImage(bmpThumb))
+            {
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.DrawImage(img, new Rectangle(0, 0, destWidth, destHeight), new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight), GraphicsUnit.Pixel);
+            }
             return bmpThumb;
         }
 
         //From: http://stackoverflow.com/questions/2352804/how-do-i-prevent-clipping-when-rotating-an-image-in-c
-        // Rotates the input image by theta degrees around center.
         public static Bitmap RotateImage(Bitmap bmpSrc, float theta)
         {
-            Matrix mRotate = new Matrix();
-            mRotate.Translate(bmpSrc.Width / -2, bmpSrc.Height / -2, MatrixOrder.Append);
-            mRotate.RotateAt(theta, new System.Drawing.Point(0, 0), MatrixOrder.Append);
-            using (GraphicsPath gp = new GraphicsPath())
-            {  // transform image points by rotation matrix
-                gp.AddPolygon(new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(bmpSrc.Width, 0), new System.Drawing.Point(0, bmpSrc.Height) });
-                gp.Transform(mRotate);
-                System.Drawing.PointF[] pts = gp.PathPoints;
+            using (Matrix mRotate = new Matrix())
+            {
+                mRotate.Translate(bmpSrc.Width / -2, bmpSrc.Height / -2, MatrixOrder.Append);
+                mRotate.RotateAt(theta, new System.Drawing.Point(0, 0), MatrixOrder.Append);
+                using (GraphicsPath gp = new GraphicsPath())
+                {
+                    gp.AddPolygon(new System.Drawing.Point[] { new System.Drawing.Point(0, 0), new System.Drawing.Point(bmpSrc.Width, 0), new System.Drawing.Point(0, bmpSrc.Height) });
+                    gp.Transform(mRotate);
+                    System.Drawing.PointF[] pts = gp.PathPoints;
 
-                // create destination bitmap sized to contain rotated source image
-                Rectangle bbox = boundingBox(bmpSrc, mRotate);
-                Bitmap bmpDest = new Bitmap(bbox.Width, bbox.Height);
+                    Rectangle bbox = boundingBox(bmpSrc, mRotate);
+                    Bitmap bmpDest = new Bitmap(bbox.Width, bbox.Height);
 
-                using (Graphics gDest = Graphics.FromImage(bmpDest))
-                {  // draw source into dest
-                    Matrix mDest = new Matrix();
-                    mDest.Translate(bmpDest.Width / 2, bmpDest.Height / 2, MatrixOrder.Append);
-                    gDest.Transform = mDest;
-                    gDest.DrawImage(bmpSrc, pts);
-                    return bmpDest;
+                    using (Graphics gDest = Graphics.FromImage(bmpDest))
+                    using (Matrix mDest = new Matrix())
+                    {
+                        mDest.Translate(bmpDest.Width / 2, bmpDest.Height / 2, MatrixOrder.Append);
+                        gDest.Transform = mDest;
+                        gDest.DrawImage(bmpSrc, pts);
+                        return bmpDest;
+                    }
                 }
             }
         }
@@ -200,22 +200,17 @@ namespace Pulse.Base
 
         public static Color CalcAverageColor(System.Drawing.Bitmap image)
         {
-            var bmp = new System.Drawing.Bitmap(1, 1);
-            var orig = image;
-            using (var g = System.Drawing.Graphics.FromImage(bmp))
+            // FIXED: Don't dispose caller's bitmap (was disposing orig)
+            using (var bmp = new System.Drawing.Bitmap(1, 1))
             {
-                // the Interpolation mode needs to be set to 
-                // HighQualityBilinear or HighQualityBicubic or this method
-                // doesn't work at all.  With either setting, the results are
-                // slightly different from the averaging method.
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(orig, new System.Drawing.Rectangle(0, 0, 1, 1));
+                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                {
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.DrawImage(image, new System.Drawing.Rectangle(0, 0, 1, 1));
+                }
+                var pixel = bmp.GetPixel(0, 0);
+                return Color.FromArgb(pixel.R, pixel.G, pixel.B);
             }
-            var pixel = bmp.GetPixel(0, 0);
-            orig.Dispose();
-            bmp.Dispose();
-            // pixel will contain average values for entire orig Bitmap
-            return Color.FromArgb(pixel.R, pixel.G, pixel.B);
         }
 
         //From: http://stackoverflow.com/questions/74100/generate-thumbnail-with-white-border
@@ -226,44 +221,38 @@ namespace Pulse.Base
                 original.Height + borderWidth * 2);
 
             Bitmap img = new Bitmap(newSize.Width, newSize.Height);
-            Graphics g = Graphics.FromImage(img);
-
-            g.Clear(borderColor);
-            g.DrawImage(original, new Point(borderWidth, borderWidth));
-            g.Dispose();
-
+            using (Graphics g = Graphics.FromImage(img))
+            {
+                g.Clear(borderColor);
+                g.DrawImage(original, new Point(borderWidth, borderWidth));
+            }
             return img;
         }
         
         public static void ReduceQuality(string file, string destFile, int quality)
         {
-            // we get the image/jpeg encoder using linq
-            ImageCodecInfo iciJpegCodec = (from c in ImageCodecInfo.GetImageEncoders() where c.MimeType == "image/jpeg" select c).SingleOrDefault();
+            var iciJpegCodec = (from c in ImageCodecInfo.GetImageEncoders() where c.MimeType == "image/jpeg" select c).SingleOrDefault();
+            if (iciJpegCodec == null) return;
 
-            // Store the quality parameter in the list of encoder parameters
-            EncoderParameters epParameters = new EncoderParameters(1);
-            epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
-
-            //original image ms
-            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(file)))
+            using (var epParameters = new EncoderParameters(1))
             {
-                //we use htis to keep track of the current size of the image, default to int.max to make sure we always run
-                var fSize = int.MaxValue;
+                epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Math.Max(0, Math.Min(100, quality)));
 
-                using (Image newImage = Image.FromStream(ms))
+                using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(file)))
                 {
-                    //check if the image we generated is larger then 245kb, if it is reduce quality by 10 and try again
-                    while (fSize >= 245)
+                    var fSize = int.MaxValue;
+                    using (Image newImage = Image.FromStream(ms))
                     {
-                        // Save the new file at tshe selected path with the specified encoder parameters, and reuse the same file name
-                        newImage.Save(destFile, iciJpegCodec, epParameters);
-
-                        //get output size in kb
-                        fSize = (int)(new FileInfo(destFile).Length / 1024);
-
-                        //reduce quality by 10, this will only affect the output if while loop continues
-                        quality -= 10;
-                        epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+                        // FIX: Prevent infinite loop / negative quality
+                        while (fSize >= 245 && quality > 0)
+                        {
+                            newImage.Save(destFile, iciJpegCodec, epParameters);
+                            fSize = (int)(new FileInfo(destFile).Length / 1024);
+                            quality -= 10;
+                            quality = Math.Max(0, quality);
+                            epParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+                            if (quality == 0) break;
+                        }
                     }
                 }
             }

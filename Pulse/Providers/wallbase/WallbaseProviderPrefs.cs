@@ -21,8 +21,25 @@ namespace wallbase
             cbImageSizeType.DataSource = WallbaseImageSearchSettings.SizingOption.GetDirectionList();
             cbOrderBy.DataSource = WallbaseImageSearchSettings.OrderBy.GetOrderByList();
             cbOrderByDirection.DataSource = WallbaseImageSearchSettings.OrderByDirection.GetDirectionList();
-            //cbTopTimespan.DataSource = WallbaseImageSearchSettings.TopTimeSpan.GetTimespanList();
+            cbTopRange.DataSource = WallbaseImageSearchSettings.TopTimeSpan.GetTimespanList();
             cbAspectRatio.DataSource = WallbaseImageSearchSettings.AspectRatio.GetAspectRatioList();
+
+            // Show/hide TopRange based on OrderBy
+            cbOrderBy.SelectedIndexChanged += (s, e) => UpdateTopRangeVisibility();
+        }
+
+        private void UpdateTopRangeVisibility()
+        {
+            try
+            {
+                string ob = cbOrderBy.SelectedValue?.ToString();
+                bool isToplist = ob == "toplist";
+                cbTopRange.Visible = isToplist;
+                label13.Visible = isToplist;
+                if (isToplist && cbTopRange.SelectedValue == null)
+                    cbTopRange.SelectedIndex = 3; // 1M default
+            }
+            catch { }
         }
 
         public void LoadConfiguration(string config)
@@ -36,12 +53,13 @@ namespace wallbase
             if (wiss == null)
                 wiss = new WallbaseImageSearchSettings();
 
-            txtUserID.Text = wiss.Username;
-            txtPassword.Text = wiss.Password;
+            // New API: ApiUsername + ApiKey, fallback to legacy Username/Password
+            txtUserID.Text = !string.IsNullOrEmpty(wiss.ApiUsername) ? wiss.ApiUsername : wiss.Username;
+            txtPassword.Text = !string.IsNullOrEmpty(wiss.ApiKey) ? wiss.ApiKey : wiss.Password;
 
             txtSearch.Text = wiss.Query;
 
-            cbArea.SelectedValue = wiss.SA;
+            try { cbArea.SelectedValue = wiss.SA; } catch { cbArea.SelectedIndex = 0; }
 
             cbWG.Checked = wiss.WG;
             cbW.Checked = wiss.W;
@@ -51,26 +69,46 @@ namespace wallbase
             cbSketchy.Checked = wiss.SKETCHY;
             cbNSFW.Checked = wiss.NSFW;
 
-            cbImageSizeType.SelectedValue = wiss.SO;
-            cbOrderBy.SelectedValue = wiss.OB;
-            cbOrderByDirection.SelectedValue = wiss.OBD;
+            try { cbImageSizeType.SelectedValue = wiss.SO; } catch { cbImageSizeType.SelectedIndex = 0; }
+            try { cbOrderBy.SelectedValue = wiss.OB; } catch { cbOrderBy.SelectedIndex = 0; }
+            try { cbOrderByDirection.SelectedValue = wiss.OBD; } catch { cbOrderByDirection.SelectedIndex = 0; }
+            try { cbTopRange.SelectedValue = string.IsNullOrEmpty(wiss.TopRange) ? "1M" : wiss.TopRange; } catch { cbTopRange.SelectedIndex = 3; }
 
-            txtWidth.Text = wiss.ImageWidth.ToString();
-            txtHeight.Text = wiss.ImageHeight.ToString();
-            cbAspectRatio.SelectedValue = wiss.AR;
+            txtWidth.Text = wiss.ImageWidth > 0 ? wiss.ImageWidth.ToString() : "";
+            txtHeight.Text = wiss.ImageHeight > 0 ? wiss.ImageHeight.ToString() : "";
+            try { cbAspectRatio.SelectedValue = wiss.AR; } catch { }
 
             txtCollectionID.Text = wiss.CollectionID;
             txtFavoritesID.Text = wiss.FavoriteID;
+
+            UpdateTopRangeVisibility();
 
             if (wiss.Color != System.Drawing.Color.Empty)
             {
                 pnlColor.BackColor = wiss.Color;
                 cdPicker.Color = wiss.Color;
             }
+
+            // Update labels to reflect new API key auth
+            try
+            {
+                label2.Text = "User:";
+                label3.Text = "API Key:";
+                label4.Text = "API Key optional. Needed for NSFW. Get key from wallhaven.cc/settings";
+                label4.AutoSize = false;
+                label4.Height = 35;
+                txtPassword.UseSystemPasswordChar = false; // API key readable
+                txtPassword.Width = 180;
+                txtUserID.Width = 180;
+            }
+            catch { }
         }
 
         public string SaveConfiguration()
         {
+            wiss.ApiUsername = txtUserID.Text;
+            wiss.ApiKey = txtPassword.Text;
+            // Keep legacy for backward compat
             wiss.Username = txtUserID.Text;
             wiss.Password = txtPassword.Text;
 
@@ -84,13 +122,17 @@ namespace wallbase
             wiss.SKETCHY = cbSketchy.Checked;
             wiss.NSFW = cbNSFW.Checked;
 
-            wiss.SA = cbArea.SelectedValue.ToString();
-            wiss.SO = cbImageSizeType.SelectedValue.ToString();
-            wiss.OB = cbOrderBy.SelectedValue==null?"":cbOrderBy.SelectedValue.ToString();
-            wiss.OBD = cbOrderByDirection.SelectedValue==null?"":cbOrderByDirection.SelectedValue.ToString();
+            wiss.SA = cbArea.SelectedValue != null ? cbArea.SelectedValue.ToString() : "search";
+            wiss.SO = cbImageSizeType.SelectedValue != null ? cbImageSizeType.SelectedValue.ToString() : "gteq";
+            wiss.OB = cbOrderBy.SelectedValue==null?"relevance":cbOrderBy.SelectedValue.ToString();
+            wiss.OBD = cbOrderByDirection.SelectedValue==null?"desc":cbOrderByDirection.SelectedValue.ToString();
+            wiss.TopRange = cbTopRange.SelectedValue==null?"1M":cbTopRange.SelectedValue.ToString();
 
-            wiss.ImageWidth = string.IsNullOrEmpty(txtWidth.Text) ? 0 : Convert.ToInt32(txtWidth.Text);
-            wiss.ImageHeight = string.IsNullOrEmpty(txtHeight.Text) ? 0 : Convert.ToInt32(txtHeight.Text);
+            int w = 0, h = 0;
+            int.TryParse(txtWidth.Text, out w);
+            int.TryParse(txtHeight.Text, out h);
+            wiss.ImageWidth = w;
+            wiss.ImageHeight = h;
             wiss.AR = cbAspectRatio.SelectedValue==null?"":cbAspectRatio.SelectedValue.ToString();
             
             wiss.CollectionID = txtCollectionID.Text;

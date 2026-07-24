@@ -8,8 +8,14 @@ using System.Reflection;
 
 namespace LogonBackground
 {
-    [System.ComponentModel.Description("Logon Background")]
-    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] //restrict to Windows 7 (doesn't work on 8)
+    // Windows 10/11: OEMBackground removed in Win8+. This provider now attempts lock screen via registry/WinRT on Win10+.
+    // Win7 path still works via OEMBackgroundManager (oobe\info\backgrounds)
+    // Win10+ path uses Desktop.SetLockScreenImage (registry + WinRT) - requires admin for machine policy or net8 build for full WinRT
+    [System.ComponentModel.Description("Lock Screen / Logon Background (Win7-11)")]
+    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] // Windows 7
+    [ProviderPlatform(PlatformID.Win32NT, 6, 2)] // Windows 8 (partial)
+    [ProviderPlatform(PlatformID.Win32NT, 6, 3)] // Windows 8.1
+    [ProviderPlatform(PlatformID.Win32NT, 10, 0)] // Windows 10 + 11
     public class OEMBackgroundProvider : IOutputProvider
     {
         public void Initialize(object args)

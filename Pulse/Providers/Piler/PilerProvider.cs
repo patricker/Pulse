@@ -10,7 +10,9 @@ namespace Piler
 {
     public class PilerProvider : IOutputProvider
     {
-        private static Random _rand = new Random();
+        // FIX: Thread-safe Random + prevent infinite placement loop
+        private static readonly ThreadLocal<Random> _rand = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+        private static Random Rand => _rand.Value;
 
         public void ProcessPicture(PictureBatch pb, string config)
         {
@@ -18,56 +20,109 @@ namespace Piler
 
             if (!pics.Any()) return;
 
-            //for starters lets use an existing image as the backdrop
+            // FIX: Validate cache path and backdrop existence
+            string cachePath = Settings.CurrentSettings?.CachePath ?? Path.GetTempPath();
+            try { Directory.CreateDirectory(cachePath); } catch { cachePath = Path.GetTempPath(); }
+
             Picture pBackdrop = pics.First();
-            string savePath = System.IO.Path.Combine(Settings.CurrentSettings.CachePath,
-                                                string.Format("{0}.jpg", Guid.NewGuid()));
+            if (string.IsNullOrEmpty(pBackdrop.LocalPath) || !System.IO.File.Exists(pBackdrop.LocalPath))
+            {
+                Log.Logger.Write($"Piler: Backdrop file missing {pBackdrop.LocalPath}", Log.LoggerLevels.Warnings);
+                return;
+            }
+
+            string savePath = Path.Combine(cachePath, $"{Guid.NewGuid()}.jpg");
 
             List<Rectangle> existingImages = new List<Rectangle>();
 
             using (Image bmpBackdrop = Image.FromFile(pBackdrop.LocalPath))
             {
-                Graphics g = Graphics.FromImage(bmpBackdrop);
+                // FIX: Ensure backdrop large enough to place images
+                if (bmpBackdrop.Width < 100 || bmpBackdrop.Height < 100)
+                {
+                    Log.Logger.Write($"Piler: Backdrop too small {bmpBackdrop.Width}x{bmpBackdrop.Height}", Log.LoggerLevels.Warnings);
+                    return;
+                }
+
+                using (Graphics g = Graphics.FromImage(bmpBackdrop))
+                {
 
                 //now get 4 or 5 other pics and strew them about
                 foreach (Picture p in pics.Skip(1))
                 {
+                    if (string.IsNullOrEmpty(p.LocalPath) || !System.IO.File.Exists(p.LocalPath))
+                        continue;
+
                     Picture pPile = p;
-                    using (Bitmap bmpToRotate = (Bitmap)Bitmap.FromFile(pPile.LocalPath))
+                    try
                     {
-                        //draw a 5px white border around the image
-                        using (Bitmap bmpWithBorder = PictureManager.AppendBorder(bmpToRotate, 25, Color.White))
+                        using (Bitmap bmpToRotate = (Bitmap)Bitmap.FromFile(pPile.LocalPath))
                         {
-
-                            using (Bitmap bmpPile = PictureManager.RotateImage(bmpWithBorder, (float)_rand.Next(-30, 30)))
+                            using (Bitmap bmpWithBorder = PictureManager.AppendBorder(bmpToRotate, 25, Color.White))
                             {
-                                //pick a random x,y coordinate to draw the image, shrink to 25%
-                                Rectangle r = Rectangle.Empty;
-
-                                while (r == Rectangle.Empty)
+                                using (Bitmap bmpPile = PictureManager.RotateImage(bmpWithBorder, (float)Rand.Next(-30, 30)))
                                 {
-                                    Rectangle tmp = new Rectangle(_rand.Next(50, bmpBackdrop.Width - 50),
-                                                                    _rand.Next(50, bmpBackdrop.Height - 50),
-                                                                    Convert.ToInt32(bmpBackdrop.Width * .1),
-                                                                    Convert.ToInt32(bmpBackdrop.Height * .1));
+                                    // FIX: Prevent ArgumentOutOfRange when backdrop small + prevent infinite loop
+                                    Rectangle r = Rectangle.Empty;
+                                    int attempts = 0;
+                                    int maxAttempts = 100;
+                                    int minX = 50;
+                                    int maxX = Math.Max(minX + 1, bmpBackdrop.Width - 50);
+                                    int minY = 50;
+                                    int maxY = Math.Max(minY + 1, bmpBackdrop.Height - 50);
+                                    int w = Convert.ToInt32(bmpBackdrop.Width * .1);
+                                    int h = Convert.ToInt32(bmpBackdrop.Height * .1);
 
-                                    if (existingImages.Where(x => Rectangle.Intersect(x, tmp) != Rectangle.Empty).Count() == 0)
+                                    while (r == Rectangle.Empty && attempts < maxAttempts)
                                     {
-                                        r = tmp;
-                                        existingImages.Add(r);
+                                        Rectangle tmp = new Rectangle(Rand.Next(minX, maxX), Rand.Next(minY, maxY), w, h);
+                                        if (!existingImages.Any(x => Rectangle.Intersect(x, tmp) != Rectangle.Empty))
+                                        {
+                                            r = tmp;
+                                            existingImages.Add(r);
+                                        }
+                                        attempts++;
                                     }
-                                }
 
-                                g.DrawImage(bmpPile, r);
+                                    // If couldn't place non-overlapping after attempts, allow overlap
+                                    if (r == Rectangle.Empty)
+                                    {
+                                        r = new Rectangle(Rand.Next(minX, maxX), Rand.Next(minY, maxY), w, h);
+                                    }
+
+                                    g.DrawImage(bmpPile, r);
+                                }
                             }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        Log.Logger.Write($"Piler: Failed to process pile image {p.LocalPath}: {ex.Message}", Log.LoggerLevels.Warnings);
+                    }
                 }
-                
-                bmpBackdrop.Save(savePath, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                try
+                {
+                    bmpBackdrop.Save(savePath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Write($"Piler: Failed to save collage {savePath}: {ex.Message}", Log.LoggerLevels.Errors);
+                    return;
+                }
             }
 
-            Desktop.SetWallpaperUsingActiveDesktop(savePath);
+            // Fixed: Use SystemParameterInfo instead of deprecated ActiveDesktop (removed in Win7+)
+            // ActiveDesktop (IActiveDesktop) was removed after XP/Vista, so modern Windows needs SPI_SETDESKWALLPAPER
+            try
+            {
+                Desktop.SetWallpaperUsingSystemParameterInfo(savePath);
+            }
+            catch
+            {
+                // Fallback to old method for XP/Vista compat
+                try { Desktop.SetWallpaperUsingActiveDesktop(savePath); } catch { }
+            }
         }
 
         public void Activate(object args) { }

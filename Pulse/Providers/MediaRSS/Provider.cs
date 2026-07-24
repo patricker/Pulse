@@ -36,26 +36,62 @@ namespace MediaRSSProvider
             MediaRSSImageSearchSettings mrssiss = string.IsNullOrEmpty(ps.SearchProvider.ProviderConfig) ?
                 new MediaRSSImageSearchSettings() : MediaRSSImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig);
 
-            XDocument feedXML = XDocument.Load(mrssiss.MediaRSSURL);
+            // Ensure TLS 1.2
+            try { System.Net.ServicePointManager.SecurityProtocol |= (System.Net.SecurityProtocolType)3072; } catch { }
+
+            XDocument feedXML = null;
+            try
+            {
+                // Use WebClient with User-Agent to avoid 403
+                using (var wc = new Pulse.Base.HttpUtility.CookieAwareWebClient())
+                {
+                    wc.UserAgent = "Pulse/2.0 (MediaRSS; +https://github.com/patricker/Pulse)";
+                    string xmlStr = wc.DownloadString(mrssiss.MediaRSSURL);
+                    feedXML = XDocument.Parse(xmlStr);
+                }
+            }
+            catch
+            {
+                try
+                {
+                    // Fallback direct load (old behavior)
+                    feedXML = XDocument.Load(mrssiss.MediaRSSURL);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Write($"MediaRSS: Failed to load RSS {mrssiss.MediaRSSURL}: {ex}", Log.LoggerLevels.Errors);
+                    return result;
+                }
+            }
+
             XNamespace media = XNamespace.Get("http://search.yahoo.com/mrss/");
 
-            var feeds = from feed in feedXML.Descendants("item")
-                        let content = feed.Elements(media + "content")
-                        let thumb = feed.Element(media + "thumbnail").Attribute("url").Value
-                        let img = content.Where(x => x.Attribute("medium").Value == "image").SingleOrDefault()
-                        let url = img!=null?img.Attribute("url").Value:thumb
-                        let id = System.IO.Path.GetFileNameWithoutExtension(url)
-                        select new Picture()
-                        {
-                            Url = url,
-                            Id = id.Length > 50 ? id.Substring(0, 50) : id,
-                            Properties = new SerializableDictionary<string,string>(Picture.StandardProperties.Thumbnail,thumb)
-                        };
+            try
+            {
+                var feeds = from feed in feedXML.Descendants("item")
+                            let content = feed.Elements(media + "content")
+                            let thumbElem = feed.Element(media + "thumbnail")
+                            let thumb = thumbElem != null ? thumbElem.Attribute("url")?.Value ?? "" : ""
+                            let img = content.Where(x => x.Attribute("medium") != null && x.Attribute("medium").Value == "image").FirstOrDefault()
+                            let url = img != null ? (img.Attribute("url")?.Value ?? thumb) : thumb
+                            where !string.IsNullOrEmpty(url)
+                            let id = System.IO.Path.GetFileNameWithoutExtension(url)
+                            select new Picture()
+                            {
+                                Url = url,
+                                Id = string.IsNullOrEmpty(id) ? Guid.NewGuid().ToString() : (id.Length > 50 ? id.Substring(0, 50) : id),
+                                Properties = new SerializableDictionary<string, string>(Picture.StandardProperties.Thumbnail, thumb)
+                            };
 
-            //get up to the maximum number of pictures, excluding banned images
-            result.Pictures.AddRange(
-                    feeds.Where(x=> !ps.BannedURLs.Contains(x.Url))
-                    .Take(ps.MaxPictureCount));
+                int max = ps.MaxPictureCount > 0 ? ps.MaxPictureCount : int.MaxValue;
+                result.Pictures.AddRange(
+                        feeds.Where(x => !ps.BannedURLs.Contains(x.Url))
+                        .Take(max));
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write($"MediaRSS: Failed to parse feed {mrssiss.MediaRSSURL}: {ex}", Log.LoggerLevels.Errors);
+            }
 
             ////handle colors
             //if (!string.IsNullOrEmpty(giss.Color))

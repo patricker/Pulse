@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework> <!-- Must match Base TFM (net8.0-windows10.0.22621.0) for compat, even though API pure -->
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>wallhaven</AssemblyName>
+    <RootNamespace>wallhaven</RootNamespace>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!-- Or System.Text.Json built-in, no package needed -->
+  </ItemGroup>
+
+  <!-- Link modern source from Phase 1 rewrite (already net8 compatible) -->
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Pulse\Providers\wallbase\Provider.cs" Link="Provider.cs" />
+    <Compile Include="..\..\..\..\Pulse\Providers\wallbase\WallbaseImageSearchSettings.cs" Link="WallbaseImageSearchSettings.cs" />
+    <Compile Include="..\..\..\..\Pulse\Providers\wallbase\WallbaseAccessDeniedException.cs" Link="WallbaseAccessDeniedException.cs" />
+    <!-- Designer + UI not needed for headless, but keep for WPF Config -->
+    <Compile Include="..\..\..\..\Pulse\Providers\wallbase\WallbaseProviderPrefs.cs" Link="WallbaseProviderPrefs.cs" Condition="'$(UseWPF)'=='true' Or '$(UseWindowsForms)'=='true'" />
+  </ItemGroup>
+
+</Project>

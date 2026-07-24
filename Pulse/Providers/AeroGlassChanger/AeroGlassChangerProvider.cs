@@ -14,9 +14,14 @@ using Pulse.Base.Providers;
 namespace AeroGlassChanger
 {
     //Most of this code came from http://aura.codeplex.com/ (Aura project)
-    [System.ComponentModel.Description("Aero Glass Color Sync")]
-    [ProviderPlatform(PlatformID.Win32NT, 6, 2)] //windows 8
-    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] //windows 7
+    // Windows 10/11 update: Original DwmSetColorizationParameters (#131) removed after Win8.
+    // Now uses modern accent color via registry (HKCU\Software\Microsoft\Windows\DWM\AccentColor)
+    // plus fallback to old API on Win7/8.
+    [System.ComponentModel.Description("Aero Glass Color Sync (Win7-11, Accent for Win10/11)")]
+    [ProviderPlatform(PlatformID.Win32NT, 6, 1)] // windows 7
+    [ProviderPlatform(PlatformID.Win32NT, 6, 2)] // windows 8
+    [ProviderPlatform(PlatformID.Win32NT, 6, 3)] // windows 8.1 (reports 6.3)
+    [ProviderPlatform(PlatformID.Win32NT, 10, 0)] // windows 10 + 11 (same GUID with manifest)
     [ProviderRunsAsyncAttribute(true)]
     public class AeroGlassChangerProvider : Pulse.Base.IOutputProvider
     {

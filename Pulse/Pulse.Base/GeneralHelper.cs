@@ -56,19 +56,25 @@ namespace Pulse.Base
 
         public static string Protect(string data)
         {
-            byte[] bytes = Encoding.Default.GetBytes(data);
-
-            byte[] protectedBytes = Protect(bytes);
-
-            return Convert.ToBase64String(protectedBytes);
+            if (string.IsNullOrEmpty(data)) return "";
+            try
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(data);
+                byte[] protectedBytes = Protect(bytes);
+                if (protectedBytes == null) return "";
+                return Convert.ToBase64String(protectedBytes);
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         public static byte[] Protect(byte[] data)
         {
+            if (data == null || data.Length == 0) return null;
             try
             {
-                // Encrypt the data using DataProtectionScope.CurrentUser. The result can be decrypted
-                //  only by the same current user.
                 return ProtectedData.Protect(data, s_aditionalEntropy, DataProtectionScope.CurrentUser);
             }
             catch
@@ -79,18 +85,29 @@ namespace Pulse.Base
 
         public static string Unprotect(string data)
         {
-            byte[] bytes = Convert.FromBase64String(data);
-
-            byte[] unprotectedBytes = Unprotect(bytes);
-
-            return Encoding.Default.GetString(unprotectedBytes);
+            if (string.IsNullOrEmpty(data)) return "";
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(data);
+                byte[] unprotectedBytes = Unprotect(bytes);
+                if (unprotectedBytes == null) return "";
+                return Encoding.UTF8.GetString(unprotectedBytes);
+            }
+            catch (FormatException)
+            {
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         public static byte[] Unprotect(byte[] data)
         {
+            if (data == null || data.Length == 0) return null;
             try
             {
-                //Decrypt the data using DataProtectionScope.CurrentUser.
                 return ProtectedData.Unprotect(data, s_aditionalEntropy, DataProtectionScope.CurrentUser);
             }
             catch

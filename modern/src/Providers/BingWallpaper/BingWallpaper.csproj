@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework> <!-- No OS-specific, pure API -->
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>BingWallpaper</AssemblyName>
+    <RootNamespace>BingWallpaper</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj" />
+  </ItemGroup>
+
+  <!-- 
+  This is an example modern provider for .NET 8 migration:
+  - No WebClient, uses HttpClient + System.Text.Json
+  - No API key needed (Bing HPImageArchive is free)
+  - Demonstrates async pattern (GetPicturesAsync wrapper)
+  - Can be built for any OS, but wallpaper setting still Windows-only via output provider
+  -->
+</Project>

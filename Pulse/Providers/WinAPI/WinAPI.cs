@@ -283,6 +283,9 @@ namespace Pulse.Base.WinAPI
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool Wow64DisableWow64FsRedirection(ref IntPtr ptr);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool Wow64RevertWow64FsRedirection(IntPtr ptr);
+
         #region AeroGlassItems
 
         public struct DWM_COLORIZATION_PARAMS

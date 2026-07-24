@@ -63,6 +63,8 @@
             this.cbOrderByDirection = new System.Windows.Forms.ComboBox();
             this.cbOrderBy = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.cbTopRange = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.tpCollections = new System.Windows.Forms.TabPage();
             this.txtCollectionID = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -350,6 +352,8 @@
             // 
             // tpSearch
             // 
+            this.tpSearch.Controls.Add(this.cbTopRange);
+            this.tpSearch.Controls.Add(this.label13);
             this.tpSearch.Controls.Add(this.label12);
             this.tpSearch.Controls.Add(this.label11);
             this.tpSearch.Controls.Add(this.txtSearch);
@@ -478,6 +482,28 @@
             this.label7.Size = new System.Drawing.Size(54, 13);
             this.label7.TabIndex = 0;
             this.label7.Text = "Order By: ";
+            // 
+            // cbTopRange (new - toplist range)
+            // 
+            this.cbTopRange.DisplayMember = "Name";
+            this.cbTopRange.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbTopRange.FormattingEnabled = true;
+            this.cbTopRange.Location = new System.Drawing.Point(75, 29);
+            this.cbTopRange.Margin = new System.Windows.Forms.Padding(2);
+            this.cbTopRange.Name = "cbTopRange";
+            this.cbTopRange.Size = new System.Drawing.Size(108, 21);
+            this.cbTopRange.TabIndex = 14;
+            this.cbTopRange.ValueMember = "Value";
+            // 
+            // label13 (TopRange label)
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(2, 32);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(68, 13);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Top Range: ";
             // 
             // tpCollections
             // 
@@ -623,5 +649,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cbAspectRatio;
+        private System.Windows.Forms.ComboBox cbTopRange;
+        private System.Windows.Forms.Label label13;
     }
 }

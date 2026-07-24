@@ -7,9 +7,12 @@ using System.Net;
 
 namespace GoogleImages
 {
-    //[ProviderConfigurationUserControl(typeof(GoogleImageProviderPreferences))]
+    // RETIRED 2026: Google removed gbv=1 basic HTML (imgurl= regex) in 2018, now JS infinite scroll + consent + bot check.
+    // This provider cannot be fixed with scraping. Options: Google Custom Search JSON API (paid, 100/day free) or Bing Image Search API.
+    // Marking obsolete but keeping DLL for backward compat - returns empty list with warning.
+    [Obsolete("Google Images scraping is dead since 2018. Use Wallhaven, Bing, or NASA instead. See WIN10-11-PATH.md")]
     [ProviderConfigurationClass(typeof(GoogleImageSearchSettings))]
-    [System.ComponentModel.Description("Google Images")]
+    [System.ComponentModel.Description("Google Images (RETIRED - use Wallhaven/Bing)")]
     [ProviderIcon(typeof(Properties.Resources),"googleImages")]
     public class Provider : IInputProvider
     {
@@ -34,91 +37,18 @@ namespace GoogleImages
         {
             var result = new PictureList() { FetchDate = DateTime.Now };
 
-            //load provider search settings
-            GoogleImageSearchSettings giss = GoogleImageSearchSettings.LoadFromXML(ps.SearchProvider.ProviderConfig) ??
-                                             new GoogleImageSearchSettings();
+            Log.Logger.Write("GoogleImages provider is RETIRED. Google removed gbv=1 HTML in 2018. Use Wallhaven (new API), Bing Image Search API, or NASA APOD instead. Returning empty. See WIN10-11-PATH.md for migration to Bing API.", Log.LoggerLevels.Warnings);
 
-            //if search is empty, return now since we can't search without it
-            if (string.IsNullOrEmpty(giss.Query)) return result;
-
-            var pageIndex = ps.PageToRetrieve; //set page to retrieve if one specified
-            var imgFoundCount = 0;
-            
-            //if max picture count is 0, then no maximum, else specified max
-            var maxPictureCount = ps.MaxPictureCount > 0?ps.MaxPictureCount : int.MaxValue;
-
-            //build tbs strring
-            var tbs = "";//isz:ex,iszw:{1},iszh:{2}
-
-            //handle sizeing
-            if (giss.ImageHeight > 0 && giss.ImageWidth > 0)
-            {
-                tbs += string.Format("isz:ex,iszw:{0},iszh:{1},", giss.ImageWidth, giss.ImageHeight);
-            }
-
-            //handle colors
-            if (!string.IsNullOrEmpty(giss.Color))
-            {
-                tbs += GoogleImageSearchSettings.GoogleImageColors.GetColorSearchString((from c in GoogleImageSearchSettings.GoogleImageColors.GetColors() where c.Value == giss.Color select c).Single()) + ",";
-            }
-
-            //if we have a filter string then add it and trim off trailing commas
-            if (!string.IsNullOrEmpty(tbs)) tbs = ("&tbs=" + tbs).Trim(new char[]{','});
-
-            //do safe search setup (off/strict/moderate) this is part of the session and tracked via cookies
-            //SetSafeSearchSetting(giss.GoogleSafeSearchOption);
-
-            do
-            {
-                //build URL from query, dimensions and page index
-                var url = string.Format(baseURL, giss.Query, tbs, (pageIndex * 20));
-
-                var response = string.Empty;
-                using (var client = new HttpUtility.CookieAwareWebClient(_cookies))
-                {
-                    response = client.DownloadString(url);
-                }
-
-                var images = _imagesRegex2.Matches(response);
-
-                //track number of images found for paging purposes
-                imgFoundCount = images.Count;
-
-                //convert images found into picture entries
-                foreach (Match item in images)
-                {
-                    var purl = item.Groups["imgurlgrp"].Value;
-                    var referrer = item.Groups["imgrefgrp"].Value;
-                    var thumbnail = item.Groups["thumbURL"].Value;
-                    //get id and trim if necessary (ran into a few cases of rediculously long filenames)
-                    var id = System.IO.Path.GetFileNameWithoutExtension(purl);
-                    if (id.Length > 50) id = id.Substring(0, 50);
-                    //because google images come from so many sites it's not uncommon to have duplicate file names. (we fix this)
-                    id = string.Format("{0}_{1}", id, purl.GetHashCode());
-
-                    var p = new Picture() { Url = purl, Id = id };
-                    p.Properties.Add(Picture.StandardProperties.Thumbnail, thumbnail);
-                    p.Properties.Add(Picture.StandardProperties.Referrer, referrer);
-
-                    result.Pictures.Add(p);
-                }
-
-                //if we have an image ban list check for them
-                // doing this in the provider instead of picture manager
-                // ensures that our count does not go down if we have a max
-                if (ps.BannedURLs != null && ps.BannedURLs.Count > 0)
-                {
-                    result.Pictures = (from c in result.Pictures where !(ps.BannedURLs.Contains(c.Url)) select c).ToList();
-                }
-
-                //increment page index so we can get the next 20 images if they exist
-                pageIndex++;
-                // Max Picture count is defined in search settings passed in, check for it here too
-            } while (imgFoundCount > 0 && result.Pictures.Count < maxPictureCount && ps.PageToRetrieve == 0);
-
-            result.Pictures = result.Pictures.Take(maxPictureCount).ToList();
+            // Optional: if you have Bing API key, you could re-implement here using Bing Search API:
+            // https://api.bing.microsoft.com/v7.0/images/search?q={query}&count=50&mkt=en-us
+            // Header: Ocp-Apim-Subscription-Key: YOUR_KEY
+            // For now, return empty to avoid breaking Pulse.
 
             return result;
+
+            /* Legacy scraping code retired - kept for reference:
+            var pageIndex = ps.PageToRetrieve; ...
+            */
         }
 
         private void SetSafeSearchSetting(GoogleImageSearchSettings.GoogleSafeSearchOptions gsso)

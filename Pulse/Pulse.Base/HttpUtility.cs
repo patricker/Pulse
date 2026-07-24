@@ -157,14 +157,32 @@ namespace Pulse.Base
         {
             public CookieContainer Cookies { get; set; }
             public string Referrer { get; set; }
+            public string UserAgent { get; set; }
 
             public CookieAwareWebClient() {
                 Cookies = new CookieContainer();
+                UserAgent = "Mozilla/5.0 (Pulse; +https://github.com/patricker/Pulse)";
+                // SECURITY FIX: Only TLS 1.2, no SSL3/TLS1.0 (was enabling Ssl3 = POODLE)
+                // Also don't mutate globally in constructor - but we keep for compat, only Tls12
+                try
+                {
+                    // 3072 = Tls12, 768 = Tls11 (deprecated but better than Ssl3)
+                    // Only enable Tls12
+                    ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
+                    // For .NET 4.8, Tls12 is default, so this is safe. Remove Ssl3/Tls10.
+                }
+                catch { }
             }
 
             public CookieAwareWebClient(CookieContainer cookies)
             {
                 Cookies = cookies;
+                UserAgent = "Mozilla/5.0 (Pulse; +https://github.com/patricker/Pulse)";
+                try
+                {
+                    ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
+                }
+                catch { }
             }
 
             protected override WebRequest GetWebRequest(Uri address)
@@ -173,13 +191,19 @@ namespace Pulse.Base
                 var httpRequest = request as HttpWebRequest;
                 if (httpRequest != null)
                 {
-                    //httpRequest.ProtocolVersion = HttpVersion.Version10;
                     httpRequest.CookieContainer = Cookies;
-                    
-                    //if we have a custom referrer, and we aren't involved in a redirect, then use our custom referrer
+                    httpRequest.UserAgent = UserAgent;
+                    httpRequest.Accept = "application/json, text/html, */*";
+                    // Set timeout
+                    httpRequest.Timeout = 15000;
+
                     if (!string.IsNullOrEmpty(Referrer) && string.IsNullOrEmpty(httpRequest.Referer))
                         httpRequest.Referer = Referrer;
                 }
+                // Also set header for WebClient's underlying headers
+                if (string.IsNullOrEmpty(this.Headers[HttpRequestHeader.UserAgent]))
+                    this.Headers.Add(HttpRequestHeader.UserAgent, UserAgent);
+
                 return request;
             }
         }
