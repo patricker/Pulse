@@ -373,11 +373,11 @@
             this.tpSearch.Text = "Search";
             this.tpSearch.UseVisualStyleBackColor = true;
             // 
-            // label12
+            // label12 (group header) - moved down to avoid overlap with TopRange
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(28, 41);
+            this.label12.Location = new System.Drawing.Point(28, 55);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(84, 13);
@@ -387,16 +387,16 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(4, 57);
+            this.label11.Location = new System.Drawing.Point(4, 71);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(41, 13);
             this.label11.TabIndex = 12;
             this.label11.Text = "Query: ";
             // 
-            // txtSearch
+            // txtSearch - moved down
             // 
-            this.txtSearch.Location = new System.Drawing.Point(58, 57);
+            this.txtSearch.Location = new System.Drawing.Point(58, 71);
             this.txtSearch.Margin = new System.Windows.Forms.Padding(2);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(145, 20);
