@@ -31,48 +31,58 @@ namespace AeroGlassChanger
             if (!lp.Any()) return;
             Picture p = lp.First();
 
-            ManualResetEvent mre = new ManualResetEvent(false);
+            if (string.IsNullOrEmpty(p.LocalPath) || !File.Exists(p.LocalPath)) return;
 
-            int stepCount = 13;
-
-            //get color to start with
-            Color currentAero = Desktop.GetCurrentAeroColor();
             Color endAeroColor;
 
-            //load file
-            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(p.LocalPath)))
+            try
             {
-                using (Bitmap bmp = (Bitmap)Bitmap.FromStream(ms))
+                using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(p.LocalPath)))
                 {
-                    //get final color
-                    endAeroColor = PictureManager.CalcAverageColor(bmp);
+                    using (Bitmap bmp = (Bitmap)Bitmap.FromStream(ms))
+                    {
+                        endAeroColor = PictureManager.CalcAverageColor(bmp);
+                    }
                 }
             }
+            catch { return; }
 
-            //build transition
+            // FIXED: Throttle broadcast storm on Win10+ (was 13 broadcasts in 1.3s causing flicker)
+            // Win10+ accent via registry only needs final color, not animated transition
+            if (Environment.OSVersion.Version.Major >= 10)
+            {
+                // Single step on Win10/11 - no timer, single registry write + single broadcast
+                try
+                {
+                    Desktop.SetAeroColor(endAeroColor);
+                    Log.Logger.Write($"AeroGlass: Set accent color directly for Win10+ (no animation) to {endAeroColor}", Log.LoggerLevels.Info);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Write($"AeroGlass: Failed to set accent {ex.Message}", Log.LoggerLevels.Warnings);
+                }
+                return;
+            }
+
+            // Win7/8: animated transition with timer
+            ManualResetEvent mre = new ManualResetEvent(false);
+            int stepCount = 13;
+            Color currentAero = Desktop.GetCurrentAeroColor();
             Color[] transitionColors = CalcColorTransition(currentAero, endAeroColor, stepCount);
 
-            //build timer
             System.Timers.Timer t = new System.Timers.Timer(100);
-
             int currentStep = 0;
 
             t.Elapsed += delegate(object sender, System.Timers.ElapsedEventArgs e)
             {
-                //double check (I've seen cases where timer fires even though currentStep is past {stepCount}
                 if (currentStep >= stepCount) { mre.Set(); t.Stop(); return; }
-
-                //set to next color
-                Desktop.SetAeroColor(transitionColors[currentStep]);
-
-                //increment steps and check if we should stop the timer
+                try { Desktop.SetAeroColor(transitionColors[currentStep]); } catch { }
                 currentStep++;
                 if (currentStep >= stepCount) { mre.Set(); t.Stop(); }
             };
 
             t.Start();
-
-            mre.WaitOne();
+            mre.WaitOne(5000); // timeout 5s to avoid hang
         }
 
         public static Color[] CalcColorTransition(Color from, Color to, int steps)

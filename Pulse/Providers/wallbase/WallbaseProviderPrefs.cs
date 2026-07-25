@@ -122,7 +122,7 @@ namespace wallbase
                 txtPassword.Width = 160;
                 txtUserID.Width = 180;
 
-                // Add eye toggle checkbox if not already added
+                // Add eye toggle checkbox if not already added - 44x24 target size for a11y
                 var eyeCb = this.Controls.Find("cbShowApiKey", true).FirstOrDefault() as CheckBox;
                 if (eyeCb == null)
                 {
@@ -130,8 +130,9 @@ namespace wallbase
                     {
                         Name = "cbShowApiKey",
                         Text = "Show",
-                        AutoSize = true,
-                        Location = new System.Drawing.Point(txtPassword.Right + 5, txtPassword.Top + 2),
+                        AutoSize = false,
+                        Size = new System.Drawing.Size(60, 24),
+                        Location = new System.Drawing.Point(txtPassword.Right + 5, txtPassword.Top),
                         TabIndex = 100,
                         AccessibleName = "Show API key"
                     };
@@ -139,11 +140,10 @@ namespace wallbase
                     {
                         txtPassword.UseSystemPasswordChar = !eyeCb.Checked;
                     };
-                    // Find parent tab to add to
                     tpAuthenticate.Controls.Add(eyeCb);
                 }
 
-                // Add Get Key link if not exists
+                // Add Get Key link if not exists - 44x24 min for WCAG target size
                 var getKeyLink = this.Controls.Find("lbGetKey", true).FirstOrDefault() as LinkLabel;
                 if (getKeyLink == null)
                 {
@@ -151,7 +151,8 @@ namespace wallbase
                     {
                         Name = "lbGetKey",
                         Text = "Get Key...",
-                        AutoSize = true,
+                        AutoSize = false,
+                        Size = new System.Drawing.Size(70, 24),
                         Location = new System.Drawing.Point(txtPassword.Left, txtPassword.Bottom + 5),
                         TabIndex = 101,
                         AccessibleName = "Get Wallhaven API key opens browser"

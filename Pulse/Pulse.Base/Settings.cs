@@ -76,20 +76,67 @@ namespace Pulse.Base
         //provider settings
         public SerializableDictionary<Guid, ActiveProviderInfo> ProviderSettings { get; set; }
 
+        public static bool IsReparsePoint(string path)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path)) return false;
+                var attr = File.GetAttributes(path);
+                return (attr & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint;
+            }
+            catch { return false; }
+        }
+
+        public static string GetFinalPath(string path)
+        {
+            try
+            {
+                // Try to resolve symlink/junction to final path via GetFinalPathNameByHandle (Windows)
+                // For .NET Framework, use FileInfo LinkTarget if available in .NET 8, else fallback to GetFullPath
+                if (IsReparsePoint(path))
+                {
+                    Log.Logger.Write($"Settings: Blocked reparse point/junction {path}", Log.LoggerLevels.Warnings);
+                    return "";
+                }
+
+                // Check parent directories for reparse points
+                string current = Path.GetFullPath(path);
+                while (!string.IsNullOrEmpty(current))
+                {
+                    string parent = Path.GetDirectoryName(current);
+                    if (string.IsNullOrEmpty(parent)) break;
+                    if (IsReparsePoint(parent))
+                    {
+                        Log.Logger.Write($"Settings: Blocked reparse point in parent {parent} for {path}", Log.LoggerLevels.Warnings);
+                        return "";
+                    }
+                    current = parent;
+                    // Avoid infinite loop for root
+                    if (current == Path.GetDirectoryName(current)) break;
+                }
+
+                return Path.GetFullPath(path);
+            }
+            catch { return Path.GetFullPath(path); }
+        }
+
         public static string GetSafeCachePath(string proposedPath)
         {
             try
             {
                 if (string.IsNullOrEmpty(proposedPath))
-                    return Path.Combine(AppPath, "Cache");
+                    return Path.Combine(DataPath, "Cache");
 
-                string full = Path.GetFullPath(proposedPath);
-                string appPathFull = Path.GetFullPath(AppPath);
+                string full = GetFinalPath(proposedPath);
+                if (string.IsNullOrEmpty(full)) return Path.Combine(DataPath, "Cache");
+
+                full = Path.GetFullPath(full);
+                string dataPathFull = Path.GetFullPath(DataPath);
                 string localAppData = Path.GetFullPath(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
                 string temp = Path.GetFullPath(Path.GetTempPath());
 
-                // Allow paths inside app dir, localappdata, or temp
-                if (full.StartsWith(appPathFull, StringComparison.OrdinalIgnoreCase) ||
+                // Allow paths inside dataPath, localappdata, or temp
+                if (full.StartsWith(dataPathFull, StringComparison.OrdinalIgnoreCase) ||
                     full.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase) ||
                     full.StartsWith(temp, StringComparison.OrdinalIgnoreCase))
                 {
@@ -101,16 +148,25 @@ namespace Pulse.Base
                 if (full.StartsWith(winDir, StringComparison.OrdinalIgnoreCase))
                 {
                     Log.Logger.Write($"Settings: Blocked unsafe CachePath {proposedPath} inside Windows dir, using default", Log.LoggerLevels.Warnings);
-                    return Path.Combine(AppPath, "Cache");
+                    return Path.Combine(DataPath, "Cache");
                 }
 
-                // For any other absolute path outside allowed roots, still allow but log warning
-                // Could be user explicitly wants D:\Wallpapers - allow if not system
+                // For any other absolute path outside allowed roots, still allow but log warning if suspicious
+                // Check for startup folder, ProgramData etc.
+                string programData = Path.GetFullPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
+                string startup = Path.Combine(programData, "Microsoft", "Windows", "Start Menu", "Programs", "Startup");
+                if (full.StartsWith(startup, StringComparison.OrdinalIgnoreCase) ||
+                    full.StartsWith(Path.Combine(programData, "Microsoft", "Windows", "Start Menu"), StringComparison.OrdinalIgnoreCase))
+                {
+                    Log.Logger.Write($"Settings: Blocked unsafe CachePath {proposedPath} inside Startup, using default", Log.LoggerLevels.Warnings);
+                    return Path.Combine(DataPath, "Cache");
+                }
+
                 return full;
             }
             catch
             {
-                return Path.Combine(AppPath, "Cache");
+                return Path.Combine(DataPath, "Cache");
             }
         }
 
@@ -131,7 +187,7 @@ namespace Pulse.Base
             try { Directory.CreateDirectory(DataPath); } catch { }
             CachePath = GetSafeCachePath(Path.Combine(DataPath, "Cache"));
             ProviderSettings = new SerializableDictionary<Guid, ActiveProviderInfo>();
-            DownloadOnAppStartup = false;
+            DownloadOnAppStartup = true; // true for Bing default immediate wallpaper (Maya casual)
             RunOnWindowsStartup = false;
             SkipChangeIfFullScreen = false;
 

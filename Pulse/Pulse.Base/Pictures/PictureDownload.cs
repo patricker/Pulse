@@ -64,6 +64,68 @@ namespace Pulse.Base
 
         public void StartDownload()
         {
+            // SECURITY FIX: Validate URL scheme http/https only, block file:// and private IPs (SSRF)
+            try
+            {
+                if (!Uri.TryCreate(Picture.Url, UriKind.Absolute, out var uri) ||
+                    (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+                {
+                    Log.Logger.Write($"PictureDownload blocked non-http URL: {Picture.Url}", Log.LoggerLevels.Warnings);
+                    Status = DownloadStatus.Error;
+                    LastError = new InvalidOperationException("Only http/https URLs allowed");
+                    if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
+                    return;
+                }
+
+                // Block private IPs and known SSRF targets
+                string host = uri.Host.ToLowerInvariant();
+                if (host == "localhost" || host == "127.0.0.1" || host == "::1" ||
+                    host.StartsWith("192.168.") || host.StartsWith("10.") ||
+                    host.StartsWith("172.16.") || host.StartsWith("172.17.") || host.StartsWith("172.18.") ||
+                    host.StartsWith("172.19.") || host.StartsWith("172.20.") || host.StartsWith("172.21.") ||
+                    host.StartsWith("172.22.") || host.StartsWith("172.23.") || host.StartsWith("172.24.") ||
+                    host.StartsWith("172.25.") || host.StartsWith("172.26.") || host.StartsWith("172.27.") ||
+                    host.StartsWith("172.28.") || host.StartsWith("172.29.") || host.StartsWith("172.30.") ||
+                    host.StartsWith("172.31.") || host == "0.0.0.0" || host == "169.254.169.254" ||
+                    host.StartsWith("169.254.") || host.StartsWith("fc00:") || host.StartsWith("fe80:"))
+                {
+                    Log.Logger.Write($"PictureDownload blocked private IP host: {host} URL: {Picture.Url}", Log.LoggerLevels.Warnings);
+                    Status = DownloadStatus.Error;
+                    LastError = new InvalidOperationException("Private IP blocked");
+                    if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
+                    return;
+                }
+
+                // Extension whitelist: only allow image extensions, force .jpg if suspicious
+                string ext = Path.GetExtension(uri.AbsolutePath).ToLowerInvariant();
+                var allowedExts = new HashSet<string> { ".jpg", ".jpeg", ".png", ".bmp", ".webp" };
+                if (!allowedExts.Contains(ext))
+                {
+                    // If extension is .dll/.exe etc, block and force .jpg via CalculateLocalPath will handle, but log warning
+                    Log.Logger.Write($"PictureDownload: URL has non-image extension {ext}, will be forced to .jpg via CalculateLocalPath", Log.LoggerLevels.Warnings);
+                }
+
+                // Decimal/octal IP check: 2130706433 = 127.0.0.1, 0x7f.0.0.1, 0177.0.0.1
+                if (System.Text.RegularExpressions.Regex.IsMatch(host, @"^\d+$") ||
+                    host.StartsWith("0x") || host.StartsWith("0o") ||
+                    System.Text.RegularExpressions.Regex.IsMatch(host, @"^0[0-7]+\."))
+                {
+                    Log.Logger.Write($"PictureDownload blocked obfuscated IP host: {host}", Log.LoggerLevels.Warnings);
+                    Status = DownloadStatus.Error;
+                    LastError = new InvalidOperationException("Obfuscated IP blocked");
+                    if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Write($"PictureDownload validation failed for {Picture.Url}: {ex.Message}", Log.LoggerLevels.Warnings);
+                Status = DownloadStatus.Error;
+                LastError = ex;
+                if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
+                return;
+            }
+
             //check if we have a referrer URL and assign it
             if (Picture.Properties.ContainsKey(Picture.StandardProperties.Referrer))
                 _client.Referrer = Picture.Properties[Picture.StandardProperties.Referrer];
@@ -73,7 +135,18 @@ namespace Pulse.Base
                 //generate a temp path to save the file to
                 _tempDownloadPath = Path.Combine(Path.GetTempPath(), "PulseTemp_" + Path.GetRandomFileName());
                 //download the file async
-                _client.DownloadFileAsync(new Uri(Picture.Url), _tempDownloadPath, Picture);
+                try
+                {
+                    _client.DownloadFileAsync(new Uri(Picture.Url), _tempDownloadPath, Picture);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Write($"PictureDownload failed to start for {Picture.Url}: {ex.Message}", Log.LoggerLevels.Warnings);
+                    Status = DownloadStatus.Error;
+                    LastError = ex;
+                    if (PictureDownloadingAborted != null) PictureDownloadingAborted(this);
+                    return;
+                }
 
                 //set status to downloading
                 Status = DownloadStatus.Downloading;
@@ -140,13 +213,41 @@ namespace Pulse.Base
             //move the temporary file to it's final destination
             try
             {
-                //copy temp file to final destination
-                File.Copy(_tempDownloadPath, Picture.LocalPath, true);
+                // SECURITY FIX: Check for symlink/junction in destination path before copy
+                string destDir = Path.GetDirectoryName(Picture.LocalPath) ?? "";
+                if (!string.IsNullOrEmpty(destDir) && Settings.IsReparsePoint(destDir))
+                {
+                    Log.Logger.Write($"PictureDownload blocked reparse point dest dir {destDir} for {Picture.LocalPath}", Log.LoggerLevels.Warnings);
+                    HandleErrorRetry();
+                    return;
+                }
+
+                string finalPath = Settings.GetFinalPath(Picture.LocalPath);
+                if (string.IsNullOrEmpty(finalPath))
+                {
+                    Log.Logger.Write($"PictureDownload blocked unsafe final path {Picture.LocalPath}", Log.LoggerLevels.Warnings);
+                    HandleErrorRetry();
+                    return;
+                }
+
+                // Ensure extension still whitelisted after CalculateLocalPath (should be .jpg)
+                string ext = Path.GetExtension(finalPath).ToLowerInvariant();
+                var allowed = new HashSet<string> { ".jpg", ".jpeg", ".png", ".webp", ".bmp" };
+                if (!allowed.Contains(ext))
+                {
+                    Log.Logger.Write($"PictureDownload blocked non-image extension {ext} for {Picture.LocalPath}", Log.LoggerLevels.Warnings);
+                    HandleErrorRetry();
+                    return;
+                }
+
+                File.Copy(_tempDownloadPath, finalPath, true);
 
                 //mark the file as complete
                 MarkAsComplete();
             }
-            catch {
+            catch (Exception ex)
+            {
+                Log.Logger.Write($"PictureDownload copy failed for {Picture.LocalPath}: {ex.Message}", Log.LoggerLevels.Warnings);
                 HandleErrorRetry();
             }
 

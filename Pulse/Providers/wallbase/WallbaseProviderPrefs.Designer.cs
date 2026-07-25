@@ -405,49 +405,50 @@
             // lbClearColor
             // 
             this.lbClearColor.AutoSize = true;
-            this.lbClearColor.Location = new System.Drawing.Point(144, 89);
+            this.lbClearColor.Location = new System.Drawing.Point(144, 95);
             this.lbClearColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbClearColor.Name = "lbClearColor";
             this.lbClearColor.Size = new System.Drawing.Size(58, 13);
             this.lbClearColor.TabIndex = 6;
             this.lbClearColor.TabStop = true;
             this.lbClearColor.Text = "Clear Color";
-            this.lbClearColor.Visible = false;
+            this.lbClearColor.Visible = true;
             this.lbClearColor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbClearColor_LinkClicked);
             // 
             // lbPickColor
             // 
             this.lbPickColor.AutoSize = true;
-            this.lbPickColor.Location = new System.Drawing.Point(84, 89);
+            this.lbPickColor.Location = new System.Drawing.Point(84, 95);
             this.lbPickColor.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbPickColor.Name = "lbPickColor";
             this.lbPickColor.Size = new System.Drawing.Size(55, 13);
             this.lbPickColor.TabIndex = 5;
             this.lbPickColor.TabStop = true;
             this.lbPickColor.Text = "Pick Color";
-            this.lbPickColor.Visible = false;
+            this.lbPickColor.Visible = true;
             this.lbPickColor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbPickColor_LinkClicked);
             // 
-            // pnlColor
+            // pnlColor - FIXED: Was 22x19 Visible=false, now 44x24 Visible=true for a11y target size
             // 
             this.pnlColor.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pnlColor.Location = new System.Drawing.Point(58, 83);
+            this.pnlColor.Location = new System.Drawing.Point(58, 95);
             this.pnlColor.Margin = new System.Windows.Forms.Padding(2);
             this.pnlColor.Name = "pnlColor";
-            this.pnlColor.Size = new System.Drawing.Size(22, 19);
+            this.pnlColor.Size = new System.Drawing.Size(44, 24);
             this.pnlColor.TabIndex = 4;
-            this.pnlColor.Visible = false;
+            this.pnlColor.Visible = true;
+            this.pnlColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(4, 89);
+            this.label8.Location = new System.Drawing.Point(4, 95);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(37, 13);
             this.label8.TabIndex = 3;
             this.label8.Text = "Color: ";
-            this.label8.Visible = false;
+            this.label8.Visible = true;
             // 
             // cbOrderByDirection
             // 

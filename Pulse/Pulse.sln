@@ -37,13 +37,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1E7B8D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAPI", "Providers\WinAPI\WinAPI.csproj", "{B60087E5-76FE-462F-BDC2-BF25BB01F7E6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{2DE0B04F-4F15-4FAC-83A0-88849593D557}"
-	ProjectSection(SolutionItems) = preProject
-		References\AppleScriptSlim.dll = References\AppleScriptSlim.dll
-		References\AppleScriptSlim.pdb = References\AppleScriptSlim.pdb
-		References\CodePlexNewReleaseChecker.dll = References\CodePlexNewReleaseChecker.dll
-		References\CodePlexNewReleaseChecker.pdb = References\CodePlexNewReleaseChecker.pdb
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{504B2B05-2EC4-4701-B4D0-66E277208FE8}"
 EndProject

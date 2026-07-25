@@ -9,7 +9,7 @@ using Pulse.Base.Providers;
 
 namespace Pulse.Base
 {
-    public class ProviderManager
+    public partial class ProviderManager
     {
         public static ProviderManager Instance
         {
@@ -110,9 +110,16 @@ namespace Pulse.Base
 
                 foreach (Type ipType in providerType)
                 {
+                    // Skip retired providers marked with ObsoleteAttribute (GoogleImages, NatGeo) - hide from UI and loading
+                    if (ipType.IsDefined(typeof(ObsoleteAttribute), false))
+                    {
+                        Log.Logger.Write($"Provider '{ipType.FullName}' skipped - marked as retired/Obsolete", Log.LoggerLevels.Info);
+                        continue;
+                    }
+
                     //look for a description attribute on the class to use as the name
                     var strName = GetProviderName(ipType);
-                    var attrPlatform = GetSupportedPlatformsForType(ipType); // ipType.GetCustomAttributes(typeof(Pulse.Base.ProviderPlatformAttribute), true);
+                    var attrPlatform = GetSupportedPlatformsForType(ipType);
                     
                     //if this provider has a list of supported platforms
                     // Windows 10/11 fix: Without manifest, OS returns 6.2. With manifest, 10.0.
@@ -140,16 +147,33 @@ namespace Pulse.Base
                         }
                     }
 
-                    //if the provider collection doesn't already contain this provider, then add it.
-                    // if it is already contained then make sure to Log the fact that a duplicatly named provider exists.
-                    if (!result.ContainsKey(strName))
+                    // Allow duplicate display names by auto-renaming with suffix (e.g., Wallhaven (2))
+                    // This enables power users to have 2 DLLs with same Description for testing variants
+                    // Instances via Guid already work for same provider type with different configs
+                    string uniqueName = strName;
+                    int suffix = 2;
+                    while (result.ContainsKey(uniqueName))
                     {
-                        result.Add(strName, ipType);
+                        // If same Type already registered from same file, skip duplicate
+                        if (result[uniqueName] == ipType)
+                            break;
+
+                        uniqueName = $"{strName} ({suffix})";
+                        suffix++;
+                        if (suffix > 10) // prevent infinite loop
+                        {
+                            Log.Logger.Write($"Provider duplicate limit reached for '{strName}' in {f}", Log.LoggerLevels.Warnings);
+                            break;
+                        }
                     }
-                    else
+
+                    if (!result.ContainsKey(uniqueName))
                     {
-                        Log.Logger.Write(string.Format("Provider with a duplicate name found while loading providers. Named: '{0}', Type: {1}, in file '{2}'.",
-                            strName, ipType.FullName, f), Log.LoggerLevels.Errors);
+                        result.Add(uniqueName, ipType);
+                        if (uniqueName != strName)
+                        {
+                            Log.Logger.Write($"Provider duplicate renamed '{strName}' -> '{uniqueName}' from {f}", Log.LoggerLevels.Info);
+                        }
                     }
                 }
             }

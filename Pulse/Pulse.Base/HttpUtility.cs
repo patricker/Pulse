@@ -159,34 +159,67 @@ namespace Pulse.Base
             public string Referrer { get; set; }
             public string UserAgent { get; set; }
 
+            private static bool _tlsInitialized = false;
+
+            private static void EnsureTls12()
+            {
+                if (_tlsInitialized) return;
+                try
+                {
+                    // SECURITY FIX: Use = not |= to avoid keeping Ssl3/Tls10 if previously set elsewhere
+                    // Only TLS 1.2 and 1.3 if available
+                    ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // Tls12
+                    // Try add Tls13 if available (0x3000 = 12288)
+                    try { ServicePointManager.SecurityProtocol |= (SecurityProtocolType)12288; } catch { }
+                    _tlsInitialized = true;
+                }
+                catch { }
+            }
+
             public CookieAwareWebClient() {
                 Cookies = new CookieContainer();
                 UserAgent = "Mozilla/5.0 (Pulse; +https://github.com/patricker/Pulse)";
-                // SECURITY FIX: Only TLS 1.2, no SSL3/TLS1.0 (was enabling Ssl3 = POODLE)
-                // Also don't mutate globally in constructor - but we keep for compat, only Tls12
-                try
-                {
-                    // 3072 = Tls12, 768 = Tls11 (deprecated but better than Ssl3)
-                    // Only enable Tls12
-                    ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
-                    // For .NET 4.8, Tls12 is default, so this is safe. Remove Ssl3/Tls10.
-                }
-                catch { }
+                EnsureTls12();
             }
 
             public CookieAwareWebClient(CookieContainer cookies)
             {
                 Cookies = cookies;
                 UserAgent = "Mozilla/5.0 (Pulse; +https://github.com/patricker/Pulse)";
-                try
-                {
-                    ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072;
-                }
-                catch { }
+                EnsureTls12();
+            }
+
+            private static bool IsPrivateHost(string host)
+            {
+                if (string.IsNullOrEmpty(host)) return true;
+                host = host.ToLowerInvariant();
+                if (host == "localhost" || host == "127.0.0.1" || host == "::1" || host == "0.0.0.0") return true;
+                if (host.StartsWith("10.")) return true;
+                if (host.StartsWith("192.168.")) return true;
+                if (host.StartsWith("169.254.")) return true;
+                if (host.StartsWith("172.16.") || host.StartsWith("172.17.") || host.StartsWith("172.18.") ||
+                    host.StartsWith("172.19.") || host.StartsWith("172.20.") || host.StartsWith("172.21.") ||
+                    host.StartsWith("172.22.") || host.StartsWith("172.23.") || host.StartsWith("172.24.") ||
+                    host.StartsWith("172.25.") || host.StartsWith("172.26.") || host.StartsWith("172.27.") ||
+                    host.StartsWith("172.28.") || host.StartsWith("172.29.") || host.StartsWith("172.30.") ||
+                    host.StartsWith("172.31.")) return true;
+                if (host.StartsWith("fc00:") || host.StartsWith("fe80:")) return true;
+                // Decimal/octal IP obfuscation check
+                if (System.Text.RegularExpressions.Regex.IsMatch(host, @"^\d+$")) return true; // 2130706433 = 127.0.0.1
+                if (host.StartsWith("0x")) return true;
+                if (System.Text.RegularExpressions.Regex.IsMatch(host, @"^0[0-7]+\.")) return true; // octal 0177.0.0.1
+                return false;
             }
 
             protected override WebRequest GetWebRequest(Uri address)
             {
+                // SECURITY FIX: Validate scheme and private IP before request
+                if (address.Scheme != Uri.UriSchemeHttp && address.Scheme != Uri.UriSchemeHttps)
+                    throw new InvalidOperationException($"Only http/https allowed, got {address.Scheme}");
+
+                if (IsPrivateHost(address.Host))
+                    throw new InvalidOperationException($"Blocked private IP host: {address.Host}");
+
                 var request = base.GetWebRequest(address);
                 var httpRequest = request as HttpWebRequest;
                 if (httpRequest != null)
@@ -194,13 +227,14 @@ namespace Pulse.Base
                     httpRequest.CookieContainer = Cookies;
                     httpRequest.UserAgent = UserAgent;
                     httpRequest.Accept = "application/json, text/html, */*";
-                    // Set timeout
                     httpRequest.Timeout = 15000;
+                    // SECURITY FIX: Disable auto-redirect to prevent SSRF via redirect to private IP
+                    // We handle redirect manually in DownloadString with validation
+                    httpRequest.AllowAutoRedirect = false;
 
                     if (!string.IsNullOrEmpty(Referrer) && string.IsNullOrEmpty(httpRequest.Referer))
                         httpRequest.Referer = Referrer;
                 }
-                // Also set header for WebClient's underlying headers
                 if (string.IsNullOrEmpty(this.Headers[HttpRequestHeader.UserAgent]))
                     this.Headers.Add(HttpRequestHeader.UserAgent, UserAgent);
 

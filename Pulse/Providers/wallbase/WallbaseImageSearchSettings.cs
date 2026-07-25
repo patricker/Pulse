@@ -337,8 +337,8 @@ namespace wallbase
                 case "1.77": return "16x9";
                 case "1.60": return "16x10";
                 case "1.70": return "16x9"; // netbook approx
-                case "2.50": return ""; // dual not directly supported
-                case "3.20": return ""; // dual wide
+                case "2.50": return "32x9"; // dual → super ultrawide
+                case "3.20": return "48x9"; // dual wide → triple
                 case "1.01": return ""; // widescreen = any wide
                 case "0.99": return "9x16"; // portrait approx
                 default: return ar; // return as is, maybe already custom
@@ -463,6 +463,10 @@ namespace wallbase
                 tts.Add(new AspectRatio() { Name = "16x9", Value = "16x9" });
                 tts.Add(new AspectRatio() { Name = "16x10", Value = "16x10" });
                 tts.Add(new AspectRatio() { Name = "21x9", Value = "21x9" });
+                tts.Add(new AspectRatio() { Name = "32x9 (dual 16:9 / super ultrawide)", Value = "32x9" });
+                tts.Add(new AspectRatio() { Name = "48x9 (triple 16:9)", Value = "48x9" });
+                tts.Add(new AspectRatio() { Name = "32x10", Value = "32x10" });
+                tts.Add(new AspectRatio() { Name = "48x10", Value = "48x10" });
                 tts.Add(new AspectRatio() { Name = "4x3", Value = "4x3" });
                 tts.Add(new AspectRatio() { Name = "5x4", Value = "5x4" });
                 tts.Add(new AspectRatio() { Name = "9x16", Value = "9x16" });

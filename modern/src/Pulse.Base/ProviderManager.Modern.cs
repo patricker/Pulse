@@ -81,6 +81,13 @@ namespace Pulse.Base
                     bool anyAdded = false;
                     foreach (Type ipType in providerTypes)
                     {
+                        // Hide retired
+                        if (ipType.IsDefined(typeof(ObsoleteAttribute), false))
+                        {
+                            Log.Logger.Write($"Provider '{ipType.FullName}' skipped - retired/Obsolete", Log.LoggerLevels.Info);
+                            continue;
+                        }
+
                         var strName = GetProviderName(ipType);
                         var attrPlatform = GetSupportedPlatformsForType(ipType);
 
@@ -101,14 +108,22 @@ namespace Pulse.Base
                             }
                         }
 
-                        if (!result.ContainsKey(strName))
+                        string uniqueName = strName;
+                        int suffix = 2;
+                        while (result.ContainsKey(uniqueName))
                         {
-                            result.Add(strName, ipType);
-                            anyAdded = true;
+                            if (result[uniqueName] == ipType) break;
+                            uniqueName = $"{strName} ({suffix})";
+                            suffix++;
+                            if (suffix > 10) break;
                         }
-                        else
+
+                        if (!result.ContainsKey(uniqueName))
                         {
-                            Log.Logger.Write($"Duplicate provider name '{strName}' in {f}", Log.LoggerLevels.Errors);
+                            result.Add(uniqueName, ipType);
+                            anyAdded = true;
+                            if (uniqueName != strName)
+                                Log.Logger.Write($"Provider duplicate renamed '{strName}' -> '{uniqueName}' from {f}", Log.LoggerLevels.Info);
                         }
                     }
 

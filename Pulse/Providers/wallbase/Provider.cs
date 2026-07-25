@@ -62,7 +62,16 @@ namespace wallbase
 
             do
             {
-                string apiUrl = wiss.BuildAPIUrl(pageIndex);
+                string apiUrl;
+                try
+                {
+                    apiUrl = wiss.BuildAPIUrl(pageIndex);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Log.Logger.Write($"Wallhaven API: Configuration error - {ex.Message}. Returning empty. Please set username for collections.", Log.LoggerLevels.Warnings);
+                    break;
+                }
                 // FIX seed handling: strip any existing seed from BuildAPIUrl and inject current seed
                 if (wiss.OB == "random")
                 {
@@ -182,25 +191,85 @@ namespace wallbase
 
         private string DownloadString(string url, string apiKey)
         {
-            // SECURITY FIX: Use CookieAwareWebClient with timeout + TLS only, validate http/https
             if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
                 throw new ArgumentException("Invalid URL scheme, only http/https allowed");
 
-            using (var client = new HttpUtility.CookieAwareWebClient())
+            // SECURITY FIX: Manual redirect handling with private IP validation
+            string currentUrl = url;
+            int redirectCount = 0;
+            const int maxRedirects = 3;
+
+            while (redirectCount <= maxRedirects)
             {
-                client.Encoding = Encoding.UTF8;
-                client.UserAgent = USER_AGENT;
-                client.Headers.Add(HttpRequestHeader.Accept, "application/json");
-                if (!string.IsNullOrEmpty(apiKey))
+                if (!Uri.TryCreate(currentUrl, UriKind.Absolute, out var curUri) ||
+                    (curUri.Scheme != Uri.UriSchemeHttp && curUri.Scheme != Uri.UriSchemeHttps))
+                    throw new ArgumentException("Invalid redirect URL scheme");
+
+                // Block private IPs
+                string host = curUri.Host.ToLowerInvariant();
+                if (host == "localhost" || host == "127.0.0.1" || host == "::1" || host == "0.0.0.0" ||
+                    host.StartsWith("10.") || host.StartsWith("192.168.") || host.StartsWith("169.254.") ||
+                    host.StartsWith("172.16.") || host.StartsWith("172.17.") || host.StartsWith("172.18.") ||
+                    host.StartsWith("172.19.") || host.StartsWith("172.20.") || host.StartsWith("172.21.") ||
+                    host.StartsWith("172.22.") || host.StartsWith("172.23.") || host.StartsWith("172.24.") ||
+                    host.StartsWith("172.25.") || host.StartsWith("172.26.") || host.StartsWith("172.27.") ||
+                    host.StartsWith("172.28.") || host.StartsWith("172.29.") || host.StartsWith("172.30.") ||
+                    host.StartsWith("172.31.") || host.StartsWith("fc00:") || host.StartsWith("fe80:"))
+                    throw new InvalidOperationException($"Blocked private IP redirect: {host}");
+
+                try
                 {
-                    if (!client.Headers.AllKeys.Contains("X-API-Key"))
-                        client.Headers.Add("X-API-Key", apiKey);
+                    var request = (HttpWebRequest)WebRequest.Create(currentUrl);
+                    request.Method = "GET";
+                    request.UserAgent = USER_AGENT;
+                    request.Accept = "application/json";
+                    request.Timeout = 15000;
+                    request.AllowAutoRedirect = false;
+                    request.CookieContainer = new CookieContainer();
+                    if (!string.IsNullOrEmpty(apiKey))
+                        request.Headers.Add("X-API-Key", apiKey);
+
+                    try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; } catch { }
+
+                    using (var response = (HttpWebResponse)request.GetResponse())
+                    {
+                        if ((int)response.StatusCode >= 300 && (int)response.StatusCode < 400)
+                        {
+                            string? location = response.Headers["Location"];
+                            if (string.IsNullOrEmpty(location))
+                                throw new WebException("Redirect with no Location header");
+
+                            // Resolve relative redirect
+                            if (!Uri.TryCreate(location, UriKind.Absolute, out var locUri))
+                            {
+                                locUri = new Uri(curUri, location);
+                            }
+                            currentUrl = locUri.ToString();
+                            redirectCount++;
+                            continue;
+                        }
+
+                        using (var stream = response.GetResponseStream())
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            return reader.ReadToEnd();
+                        }
+                    }
                 }
-
-                try { ServicePointManager.SecurityProtocol |= (SecurityProtocolType)3072; } catch { }
-
-                return client.DownloadString(url);
+                catch (WebException wex) when (wex.Response is HttpWebResponse resp && (int)resp.StatusCode >= 300 && (int)resp.StatusCode < 400)
+                {
+                    // Handle redirect via exception path (some WebRequest versions throw on 302 when AllowAutoRedirect=false)
+                    string? location = resp.Headers["Location"];
+                    if (string.IsNullOrEmpty(location)) throw;
+                    if (!Uri.TryCreate(location, UriKind.Absolute, out var locUri))
+                        locUri = new Uri(curUri, location);
+                    currentUrl = locUri.ToString();
+                    redirectCount++;
+                    continue;
+                }
             }
+
+            throw new WebException($"Too many redirects for {url}");
         }
 
         #region JSON parsing
