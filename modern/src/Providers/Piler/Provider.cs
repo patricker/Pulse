@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Pulse.Base;
-using Pulse.Base.WinAPI;
+using Pulse.Base.Wallpaper;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -136,14 +136,23 @@ namespace Piler
                     backdrop.Save(savePath, encoder);
                 }
 
-                // Set wallpaper via modern API (IDesktopWallpaper preferred)
+                // Set wallpaper via cross-platform abstraction
                 try
                 {
-                    Desktop.SetWallpaperUsingSystemParameterInfo(savePath);
+                    var setter = Pulse.Base.Wallpaper.WallpaperSetterFactory.Create();
+                    if (setter.IsSupported)
+                    {
+                        setter.SetWallpaperAsync(savePath, Pulse.Base.Wallpaper.WallpaperStyle.Fill).GetAwaiter().GetResult();
+                    }
+                    else
+                    {
+                        // Fallback to legacy Desktop for Windows builds that still reference it
+                        Desktop.SetWallpaperUsingSystemParameterInfo(savePath);
+                    }
                 }
                 catch
                 {
-                    try { Desktop.SetWallpaperUsingActiveDesktop(savePath); } catch { }
+                    try { Desktop.SetWallpaperUsingSystemParameterInfo(savePath); } catch { }
                 }
             }
             catch (Exception ex)

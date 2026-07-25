@@ -10,21 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj" />
+    <ProjectReference Include="..\..\Pulse.Base.Abstractions\Pulse.Base.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <!-- Or System.Text.Json built-in, no package needed -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
-  <!-- Link modern source from Phase 1 rewrite (already net8 compatible) -->
+  <!-- Modern cross-platform: use modern Provider.cs from legacy rewrite (already net8 compatible) but as pure provider -->
   <ItemGroup>
     <Compile Include="..\..\..\..\Pulse\Providers\wallbase\Provider.cs" Link="Provider.cs" />
     <Compile Include="..\..\..\..\Pulse\Providers\wallbase\WallbaseImageSearchSettings.cs" Link="WallbaseImageSearchSettings.cs" />
     <Compile Include="..\..\..\..\Pulse\Providers\wallbase\WallbaseAccessDeniedException.cs" Link="WallbaseAccessDeniedException.cs" />
-    <!-- Designer + UI not needed for headless, but keep for WPF Config -->
-    <Compile Include="..\..\..\..\Pulse\Providers\wallbase\WallbaseProviderPrefs.cs" Link="WallbaseProviderPrefs.cs" Condition="'$(UseWPF)'=='true' Or '$(UseWindowsForms)'=='true'" />
   </ItemGroup>
 
 </Project>

@@ -8,28 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-old:
-    name: Legacy .NET 4.8 Build (Win7-11 compat)
-    runs-on: windows-latest # windows-2019 retired June 2024, windows-latest has MSBuild + .NET 4.8 targeting pack
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Restore NuGet (old)
-        run: nuget restore Pulse/Pulse.sln
-
-      - name: Build Legacy Solution (net4.8)
-        run: msbuild Pulse/Pulse.sln /p:Configuration=Release /p:Platform="Any CPU" /m
-
-      - name: Upload Legacy Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Pulse-net48-legacy
-          path: Pulse/bin/Release/
-          retention-days: 7
-
   build-modern:
     name: Modern .NET 8 Build (Win10/11)
     runs-on: windows-latest # Win11 image with .NET 8 SDK + Win11 SDK 22621

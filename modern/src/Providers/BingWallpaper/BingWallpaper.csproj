@@ -1,16 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework> <!-- Must match Base TFM for NU1201 compat -->
+    <TargetFramework>net8.0</TargetFramework> <!-- Pure cross-platform, no OS specific -->
     <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>BingWallpaper</AssemblyName>
     <RootNamespace>BingWallpaper</RootNamespace>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj" />
+    <ProjectReference Include="..\..\Pulse.Base.Abstractions\Pulse.Base.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
   <!-- 

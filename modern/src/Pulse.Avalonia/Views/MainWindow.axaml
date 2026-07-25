@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Pulse.Avalonia.ViewModels"
+        x:Class="Pulse.Avalonia.Views.MainWindow"
+        Title="Pulse - Cross-Platform Wallpaper"
+        Width="800" Height="600">
+
+  <Design.DataContext>
+    <vm:MainWindowViewModel />
+  </Design.DataContext>
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <!-- Header -->
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="10">
+      <TextBlock Text="Pulse" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
+      <TextBlock Text="Cross-platform (Windows, macOS, Linux) - ImageSharp single library" VerticalAlignment="Center" Opacity="0.6"/>
+    </StackPanel>
+
+    <!-- Search -->
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" Margin="10" ColumnSpacing="10">
+      <TextBox Grid.Column="0" Watermark="Search query (e.g. nature, anime, mountains)" Text="{Binding Query}"/>
+      <Button Grid.Column="1" Content="Wallhaven (SFW)" Command="{Binding LoadWallhavenAsync}"/>
+      <Button Grid.Column="2" Content="Bing (no key)" Command="{Binding LoadBingAsync}"/>
+    </Grid>
+
+    <!-- Pictures List -->
+    <ScrollViewer Grid.Row="2" Margin="10">
+      <ItemsControl Items="{Binding Pictures}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Margin="5" Padding="5" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Width="180">
+              <StackPanel Spacing="5">
+                <TextBlock Text="{Binding Id}" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding Url}" FontSize="10" Opacity="0.7" TextWrapping="Wrap" MaxLines="2"/>
+                <TextBlock Text="Provider:" FontSize="10"/>
+                <TextBlock Text="{Binding Properties[providerLabel]}" FontSize="10" Opacity="0.8" />
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <!-- Status -->
+    <Border Grid.Row="3" Background="#f0f0f0" Padding="10">
+      <TextBlock Text="{Binding Status}" />
+    </Border>
+  </Grid>
+</Window>

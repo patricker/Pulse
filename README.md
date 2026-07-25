@@ -1,30 +1,50 @@
-# Pulse (Revived)
+# Pulse (Revived) — True Cross-Platform
 
 Pulse is an application that automatically changes your wallpaper (and so much more!) by downloading images from the Internet. You choose the search and filtering options, Pulse does all the heavy lifting to get you the wallpapers you want!
 
 **Original:** Windows 7/8 and OSX with Mono (tested on 3.2.3, beta support).
-**Revived (2026):** Windows 7-11 with .NET Framework 4.8, plus modern .NET 8 path in `modern/` folder.
+**Revived (2026):** **True cross-platform .NET 8** — Windows 10/11, macOS, Linux from single codebase. **Single image library ImageSharp** (no System.Drawing.Common switching). Avalonia UI for Win/Mac/Linux, CLI for headless.
 
-## Quick Start
+## Quick Start — Build from Just Linux!
 
 ```bash
-# Legacy .NET 4.8 build (Win7-11, works today)
-msbuild Pulse/Pulse.sln /p:Configuration=Release /p:Platform="Any CPU"
-# Output: Pulse/bin/Release/Pulse.exe + Providers/*.dll
+# Cross-platform core (works on Linux, macOS, Windows) - no Windows SDK needed
+dotnet restore modern/Pulse.Modern.CrossPlatform.sln
+dotnet build modern/Pulse.Modern.CrossPlatform.sln -c Release
 
-# Modern .NET 8 build (Win10 1809+ / Win11)
+# Run CLI that tests Wallhaven + Bing providers without setting wallpaper (works on Linux)
+dotnet run --project modern/src/Pulse.CLI/Pulse.CLI.csproj -c Release
+# OS: Unix ... Got 5 pictures from Wallhaven ...
+
+# Publish Linux self-contained CLI
+dotnet publish modern/src/Pulse.CLI/Pulse.CLI.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o publish/linux-x64-cli/
+./publish/linux-x64-cli/Pulse.CLI
+
+# Cross-platform Avalonia UI (Windows, macOS, Linux) - single UI, no WPF/WinForms
+dotnet run --project modern/src/Pulse.Avalonia/Pulse.Avalonia.csproj -c Release
+
+# Full Windows build (Win10 1809+ / Win11) with wallpaper setting via IDesktopWallpaper
 dotnet restore modern/Pulse.Modern.sln
 dotnet build modern/Pulse.Modern.sln -c Release
 dotnet publish modern/src/Pulse/Pulse.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/win-x64-single/
+# Publish for macOS/Linux with platform-specific wallpaper setter
+dotnet publish modern/src/Pulse.Avalonia/Pulse.Avalonia.csproj -c Release -r osx-x64 --self-contained true -o publish/osx-x64/
+dotnet publish modern/src/Pulse.Avalonia/Pulse.Avalonia.csproj -c Release -r linux-x64 --self-contained true -o publish/linux-x64/
 ```
+
+No legacy .NET Framework 4.8 build needed anymore — `Pulse/Pulse.sln` is retired. True cross-platform is `net8.0` Abstractions + `net8.0-windows/macos/linux` platform-specific setters via `IWallpaperSetter`.
 
 ## Documentation Index
 
-- **[REVIVAL_PLAN.md](REVIVAL_PLAN.md)** — Live endpoint validation (wallhaven API v1 works, Google dead), what was fixed, provider audit table, next PRs
-- **[WIN10-11-PATH.md](WIN10-11-PATH.md)** — Why Win7 code breaks on Win10/11: OSVersion lie, PerMonitorV2 DPI, IDesktopWallpaper vs SPI_SETDESKWALLPAPER, DWM #131 removed → accent registry, lock screen vs oobe, manifest with Win10 GUID
-- **[DOTNET-CORE-MIGRATION.md](DOTNET-CORE-MIGRATION.md)** — Full audit of .NET 4.0 blockers (WebClient obsolete, System.Drawing.Common Windows-only, ProtectedData package, CodePlex checker dead), TFM strategy `net8.0-windows10.0.22621.0`, SDK conversion, AssemblyLoadContext, MSIX packaging
-- **[modern/VERIFICATION.md](modern/VERIFICATION.md)** — Checklist to verify legacy + modern builds, wallpaper setting via IDesktopWallpaper, accent, lock screen
-- **[modern/.github/workflows/build.yml](modern/.github/workflows/build.yml)** — CI for both legacy (windows-latest + MSBuild) and modern (.NET 8)
+- **[REVIVAL_PLAN.md](REVIVAL_PLAN.md)** — Live endpoint validation (wallhaven API v1 works, Google dead), what was fixed, provider audit table
+- **[WIN10-11-PATH.md](WIN10-11-PATH.md)** — Why Win7 breaks on Win10/11: OSVersion lie, PerMonitorV2, IDesktopWallpaper vs SPI, DWM #131 → accent registry
+- **[DOTNET-CORE-MIGRATION.md](DOTNET-CORE-MIGRATION.md)** — Audit of .NET 4.0 blockers, TFM strategy, SDK conversion, AssemblyLoadContext, MSIX
+- **[INTEGRATION-TESTING.md](INTEGRATION-TESTING.md)** — Full integration testing plan: what needs testing, environments (Win11 3-mon, low-end HDD, macOS, Linux, NAT), test cases, infrastructure, tools
+- **[modern/LINUX-BUILD.md](modern/LINUX-BUILD.md)** — **Build from just Linux**: what builds on Linux vs needs Windows, EnableWindowsTargeting, cross-platform CLI, cross-platform solution, what doesn't work yet (wallpaper setting macOS/Linux impl)
+- **[modern/VERIFICATION.md](modern/VERIFICATION.md)** — Checklist to verify builds, wallpaper setting, accent, lock screen
+- **[.github/workflows/build.yml](.github/workflows/build.yml)** — CI now cross-platform: windows-latest for full modern + ubuntu-latest for Linux API providers
+- **Cross-Platform UI:** `modern/src/Pulse.Avalonia/` — Avalonia 11.1 single UI for Win/Mac/Linux replacing WPF/WinForms, `modern/src/Pulse.CLI/` — headless CLI for Linux testing
+- **Abstractions:** `modern/src/Pulse.Base.Abstractions/` — net8.0 pure, no OS deps, ImageSharp only, IWallpaperSetter with Windows/macOS/Linux implementations
 
 ## Providers
 
@@ -57,11 +77,18 @@ dotnet publish modern/src/Pulse/Pulse.csproj -c Release -r win-x64 --self-contai
 - Collections: old hardcoded user `Aheres` fallback removed, now throws `Username required for collection browsing` - set ApiUsername
 - TopRange UI: visible only when OrderBy=Toplist (was Area=Top List), new dropdown at 75,29
 
-## Branches
+## Branches & Migration
 
-- `master` - net4.8 with Win10 manifests (Phase 1, safe)
-- `v3-net8-win1011` - this revival: net4.8 + modern net8 templates, security hardening, Win10/11 fixes (you are here)
-- Planned `v3-net8` - full SDK migration, single-file self-contained, MSIX
+- `master` - legacy net4.8 Win7-11 (retired, kept for archaeology)
+- `v3-net8-win1011` - revival: Win10/11 compat + Wallhaven API v1 + security hardening + ImageSharp single library (you are here) — **last branch with legacy .NET Framework**
+- **`main` / `v3-net8` going forward** — **true cross-platform .NET 8 only**: 
+  - `net8.0` Abstractions (no OS deps, ImageSharp only)
+  - Providers cross-platform (`net8.0` referencing Abstractions only, not Windows Base)
+  - `IWallpaperSetter` abstraction: Windows (IDesktopWallpaper), macOS (osascript/NSWorkspace), Linux (gsettings/feh)
+  - Avalonia UI `net8.0` for Win/Mac/Linux single UI, CLI `net8.0` for headless
+  - No legacy build, no System.Drawing.Common switching, single image library
+
+Legacy `Pulse/Pulse.sln` net4.8 is **no longer needed** — `modern/Pulse.Modern.CrossPlatform.sln` builds from just Linux for providers + ImageSharp + CLI. Full wallpaper setting needs Windows for IDesktopWallpaper, macOS for osascript, Linux for gsettings, but core builds everywhere.
 
 ## Links
 

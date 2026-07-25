@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Pulse.Base\Pulse.Base.csproj" />
+    <ProjectReference Include="..\..\Pulse.Base.Abstractions\Pulse.Base.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
